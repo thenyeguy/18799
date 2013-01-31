@@ -3,6 +3,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include "portaudio.h"
+#include <time.h>
 
 // Need this?
 #define CHECK_OVERFLOW  (0)
@@ -55,11 +56,26 @@ int main()
                         SAMPLE_RATE, SAMPLES_PER_BUFFER, paClipOff,
                         NULL, NULL);
     
+    //Waits for push to talk...
     printf("\nPress enter to begin recording...\n");
     getchar();
-    int outputfile = open("./recorded.out", O_WRONLY|O_CREAT, 0644);
+    
+    //Sets up time stamped file name. There's gotta be a better way to do this...
+    time_t sys_time = time(NULL);
+    char * prefix = "./recordings/recorded-";
+    char timestamp[32];
+    sprintf(timestamp, "%lu", (long unsigned)sys_time);
+    char * suffix = ".out";
+    char dataFileName[256];
+	snprintf(dataFileName, sizeof(dataFileName), "%s%s%s", prefix,timestamp, suffix);
+	printf("Naming file:\t%s\n",dataFileName);
+    int outputfile = open(dataFileName, O_WRONLY|O_CREAT, 0644);
+    
+    
     int listening = 1;
     int counter = 0;
+
+	int dataCaptured = 0;
 
     //Run until user ends it!
     err = Pa_StartStream(stream);
@@ -68,6 +84,7 @@ int main()
         err = Pa_ReadStream(stream, samples, SAMPLES_PER_BUFFER);
         //err = Pa_WriteStream(stream, samples, SAMPLES_PER_BUFFER);
         write(outputfile, samples, SAMPLES_PER_BUFFER);
+		dataCaptured+=SAMPLES_PER_BUFFER;
 
         //Window - stop recording when the magnitude averaged over a
         //  second drops below an arbitrary constant
