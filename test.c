@@ -58,7 +58,7 @@ int main()
     printf("\nPress enter to begin recording...\n");
     getchar();
     int outputfile = open("./recorded.out", O_WRONLY|O_CREAT, 0644);
-    int listening = 1;
+	int listening = 1;
     int counter = 0;
 
     //Run until user ends it!
@@ -66,10 +66,10 @@ int main()
     while(listening || counter < 2)
     {
         err = Pa_ReadStream(stream, samples, SAMPLES_PER_BUFFER);
-        //err = Pa_WriteStream(stream, samples, SAMPLES_PER_BUFFER);
+        // err = Pa_WriteStream(stream, samples, SAMPLES_PER_BUFFER);
         write(outputfile, samples, SAMPLES_PER_BUFFER);
 
-        //Window - stop recording when the magnitude averaged over a
+        // Window - stop recording when the magnitude averaged over a
         //  second drops below an arbitrary constant
         int sum = 0;
         for(int i = 0; i < SAMPLES_PER_BUFFER; i++)
