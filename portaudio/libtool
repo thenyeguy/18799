@@ -2,7 +2,7 @@
 
 # libtool - Provide generalized library-building support services.
 # Generated automatically by config.status () 
-# Libtool was configured on host michaelnye.local:
+# Libtool was configured on host emily-groves-macbook.local:
 # NOTE: Changes made to this file will be lost: look at ltmain.sh.
 #
 #   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2003, 2004, 2005,
@@ -72,13 +72,13 @@ ECHO="printf %s\\n"
 
 # The host system.
 host_alias=
-host=x86_64-apple-darwin12.2.0
-host_os=darwin12.2.0
+host=x86_64-apple-darwin10.8.0
+host_os=darwin10.8.0
 
 # The build system.
 build_alias=
-build=x86_64-apple-darwin12.2.0
-build_os=darwin12.2.0
+build=x86_64-apple-darwin10.8.0
+build_os=darwin10.8.0
 
 # A sed program that does not truncate output.
 SED="/usr/bin/sed"
@@ -96,7 +96,7 @@ EGREP="/usr/bin/grep -E"
 FGREP="/usr/bin/grep -F"
 
 # A BSD- or MS-compatible name lister.
-NM="/Applications/Xcode.app/Contents/Developer/usr/bin/nm"
+NM="/usr/bin/nm"
 
 # Whether we need soft or hard links.
 LN_S="ln -s"
@@ -141,7 +141,7 @@ want_nocaseglob="no"
 sharedlib_from_linklib_cmd="printf %s\\n"
 
 # The archiver.
-AR="/Applications/Xcode.app/Contents/Developer/usr/bin/ar"
+AR="/usr/bin/ar"
 
 # Flags to create an archive.
 AR_FLAGS="cru"
@@ -164,7 +164,7 @@ lock_old_archive_extraction=yes
 LTCC="gcc"
 
 # LTCC compiler flags.
-LTCFLAGS="-std=c99 -g -O2 -DPA_LITTLE_ENDIAN -I\$(top_srcdir)/include -I\$(top_srcdir)/src/common -I\$(top_srcdir)/src/os/unix -DNDEBUG    "
+LTCFLAGS="-std=c99 -O2 -Wall -pedantic -pipe -fPIC -DNDEBUG -DPA_LITTLE_ENDIAN -I\$(top_srcdir)/include -I\$(top_srcdir)/src/common -I\$(top_srcdir)/src/os/unix -DNDEBUG -arch i386 -arch ppc -arch x86_64 -arch ppc64 -isysroot /Developer/SDKs/MacOSX10.5.sdk -mmacosx-version-min=10.3 "
 
 # Take the output of nm and produce a listing of raw symbols and C names.
 global_symbol_pipe="sed -n -e 's/^.*[	 ]\\([BCDEGRST][BCDEGRST]*\\)[	 ][	 ]*_\\([_A-Za-z][_A-Za-z0-9]*\\)\$/\\1 _\\2 \\2/p' | sed '/ __gnu_lto/d'"
@@ -272,7 +272,7 @@ finish_eval=""
 hardcode_into_libs=no
 
 # Compile-time system search path for libraries.
-sys_lib_search_path_spec="/Applications/Xcode.app/Contents/Developer/usr/llvm-gcc-4.2/lib/gcc/i686-apple-darwin11/4.2.1/x86_64 /usr/lib /Applications/Xcode.app/Contents/Developer/usr/llvm-gcc-4.2/lib  /usr/local/lib"
+sys_lib_search_path_spec="/usr/lib/gcc/i686-apple-darwin10/4.2.1/x86_64 /usr/lib/i686-apple-darwin10/4.2.1 /usr/lib  /usr/local/lib"
 
 # Run-time system search path for libraries.
 sys_lib_dlsearch_path_spec="/usr/local/lib /lib /usr/lib"
@@ -292,7 +292,7 @@ striplib="strip -x"
 
 
 # The linker used to build libraries.
-LD="/Applications/Xcode.app/Contents/Developer/usr/llvm-gcc-4.2/libexec/gcc/i686-apple-darwin11/4.2.1/ld"
+LD="/usr/libexec/gcc/i686-apple-darwin10/4.2.1/ld"
 
 # How to create reloadable object files.
 reload_flag=" -r"

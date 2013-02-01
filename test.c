@@ -1,73 +1,65 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
+#include <time.h>
 #include <fcntl.h>
 #include <unistd.h>
+
 #include "portaudio.h"
-
-// Need this?
-#define CHECK_OVERFLOW  (0)
-#define CHECK_UNDERFLOW  (0)
-
-// Define sample format
-typedef short SAMPLE;
-#define PA_SAMPLE_TYPE  paInt16
-#define SAMPLE_SILENCE  (0)
-#define PRINTF_S_FORMAT "%d"
-
-// Define recording constants
-#define SAMPLE_RATE        (16000)
-#define SAMPLES_PER_BUFFER (SAMPLE_RATE)
-#define NUM_CHANNELS       (1)
-#define NUM_SECONDS        (10)
+#include "portaudio_utils.h"
 
 
+/* test.c - main function for our working test of portaudio import
+ *      TODO: rename and continue refactoring code
+ *		TODO: convert output file from raw data to wav
+ *
+ *      Currently performs a basic push-to-begin recording of user input, with
+ *      a windowing function to determine when to stop audio. Writes the raw
+ *      recorded data to a file recorded.out. */
 int main()
 {
-    //Define portaudio magic
-    PaStreamParameters inputParams, outputParams;
+    //Initialize portaudio stream
     PaStream* stream = NULL;
-    PaError err;
-    SAMPLE* samples = malloc(NUM_CHANNELS * SAMPLE_RATE * NUM_SECONDS * sizeof(SAMPLE));
-
-    //Initialize portaudio
-    err = Pa_Initialize();
-
-    //Set up stream params
-    inputParams.device = Pa_GetDefaultInputDevice();
-    inputParams.channelCount = 1;
-    inputParams.sampleFormat = PA_SAMPLE_TYPE;
-    inputParams.suggestedLatency =
-        Pa_GetDeviceInfo(inputParams.device)->defaultHighInputLatency;
-    inputParams.hostApiSpecificStreamInfo = NULL;
-
-    outputParams.device = Pa_GetDefaultOutputDevice();
-    outputParams.channelCount = 1;
-    outputParams.sampleFormat = PA_SAMPLE_TYPE;
-    outputParams.suggestedLatency =
-        Pa_GetDeviceInfo(outputParams.device)->defaultHighOutputLatency;
-    outputParams.hostApiSpecificStreamInfo = NULL;
-
-    printf("Using input device #%d and output device #%d.\n",
-           inputParams.device, outputParams.device);
-
-    //Open the stream!
-    err = Pa_OpenStream(&stream, &inputParams, &outputParams,
-                        SAMPLE_RATE, SAMPLES_PER_BUFFER, paClipOff,
-                        NULL, NULL);
+    initialize_portaudio(&stream);
     
+    //Create buffer to read audio into
+    SAMPLE* samples = malloc(NUM_CHANNELS * SAMPLES_PER_BUFFER * sizeof(SAMPLE));
+
+
+    //Sets up time stamped file name. There's gotta be a better way to do this...
+    time_t sys_time = time(NULL);
+    char * prefix = "./recordings/recorded-";
+    char timestamp[32];
+    sprintf(timestamp, "%lu", (long unsigned)sys_time);
+    char * suffix = ".wav";
+    char dataFileName[256];
+	snprintf(dataFileName, sizeof(dataFileName), "%s%s%s", prefix,timestamp, suffix);
+	printf("Output will be stored in %s\n",dataFileName);
+    int outputfile = open(dataFileName, O_WRONLY|O_CREAT, 0644);
+    
+    //Wait for the user to begin
     printf("\nPress enter to begin recording...\n");
     getchar();
     int outputfile = open("./recorded.out", O_WRONLY|O_CREAT, 0644);
 	int listening = 1;
     int counter = 0;
 
-    //Run until user ends it!
-    err = Pa_StartStream(stream);
+	
+    //Run until windowing function signals the end, ignoring the
+    //  first sample to let the user begin talking
+    //Write the recorded data to an output file
+    error_check("StartStream",Pa_StartStream(stream));
+
+    bool listening = true;
+    int counter = 0;
+	int dataCaptured = 0;
     while(listening || counter < 2)
     {
         err = Pa_ReadStream(stream, samples, SAMPLES_PER_BUFFER);
         // err = Pa_WriteStream(stream, samples, SAMPLES_PER_BUFFER);
+        Pa_ReadStream(stream, samples, SAMPLES_PER_BUFFER);
         write(outputfile, samples, SAMPLES_PER_BUFFER);
+		dataCaptured+=SAMPLES_PER_BUFFER;
 
         // Window - stop recording when the magnitude averaged over a
         //  second drops below an arbitrary constant
@@ -77,16 +69,16 @@ int main()
             sum += abs(samples[i]);
         }
         int average = sum/SAMPLES_PER_BUFFER;
-        if(average < 250) listening = 0;
+        if(average < 250) listening = false;
         counter++;
     }
-    //No escape yet
+	
+	WAV_Writer *writer = malloc(sizeof(WAV_WRITER));
+	Audio_WAV_OpenWriter(writer, dataFileName, 44100) 
 
-    printf("You are done!\n");
-    err = Pa_StopStream(stream);
-    err = Pa_CloseStream(stream);
-    err = Pa_Terminate();
-
+    //Close portaudio and clean up   
+    error_check("StopStream", Pa_StopStream(stream));
+    close_portaudio(stream);
     close(outputfile);
     free(samples);
 
