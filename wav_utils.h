@@ -18,9 +18,13 @@
 #define WAV_FORMAT_PCM			(1)
 #define WAV_FORMAT_IMA_ADPCM	(0x0011)
 
+#define BUFFER_SIZE 256
 
-int raw_to_wav(char *infile_name, char *outfile_name, int num_channels, int sample_rate, int bits_per_sample);
+#define SUCCESS 0
+#define FAILURE 1
 
+int raw_to_wav(char *infile_name, char *outfile_name, int num_channels, int sample_rate, int bits_per_sample, int data_length);
+void make_header(int num_channels, int sample_rate, int bits_per_sample, char* header, int data_length);
 
 
 #endif

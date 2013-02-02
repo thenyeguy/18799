@@ -7,7 +7,7 @@
 
 #include "portaudio.h"
 #include "portaudio_utils.h"
-
+#include "wav_utils.h"
 
 /* test.c - main function for our working test of portaudio import
  *      TODO: rename and continue refactoring code
@@ -31,27 +31,33 @@ int main()
     char * prefix = "./recordings/recorded-";
     char timestamp[32];
     sprintf(timestamp, "%lu", (long unsigned)sys_time);
-    char * suffix = ".wav";
+    char * suffix = ".out";
     char dataFileName[256];
 	snprintf(dataFileName, sizeof(dataFileName), "%s%s%s", prefix,timestamp, suffix);
+	
+	char wavFileName[256];
+	char *wav_suffix = ".wav";
+	snprintf(wavFileName, sizeof(wavFileName), "%s%s%s", prefix, timestamp, wav_suffix);
+	
+
 	printf("Output will be stored in %s\n",dataFileName);
     int outputfile = open(dataFileName, O_WRONLY|O_CREAT, 0644);
-    
+   
     //Wait for the user to begin
-    printf("\nPress enter to begin recording...\n");
-    getchar();
-    int outputfile = open("./recorded.out", O_WRONLY|O_CREAT, 0644);
-	int listening = 1;
+    printf("\nPress enter to begin recording... WHAT THE FUCK\n");
+	getchar();
+    //outputfile = open("./recorded.out", O_WRONLY|O_CREAT, 0644);
+	bool listening = true;
     int counter = 0;
-
+	int err = 0;
 	
     //Run until windowing function signals the end, ignoring the
     //  first sample to let the user begin talking
     //Write the recorded data to an output file
     error_check("StartStream",Pa_StartStream(stream));
 
-    bool listening = true;
-    int counter = 0;
+    listening = true;
+    counter = 0;
 	int dataCaptured = 0;
     while(listening || counter < 2)
     {
@@ -72,9 +78,10 @@ int main()
         if(average < 250) listening = false;
         counter++;
     }
-	
-	WAV_Writer *writer = malloc(sizeof(WAV_WRITER));
-	Audio_WAV_OpenWriter(writer, dataFileName, 44100) 
+
+	printf("this is where raw_to_wav should be called\n");
+	raw_to_wav(dataFileName, wavFileName, 1, 44100, 1, counter);
+
 
     //Close portaudio and clean up   
     error_check("StopStream", Pa_StopStream(stream));
@@ -82,5 +89,5 @@ int main()
     close(outputfile);
     free(samples);
 
-    return 0;
+	return 0;
 }

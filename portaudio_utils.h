@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include "portaudio.h"
 
-
 #ifndef AUDIOCONSTS
 #define AUDIOCONSTS
 
