@@ -7,6 +7,7 @@
 
 #include "portaudio.h"
 #include "portaudio_utils.h"
+#include "endpoint.h"
 
 
 /* test.c - main function for our working test of portaudio import
@@ -46,24 +47,15 @@ int main()
     error_check("StartStream",Pa_StartStream(stream));
 
     bool listening = true;
-    int counter = 0;
 	int dataCaptured = 0;
-    while(listening || counter < 2)
+    while(listening)
     {
         Pa_ReadStream(stream, samples, SAMPLES_PER_BUFFER);
         write(outputfile, samples, SAMPLES_PER_BUFFER);
 		dataCaptured+=SAMPLES_PER_BUFFER;
 
-        //Window - stop recording when the magnitude averaged over a
-        //  second drops below an arbitrary constant
-        int sum = 0;
-        for(int i = 0; i < SAMPLES_PER_BUFFER; i++)
-        {
-            sum += abs(samples[i]);
-        }
-        int average = sum/SAMPLES_PER_BUFFER;
-        if(average < 250) listening = false;
-        counter++;
+        if(done_speaking(samples, SAMPLES_PER_BUFFER))
+            listening = false;
     }
 
     //Close portaudio and clean up   
