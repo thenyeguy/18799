@@ -44,7 +44,7 @@ int main()
     int outputfile = open(dataFileName, O_WRONLY|O_CREAT, 0644);
    
     //Wait for the user to begin
-    printf("\nPress enter to begin recording... WHAT THE FUCK\n");
+    printf("\nPress enter to begin recording... \n");
 	getchar();
     //outputfile = open("./recorded.out", O_WRONLY|O_CREAT, 0644);
 	bool listening = true;
@@ -79,8 +79,7 @@ int main()
         counter++;
     }
 
-	printf("this is where raw_to_wav should be called\n");
-	raw_to_wav(dataFileName, wavFileName, 1, 44100, 1, counter);
+	raw_to_wav(dataFileName, wavFileName, 0);
 
 
     //Close portaudio and clean up   

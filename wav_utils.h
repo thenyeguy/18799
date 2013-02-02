@@ -7,7 +7,16 @@
 #define DATA_ID		(('d'<<24) | ('a'<<16) | ('t'<<8) | 'a')
 #define FACT_ID		(('f'<<24) | ('a'<<16) | ('c'<<8) | 't')
 
+#define CHUNK_SIZE			0x24080000
+#define SUBCHUNK_1_SIZE		0x10000000
+
+#define AUDIO_FORMAT		0x0100
+#define HEADER_NUM_CHANNELS		0x0100
+
 #define WAV_HEADER_SIZE		44
+
+#define SAMPLE_RATE			0x22560000
+#define BITS_PER_SAMPLE		16
 
 #define WAV_ERR_CHUNK_SIZE		(-1)
 #define WAV_ERR_FILE_TYPE		(-2)
@@ -23,8 +32,8 @@
 #define SUCCESS 0
 #define FAILURE 1
 
-int raw_to_wav(char *infile_name, char *outfile_name, int num_channels, int sample_rate, int bits_per_sample, int data_length);
-void make_header(int num_channels, int sample_rate, int bits_per_sample, char* header, int data_length);
+int raw_to_wav(char *infile_name, char *outfile_name, int data_length);
+void make_header(char* header, int data_length);
 
 
 #endif
