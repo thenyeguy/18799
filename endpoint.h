@@ -9,7 +9,9 @@
  */
 #define SMOOTHINGFACTOR   2.2
 #define BACKGROUNDFACTOR  0.05
-#define THRESHOLD         5.0
+#define THRESHOLD         1.0
+
+#define NAIVETHRESHOLD    0.005
 
 /* window - takes in a buffer of audio samples its length, and returns true if it
  *          the speaker has stopped speaking */

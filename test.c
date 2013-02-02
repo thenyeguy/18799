@@ -44,7 +44,6 @@ int main()
     //Run until windowing function signals the end, ignoring the
     //  first sample to let the user begin talking
     //Write the recorded data to an output file
-    //Dump first samples
     error_check("StartStream",Pa_StartStream(stream));
 
     bool listening = true;

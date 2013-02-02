@@ -12,11 +12,5 @@ test: $(OBJECTS)
 %.o: %.c
 	$(CC) $(OFLAGS) $<
 
-#test.o: test.c
-#	$(CC) $(OFLAGS) test.c
-
-#portaudio_utils.o: portaudio_utils.c
-#	$(CC) $(OFLAGS) portaudio_utils.c
-
 clean:
 	rm -rf *.o *.out
