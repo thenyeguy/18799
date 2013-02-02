@@ -17,7 +17,7 @@ typedef short SAMPLE;
  * everywhere when possible. */
 #define SAMPLE_RATE        (16000)
 #define NUM_CHANNELS       (1)
-#define SAMPLES_PER_BUFFER (SAMPLE_RATE)
+#define SAMPLES_PER_BUFFER (SAMPLE_RATE/3)
 
 #endif
 
