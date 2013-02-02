@@ -45,29 +45,31 @@ void make_header(char* header, int data_length) {
 
 	
 
-	//AudioFormat
+	//AudioFormat: 1(PCM)
 	(header)[20] = 0x01;
 	(header)[21] = 0x00;
-	(header)[22] = 0x02;
+
+	//NumChannels: 1
+	(header)[22] = 0x01;
 	(header)[23] = 0x00;
 
-	//SampleRate
-	(header)[24] = 0x22;
-	(header)[25] = 0x56;
+	//SampleRate: 16,000
+	(header)[24] = 0x80;
+	(header)[25] = 0x3E;
 	(header)[26] = 0x00;
 	(header)[27] = 0x00;
 
-	//ByteRate
-	(header)[28] = 0x88;
-	(header)[29] = 0x58;
-	(header)[30] = 0x01;
+	//ByteRate: 32,000
+	(header)[28] = 0x00;
+	(header)[29] = 0x7D;
+	(header)[30] = 0x00;
 	(header)[31] = 0x00;
 
 	//Block Align
 	(header)[32] = 0x04;
 	(header)[33] = 0x00;
 
-	//BitsPerSample
+	//BitsPerSample: 16
 	(header)[34] = 0x10;
 	(header)[35] = 0x00;
 
