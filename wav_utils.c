@@ -43,39 +43,39 @@ void make_header(char* header, int data_length) {
 =======
 	sprintf(header, "Hello, I am a wav header\n\n\n");
 
-
+	
 
 	//AudioFormat
-	(*header)[20] = 0x01;
-	(*header)[21] = 0x00;
-	(*header)[22] = 0x02;
-	(*header)[23] = 0x00;
+	(header)[20] = 0x01;
+	(header)[21] = 0x00;
+	(header)[22] = 0x02;
+	(header)[23] = 0x00;
 
 	//SampleRate
-	(*header)[24] = 0x22;
-	(*header)[25] = 0x56;
-	(*header)[26] = 0x00;
-	(*header)[27] = 0x00;
+	(header)[24] = 0x22;
+	(header)[25] = 0x56;
+	(header)[26] = 0x00;
+	(header)[27] = 0x00;
 
 	//ByteRate
-	(*header)[28] = 0x88;
-	(*header)[29] = 0x58;
-	(*header)[30] = 0x01;
-	(*header)[31] = 0x00;
+	(header)[28] = 0x88;
+	(header)[29] = 0x58;
+	(header)[30] = 0x01;
+	(header)[31] = 0x00;
 
 	//Block Align
-	(*header)[32] = 0x04;
-	(*header)[33] = 0x00;
+	(header)[32] = 0x04;
+	(header)[33] = 0x00;
 
 	//BitsPerSample
-	(*header)[34] = 0x10;
-	(*header)[35] = 0x00;
+	(header)[34] = 0x10;
+	(header)[35] = 0x00;
 
 	//data
-	(*header)[36] = 0x64;
-	(*header)[37] = 0x61;
-	(*header)[38] = 0x74;
-	(*header)[39] = 0x61;
+	(header)[36] = 0x64;
+	(header)[37] = 0x61;
+	(header)[38] = 0x74;
+	(header)[39] = 0x61;
 	
 	
 	
