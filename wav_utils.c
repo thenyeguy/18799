@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-
+#include <strings.h>
 #include "wav_utils.h"
 
 /* 
@@ -31,8 +31,8 @@ int raw_to_wav(char *infile_name, char *outfile_name, int data_length) {
 
 
 void make_header(char* header, int data_length) {
+
 	/* make a wav header based on the information passed into the function */
-<<<<<<< HEAD
 	memset(header, RIFF_ID, 4);
 	memset(header+4, CHUNK_SIZE, 4);
 	memset(header+8, WAVE_ID, 4);
@@ -40,10 +40,6 @@ void make_header(char* header, int data_length) {
 	memset(header+16, SUBCHUNK_1_SIZE, 4);
 	memset(header+20, AUDIO_FORMAT, 2);
 	memset(header+22, HEADER_NUM_CHANNELS, 2);
-=======
-	sprintf(header, "Hello, I am a wav header\n\n\n");
-
-	
 
 	//AudioFormat: 1(PCM)
 	(header)[20] = 0x01;
@@ -81,6 +77,5 @@ void make_header(char* header, int data_length) {
 	
 	
 	
->>>>>>> Second half of Header Buffer
 }
 

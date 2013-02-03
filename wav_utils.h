@@ -15,7 +15,7 @@
 
 #define WAV_HEADER_SIZE		44
 
-#define SAMPLE_RATE			0x22560000
+//#define SAMPLE_RATE			0x22560000
 #define BITS_PER_SAMPLE		16
 
 #define WAV_ERR_CHUNK_SIZE		(-1)
