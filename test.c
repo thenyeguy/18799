@@ -79,7 +79,8 @@ int main()
         counter++;
     }
 
-	raw_to_wav(dataFileName, wavFileName, 0);
+	//Should we be sending dataCaptured?
+	raw_to_wav(dataFileName, wavFileName, dataCaptured);
 
 
     //Close portaudio and clean up   

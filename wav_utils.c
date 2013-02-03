@@ -31,17 +31,8 @@ int raw_to_wav(char *infile_name, char *outfile_name, int data_length) {
 
 
 void make_header(char* header, int data_length) {
-
-	/* make a wav header based on the information passed into the function */
-	/*
-	memset(header, RIFF_ID, 4);
-	memset(header+4, CHUNK_SIZE, 4);
-	memset(header+8, WAVE_ID, 4);
-	memset(header+12, FMT_ID, 4);
-	memset(header+16, SUBCHUNK_1_SIZE, 4);
-	memset(header+20, AUDIO_FORMAT, 2);
-	memset(header+22, HEADER_NUM_CHANNELS, 2);
-	*/
+	
+	printf("Data Length: %d\n",data_length);
 	
 	//Chunk Descriptor
 	(header)[0] = 0x52;
@@ -107,13 +98,20 @@ void make_header(char* header, int data_length) {
 	(header)[38] = 0x74;
 	(header)[39] = 0x61;
 	
+	//SubChunk2Size: NumSamples * NumChannels * BitsPerSample/8
+	//int subchunk2size = NUMSAMPLES * NUMCHANNELS * BITSPERSAMPLE / 8;
+	(header)[40] = 0x00;
+	(header)[41] = 0x00;
+	(header)[42] = 0x00;
+	(header)[43] = 0x00;
+	
 	
 	int i;
 	for(i=0; i <44; i++){
 		if(i%4==0){
 			printf("\n");
 		}
-		printf("%02x ",header[i]);
+		printf("%02x ",((unsigned char *)header)[i]);
 	}
 }
 
