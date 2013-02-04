@@ -17,22 +17,33 @@ int raw_to_wav(char *infile_name, char *outfile_name, int data_length) {
 	
 	fwrite(header, 1, WAV_HEADER_SIZE, outfile);
 
-	void* buf = malloc(BUFFER_SIZE);
+	void * buf = malloc(BUFFER_SIZE);
 
+	//int data_transfered = 0;
 	while (fread(buf, 1, BUFFER_SIZE, infile)) {
+		/*
+		int i;
+		unsigned char * intbuf = (unsigned char *)buf;
+		for( i=0; i<BUFFER_SIZE; i+=2){
+			printf("[%02x%02x] ",intbuf[i+1],intbuf[i]);
+		}
+		printf("\n");
+		*/
 		fwrite(buf, 1, BUFFER_SIZE, outfile);
+		//data_transfered+=BUFFER_SIZE;
 	}
+	
+	//printf("Data transfered: %d\n",data_transfered);
 	
 	fclose(infile);
 	fclose(outfile);
-	
 	return 0;
 }
 
 
 void make_header(char* header, int data_length) {
 	
-	printf("Data Length: %d\n",data_length);
+	//printf("Data Length: %d\n",data_length);
 	int subchunk1size = 16; //always
 	int subchunk2size = data_length;
 	int chunksize = 4 + (8 + subchunk1size) + (8 + subchunk2size);
@@ -106,10 +117,12 @@ void make_header(char* header, int data_length) {
 	(header)[39] = 0x61;
 	
 	//SubChunk2Size:
+	/*
 	(header)[40] = 0x66;
 	(header)[41] = 0x27;
 	(header)[42] = 0x09;
 	(header)[43] = 0x00;
+	*/
 	
 	int_header[10] = subchunk2size;
 	
