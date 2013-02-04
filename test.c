@@ -59,11 +59,10 @@ int main()
     listening = true;
     counter = 0;
 	int dataCaptured = 0;
-    while(listening || counter < 2)
+    while(listening || counter < 4)
     {
         err = Pa_ReadStream(stream, samples, SAMPLES_PER_BUFFER);
         // err = Pa_WriteStream(stream, samples, SAMPLES_PER_BUFFER);
-        Pa_ReadStream(stream, samples, SAMPLES_PER_BUFFER);
         write(outputfile, samples, SAMPLES_PER_BUFFER);
 		dataCaptured+=SAMPLES_PER_BUFFER;
 
