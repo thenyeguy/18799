@@ -1,9 +1,9 @@
 18799
 =====
 
-Currently just a test of portaudio. The test will read from the microphone and
-once a second write it to a file, and take the average magnitude. If this
-average is below an arbitrary value, it stops recording.
+Must have portaudio installed on your computer to compile. Once portaudio is
+configured, the package is self compiling using the make file.
 
-Requires portaudio be correctly installed on your machine already. Portaudio
-install library is included.
+Project is segmented into a few different files that can be piped together.
+Record will write a recorded voice sample to a wav file. Feature will calculate
+mel cepstrum.

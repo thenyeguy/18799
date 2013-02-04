@@ -10,12 +10,10 @@
 #include "endpoint.h"
 
 
-/* test.c - main function for our working test of portaudio import
- *      TODO: rename and continue refactoring code
- *
- *      Currently performs a basic push-to-begin recording of user input, with
- *      a windowing function to determine when to stop audio. Writes the raw
- *      recorded data to a file recorded.out. */
+/* record.c - main function for our working test of portaudio import
+ *            Currently performs a basic push-to-begin recording of user input,
+ *            with a windowing function to determine when to stop audio. Writes
+ *            the raw recorded data to a file recorded.out. */
 int main()
 {
     //Initialize portaudio stream

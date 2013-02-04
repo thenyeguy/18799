@@ -1,16 +1,20 @@
 CC      = gcc
 OFLAGS  = -c -Wall -Werror -std=c99
 CFLAGS  = -lportaudio
-SOURCES = portaudio_utils.c endpoint.c test.c
+SOURCES = cepstrum_utils.c portaudio_utils.c endpoint.c
 OBJECTS = $(SOURCES:.c=.o)
 
-all: test
+all: record cepstrum
+full: clean all
 
-test: $(OBJECTS)
-	$(CC) $(CFLAGS) -o test.out $(OBJECTS)
+record: $(OBJECTS) record.o
+	$(CC) $(CFLAGS) -o record.out $(OBJECTS) record.o
+
+cepstrum: $(OBJECTS) cepstrum.o
+	$(CC) $(CFLAGS) -o cepstrum.out $(OBJECTS) cepstrum.o
 
 %.o: %.c
-	$(CC) $(OFLAGS) $<
+	$(CC) $(OFLAGS) -o $@ $<
 
 clean:
 	rm -rf *.o *.out
