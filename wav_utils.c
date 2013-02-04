@@ -33,6 +33,9 @@ int raw_to_wav(char *infile_name, char *outfile_name, int data_length) {
 void make_header(char* header, int data_length) {
 	
 	printf("Data Length: %d\n",data_length);
+	int subchunk1size = 16; //always
+	int subchunk2size = data_length;
+	int chunksize = 4 + (8 + subchunk1size) + (8 + subchunk2size);
 	
 	//Chunk Descriptor
 	(header)[0] = 0x52;
@@ -40,11 +43,15 @@ void make_header(char* header, int data_length) {
 	(header)[2] = 0x46;
 	(header)[3] = 0x46;
 	
-	//ChunkSize: 2084		//file_size - 8 or data+36?
+	//ChunkSize: 2084	
+	/*	
 	(header)[4] = 0x96;
-	(header)[5] = 0x92;
-	(header)[6] = 0x00;
+	(header)[5] = 0x27;
+	(header)[6] = 0x09;
 	(header)[7] = 0x00;				
+	*/
+	int * int_header = (int*)header;
+	int_header[1] = chunksize;
 	
 	//WAVE
 	(header)[8] = 0x57;
@@ -58,7 +65,7 @@ void make_header(char* header, int data_length) {
 	(header)[14] = 0x74;
 	(header)[15] = 0x20;
 	
-	//Subchunk Size: 16
+	//Subchunk 1 Size: 16
 	(header)[16] = 0x10;
 	(header)[17] = 0x00;
 	(header)[18] = 0x00;
@@ -73,19 +80,19 @@ void make_header(char* header, int data_length) {
 	(header)[23] = 0x00;
 
 	//SampleRate: 16,000
-	(header)[24] = 0x11;			//(header)[24] = 0x80;
-	(header)[25] = 0x2B;				//(header)[25] = 0x3E;
+	(header)[24] = 0x80;			
+	(header)[25] = 0x3E;				
 	(header)[26] = 0x00;
 	(header)[27] = 0x00;
 
 	//ByteRate: 32,000
-	(header)[28] = 0x11;	//(header)[28] = 0x00;
-	(header)[29] = 0x2b;	//(header)[29] = 0x7D;
+	(header)[28] = 0x00;	
+	(header)[29] = 0x7D;	
 	(header)[30] = 0x00;
 	(header)[31] = 0x00;
 
 	//Block Align
-	(header)[32] = 0x02;	//4 or 2?
+	(header)[32] = 0x02;	
 	(header)[33] = 0x00;
 
 	//BitsPerSample: 16
@@ -98,13 +105,13 @@ void make_header(char* header, int data_length) {
 	(header)[38] = 0x74;
 	(header)[39] = 0x61;
 	
-	//SubChunk2Size: NumSamples * NumChannels * BitsPerSample/8
-	//int subchunk2size = NUMSAMPLES * NUMCHANNELS * BITSPERSAMPLE / 8 = file_size-44;
+	//SubChunk2Size:
 	(header)[40] = 0x66;
-	(header)[41] = 0x92;
-	(header)[42] = 0x00;
+	(header)[41] = 0x27;
+	(header)[42] = 0x09;
 	(header)[43] = 0x00;
 	
+	int_header[10] = subchunk2size;
 	
 	int i;
 	for(i=0; i <44; i++){
@@ -113,5 +120,8 @@ void make_header(char* header, int data_length) {
 		}
 		printf("%02x ",((unsigned char *)header)[i]);
 	}
+	
+	printf("ChunkSize: %d\n",((int *)header)[1]);
+	printf("Chunk2Size: %d\n",((int *)header)[10]);
 }
 
