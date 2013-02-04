@@ -59,7 +59,7 @@ int main()
     listening = true;
     counter = 0;
 	int dataCaptured = 0;
-    while(listening || counter < 2)
+    while(listening || counter < 3)
     {
         err = Pa_ReadStream(stream, samples, SAMPLES_PER_BUFFER);
         // err = Pa_WriteStream(stream, samples, SAMPLES_PER_BUFFER);
@@ -76,6 +76,7 @@ int main()
         }
         int average = sum/SAMPLES_PER_BUFFER;
         if(average < 250) listening = false;
+        printf("Counter: %d\n",counter);
         counter++;
     }
 

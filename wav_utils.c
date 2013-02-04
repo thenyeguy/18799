@@ -40,11 +40,11 @@ void make_header(char* header, int data_length) {
 	(header)[2] = 0x46;
 	(header)[3] = 0x46;
 	
-	//ChunkSize: 2084
-	(header)[4] = 0x24;
-	(header)[5] = 0x08;
+	//ChunkSize: 2084		//file_size - 8 or data+36?
+	(header)[4] = 0x96;
+	(header)[5] = 0x92;
 	(header)[6] = 0x00;
-	(header)[7] = 0x00;
+	(header)[7] = 0x00;				
 	
 	//WAVE
 	(header)[8] = 0x57;
@@ -73,19 +73,19 @@ void make_header(char* header, int data_length) {
 	(header)[23] = 0x00;
 
 	//SampleRate: 16,000
-	(header)[24] = 0x80;
-	(header)[25] = 0x3E;
+	(header)[24] = 0x11;			//(header)[24] = 0x80;
+	(header)[25] = 0x2B;				//(header)[25] = 0x3E;
 	(header)[26] = 0x00;
 	(header)[27] = 0x00;
 
 	//ByteRate: 32,000
-	(header)[28] = 0x00;
-	(header)[29] = 0x7D;
+	(header)[28] = 0x11;	//(header)[28] = 0x00;
+	(header)[29] = 0x2b;	//(header)[29] = 0x7D;
 	(header)[30] = 0x00;
 	(header)[31] = 0x00;
 
 	//Block Align
-	(header)[32] = 0x04;
+	(header)[32] = 0x02;	//4 or 2?
 	(header)[33] = 0x00;
 
 	//BitsPerSample: 16
@@ -99,9 +99,9 @@ void make_header(char* header, int data_length) {
 	(header)[39] = 0x61;
 	
 	//SubChunk2Size: NumSamples * NumChannels * BitsPerSample/8
-	//int subchunk2size = NUMSAMPLES * NUMCHANNELS * BITSPERSAMPLE / 8;
-	(header)[40] = 0x00;
-	(header)[41] = 0x00;
+	//int subchunk2size = NUMSAMPLES * NUMCHANNELS * BITSPERSAMPLE / 8 = file_size-44;
+	(header)[40] = 0x66;
+	(header)[41] = 0x92;
 	(header)[42] = 0x00;
 	(header)[43] = 0x00;
 	
