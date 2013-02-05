@@ -108,7 +108,7 @@ int main(void)
     PaStream *stream = NULL;
     PaError err;
     char *sampleBlock;
-    int i;
+    
     int numBytes;
     
     
@@ -178,9 +178,9 @@ int main(void)
     int bytes_written = 0;
 
 
-
-    for( i=0; i<(NUM_SECONDS*SAMPLE_RATE)/FRAMES_PER_BUFFER; ++i )
-    //while(1)
+    //int i;
+    //for( i=0; i<(NUM_SECONDS*SAMPLE_RATE)/FRAMES_PER_BUFFER; ++i )
+    while(1)
     {
        //printf("%d ",i);
        err = Pa_WriteStream( stream, sampleBlock, FRAMES_PER_BUFFER );
@@ -188,7 +188,20 @@ int main(void)
        err = Pa_ReadStream( stream, sampleBlock, FRAMES_PER_BUFFER );
        if( err && CHECK_OVERFLOW ) goto xrun;
        fwrite(sampleBlock,1,numBytes,outputfile);
-       bytes_written +=  numBytes;	
+       bytes_written += numBytes;
+
+	//Calculate average level
+	unsigned short * short_ptr = (unsigned short *) sampleBlock;	
+	int j;
+	int sum=0;
+	for(j=0; j<(numBytes/sizeof(short)); j++){
+		//Prints out each short
+		//printf("%04x ",short_ptr[j]);
+		sum+=short_ptr[j];	
+	}
+	int average_level = sum/(numBytes/sizeof(short));
+	printf("average_level: %d\n",average_level);
+	if(average_level<25000 && average_level>10000) break;	
     }
     
     
