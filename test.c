@@ -62,8 +62,9 @@ int main()
     while( counter < 4)
     {
         err = Pa_ReadStream(stream, samples, SAMPLES_PER_BUFFER);
-        error_check("read stream",err);		//		<------- THAT LINE
-        write(outputfile, samples, SAMPLES_PER_BUFFER);
+//        error_check("read stream",err);		//		<------- THAT LINE
+        printf("error = %d\n", err);
+		write(outputfile, samples, SAMPLES_PER_BUFFER);
 		dataCaptured+=SAMPLES_PER_BUFFER;
 
         // Window - stop recording when the magnitude averaged over a

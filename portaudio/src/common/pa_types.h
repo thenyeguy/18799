@@ -62,11 +62,7 @@
 #endif
 
 #ifndef SIZEOF_LONG
-#ifdef __LP64__
-#define SIZEOF_LONG 8
-#else
 #define SIZEOF_LONG 4
-#endif /* __LP64__ */
 #endif
 
 

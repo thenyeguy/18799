@@ -17,6 +17,7 @@ typedef short SAMPLE;
 #define SAMPLE_RATE        (16000)		//Mac: 44100	PC: 16000
 #define NUM_CHANNELS       (1)
 #define SAMPLES_PER_BUFFER (SAMPLE_RATE)
+#define FRAME_RATE		(1024)
 
 #endif
 

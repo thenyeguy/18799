@@ -15654,6 +15654,7 @@ $as_echo "$ac_cv_sizeof_long" >&6; }
 
 
 cat >>confdefs.h <<_ACEOF
+#define SIZEOF_LONG $ac_cv_sizeof_long
 _ACEOF
 
 
@@ -15764,7 +15765,7 @@ case "${host_os}" in
         $as_echo "#define PA_USE_COREAUDIO 1" >>confdefs.h
 
 
-        CFLAGS="$CFLAGS -I\$(top_srcdir)/src/os/unix -DNDEBUG"
+        CFLAGS="$CFLAGS -I\$(top_srcdir)/src/os/unix -Werror"
         LIBS="-framework CoreAudio -framework AudioToolbox -framework AudioUnit -framework Carbon"
 
         if test "x$enable_mac_universal" = "xyes" ; then
