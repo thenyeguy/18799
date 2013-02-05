@@ -1,101 +1,246 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdbool.h>
-#include <time.h>
-#include <fcntl.h>
-#include <unistd.h>
+/** @file paex_read_write_wire.c
+	@ingroup examples_src
+	@brief Tests full duplex blocking I/O by passing input straight to output.
+	@author Bjorn Roche. XO Audio LLC for Z-Systems Engineering.
+    @author based on code by: Phil Burk  http://www.softsynth.com
+    @author based on code by: Ross Bencina rossb@audiomulch.com
+*/
+/*
+ * $Id: patest_read_record.c 757 2004-02-13 07:48:10Z rossbencina $
+ *
+ * This program uses the PortAudio Portable Audio Library.
+ * For more information see: http://www.portaudio.com
+ * Copyright (c) 1999-2000 Ross Bencina and Phil Burk
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files
+ * (the "Software"), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge,
+ * publish, distribute, sublicense, and/or sell copies of the Software,
+ * and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR
+ * ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+ * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
 
+/*
+ * The text above constitutes the entire PortAudio license; however, 
+ * the PortAudio community also makes the following non-binding requests:
+ *
+ * Any person wishing to distribute modifications to the Software is
+ * requested to send the modifications to the original developer so that
+ * they can be incorporated into the canonical version. It is also 
+ * requested that these non-binding requests be included along with the 
+ * license above.
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "portaudio.h"
-#include "portaudio_utils.h"
 #include "wav_utils.h"
 
-/* test.c - main function for our working test of portaudio import
- *      TODO: rename and continue refactoring code
- *		TODO: convert output file from raw data to wav
- *
- *      Currently performs a basic push-to-begin recording of user input, with
- *      a windowing function to determine when to stop audio. Writes the raw
- *      recorded data to a file recorded.out. */
-int main()
-{
-    //Initialize portaudio stream
-    PaStream* stream = NULL;
-    initialize_portaudio(&stream);
-    
-    //Create buffer to read audio into
-    int buffer_size = NUM_CHANNELS * SAMPLES_PER_BUFFER * sizeof(SAMPLE);
-    SAMPLE* samples = (SAMPLE *)malloc(buffer_size);
+/* #define SAMPLE_RATE  (17932) // Test failure to open with this value. */
+#define SAMPLE_RATE  (44100)
+#define FRAMES_PER_BUFFER (1024)
+#define NUM_CHANNELS    (2)
+#define NUM_SECONDS     (15)
+/* #define DITHER_FLAG     (paDitherOff)  */
+#define DITHER_FLAG     (0) /**/
+
+/* @todo Underflow and overflow is disabled until we fix priming of blocking write. */
+#define CHECK_OVERFLOW  (0)
+#define CHECK_UNDERFLOW  (0)
 
 
-    //Sets up time stamped file name. There's gotta be a better way to do this...
-    time_t sys_time = time(NULL);
-    char * prefix = "./recordings/recorded-";
-    char timestamp[32];
-    sprintf(timestamp, "%lu", (long unsigned)sys_time);
-    char * suffix = ".out";
-    char dataFileName[256];
-	snprintf(dataFileName, sizeof(dataFileName), "%s%s%s", prefix,timestamp, suffix);
-	
-	char wavFileName[256];
-	char *wav_suffix = ".wav";
-	snprintf(wavFileName, sizeof(wavFileName), "%s%s%s", prefix, timestamp, wav_suffix);
-	
-
-	printf("Output will be stored in %s\n",dataFileName);
-    int outputfile = open(dataFileName, O_WRONLY|O_CREAT, 0644);
-   
-    //Wait for the user to begin
-    printf("\nPress enter to begin recording... \n");
-	getchar();
-    //outputfile = open("./recorded.out", O_WRONLY|O_CREAT, 0644);
-	bool listening = true;
-    int counter = 0;
-	int err = 0;
-	
-    //Run until windowing function signals the end, ignoring the
-    //  first sample to let the user begin talking
-    //Write the recorded data to an output file
-    error_check("StartStream",Pa_StartStream(stream));
-
-    listening = true;
-    counter = 0;
-    int dataCaptured = 0;
-    printf("Size of buffer: %d\n",buffer_size);
-    printf("Size of SAMPLES_PER_BUFFER: %d\n",SAMPLES_PER_BUFFER);
-
-    while( counter < 4)
-    {
-	printf("Counter: %d\n",counter);
-
-        err = Pa_ReadStream(stream, samples, SAMPLES_PER_BUFFER);
-//        error_check("read stream",err);		//		<------- THAT LINE
-        printf("error = %d\n", err);
-		write(outputfile, samples, SAMPLES_PER_BUFFER);
-		dataCaptured+=SAMPLES_PER_BUFFER;
-
-        // Window - stop recording when the magnitude averaged over a
-        //  second drops below an arbitrary constant
-        /*
-        int sum = 0;
-        for(int i = 0; i < SAMPLES_PER_BUFFER; i++)
-        {
-            sum += abs(samples[i]);
-        }
-        int average = sum/SAMPLES_PER_BUFFER;
-        if(average < 250) listening = false;
-        */
-        counter++;
-    }
-
-	//Should we be sending dataCaptured?
-	raw_to_wav(dataFileName, wavFileName, dataCaptured);
-
-
-    //Close portaudio and clean up   
-    error_check("StopStream", Pa_StopStream(stream));
-    close_portaudio(stream);
-    close(outputfile);
-    free(samples);
-
-	return 0;
+/* Select sample format. */
+#if 0
+#define PA_SAMPLE_TYPE  paFloat32
+#define SAMPLE_SIZE (4)
+#define SAMPLE_SILENCE  (0.0f)
+#define CLEAR(a) memset( (a), 0, FRAMES_PER_BUFFER * NUM_CHANNELS * SAMPLE_SIZE )
+#define PRINTF_S_FORMAT "%.8f"
+#elif 0
+#define PA_SAMPLE_TYPE  paInt16
+#define SAMPLE_SIZE (2)
+#define SAMPLE_SILENCE  (0)
+#define CLEAR(a) memset( (a), 0,  FRAMES_PER_BUFFER * NUM_CHANNELS * SAMPLE_SIZE )
+#define PRINTF_S_FORMAT "%d"
+#elif 1
+#define PA_SAMPLE_TYPE  paInt24
+#define SAMPLE_SIZE (3)
+#define SAMPLE_SILENCE  (0)
+#define CLEAR(a) memset( (a), 0,  FRAMES_PER_BUFFER * NUM_CHANNELS * SAMPLE_SIZE )
+#define PRINTF_S_FORMAT "%d"
+#elif 0
+#define PA_SAMPLE_TYPE  paInt8
+#define SAMPLE_SIZE (1)
+#define SAMPLE_SILENCE  (0)
+#define CLEAR(a) memset( (a), 0,  FRAMES_PER_BUFFER * NUM_CHANNELS * SAMPLE_SIZE )
+#define PRINTF_S_FORMAT "%d"
+#else
+#define PA_SAMPLE_TYPE  paUInt8
+#define SAMPLE_SIZE (1)
+#define SAMPLE_SILENCE  (128)
+#define CLEAR( a ) { \
+    int i; \
+    for( i=0; i<FRAMES_PER_BUFFER*NUM_CHANNELS; i++ ) \
+        ((unsigned char *)a)[i] = (SAMPLE_SILENCE); \
 }
+#define PRINTF_S_FORMAT "%d"
+#endif
+
+
+/*******************************************************************/
+int main(void);
+int main(void)
+{
+    PaStreamParameters inputParameters, outputParameters;
+    PaStream *stream = NULL;
+    PaError err;
+    char *sampleBlock;
+    int i;
+    int numBytes;
+    
+    
+    printf("patest_read_write_wire.c\n"); fflush(stdout);
+
+    numBytes = FRAMES_PER_BUFFER * NUM_CHANNELS * SAMPLE_SIZE ;
+    sampleBlock = (char *) malloc( numBytes );
+    if( sampleBlock == NULL )
+    {
+        printf("Could not allocate record array.\n");
+        exit(1);
+    }
+    CLEAR( sampleBlock );
+
+    err = Pa_Initialize();
+    if( err != paNoError ) goto error;
+
+    inputParameters.device = Pa_GetDefaultInputDevice(); /* default input device */
+    printf( "Input device # %d.\n", inputParameters.device );
+    printf( "Input LL: %g s\n", Pa_GetDeviceInfo( inputParameters.device )->defaultLowInputLatency );
+    printf( "Input HL: %g s\n", Pa_GetDeviceInfo( inputParameters.device )->defaultHighInputLatency );
+    inputParameters.channelCount = NUM_CHANNELS;
+    inputParameters.sampleFormat = PA_SAMPLE_TYPE;
+    inputParameters.suggestedLatency = Pa_GetDeviceInfo( inputParameters.device )->defaultHighInputLatency ;
+    inputParameters.hostApiSpecificStreamInfo = NULL;
+
+    outputParameters.device = Pa_GetDefaultOutputDevice(); /* default output device */
+    printf( "Output device # %d.\n", outputParameters.device );
+    printf( "Output LL: %g s\n", Pa_GetDeviceInfo( outputParameters.device )->defaultLowOutputLatency );
+    printf( "Output HL: %g s\n", Pa_GetDeviceInfo( outputParameters.device )->defaultHighOutputLatency );
+    outputParameters.channelCount = NUM_CHANNELS;
+    outputParameters.sampleFormat = PA_SAMPLE_TYPE;
+    outputParameters.suggestedLatency = Pa_GetDeviceInfo( outputParameters.device )->defaultHighOutputLatency;
+    outputParameters.hostApiSpecificStreamInfo = NULL;
+
+    /* -- setup -- */
+
+   err = Pa_OpenStream(
+              &stream,
+              &inputParameters,
+              &outputParameters,
+              SAMPLE_RATE,
+              FRAMES_PER_BUFFER,
+              paClipOff,      /* we won't output out of range samples so don't bother clipping them */
+              NULL, /* no callback, use blocking API */
+              NULL ); /* no callback, so no callback userData */
+    if( err != paNoError ) goto error;
+
+    err = Pa_StartStream( stream );
+    if( err != paNoError ) goto error;
+    printf("Wire on. Will run %d seconds.\n", NUM_SECONDS); fflush(stdout);
+    /* 
+    FILE * outputfile = fopen("wavefiletest.out","w");
+    int bytes_written = 0;
+    for( i=0; i<(NUM_SECONDS*SAMPLE_RATE)/FRAMES_PER_BUFFER; ++i )
+    {
+       //printf("%d ",i);
+       //err = Pa_WriteStream( stream, sampleBlock, FRAMES_PER_BUFFER );
+       //if( err && CHECK_UNDERFLOW ) goto xrun;
+       err = Pa_ReadStream( stream, sampleBlock, FRAMES_PER_BUFFER );
+       if( err && CHECK_OVERFLOW ) goto xrun;
+       fwrite(sampleBlock,1,sizeof(sampleBlock),outputfile);
+       bytes_written +=  sizeof(sampleBlock);	
+    }
+    */
+    FILE * outputfile = fopen("wavefiletest.out","w");
+    int bytes_written = 0;
+    for( i=0; i<(NUM_SECONDS*SAMPLE_RATE)/FRAMES_PER_BUFFER; ++i )
+    //while(1)
+    {
+       //printf("%d ",i);
+       err = Pa_WriteStream( stream, sampleBlock, FRAMES_PER_BUFFER );
+       if( err && CHECK_UNDERFLOW ) goto xrun;
+       err = Pa_ReadStream( stream, sampleBlock, FRAMES_PER_BUFFER );
+       if( err && CHECK_OVERFLOW ) goto xrun;
+       fwrite(sampleBlock,1,sizeof(sampleBlock),outputfile);
+       bytes_written +=  sizeof(sampleBlock);	
+    }
+    raw_to_wav("wavefiletest.out", "wavefiletest.wav", bytes_written);
+    
+    printf("Bytes Written: %d\n",bytes_written);
+
+
+    err = Pa_StopStream( stream );
+    if( err != paNoError ) goto error;
+
+    CLEAR( sampleBlock );
+/*
+    err = Pa_StartStream( stream );
+    if( err != paNoError ) goto error;
+    printf("Wire on. Interrupt to stop.\n"); fflush(stdout);
+
+    while( 1 )
+    {
+       err = Pa_WriteStream( stream, sampleBlock, FRAMES_PER_BUFFER );
+       if( err ) goto xrun;
+       err = Pa_ReadStream( stream, sampleBlock, FRAMES_PER_BUFFER );
+       if( err ) goto xrun;
+    }
+    err = Pa_StopStream( stream );
+    if( err != paNoError ) goto error;
+
+    Pa_CloseStream( stream );
+*/
+    free( sampleBlock );
+
+    Pa_Terminate();
+    return 0;
+
+xrun:
+    if( stream ) {
+       Pa_AbortStream( stream );
+       Pa_CloseStream( stream );
+    }
+    free( sampleBlock );
+    Pa_Terminate();
+    if( err & paInputOverflow )
+       fprintf( stderr, "Input Overflow.\n" );
+    if( err & paOutputUnderflow )
+       fprintf( stderr, "Output Underflow.\n" );
+    return -2;
+
+error:
+    if( stream ) {
+       Pa_AbortStream( stream );
+       Pa_CloseStream( stream );
+    }
+    free( sampleBlock );
+    Pa_Terminate();
+    fprintf( stderr, "An error occured while using the portaudio stream\n" );
+    fprintf( stderr, "Error number: %d\n", err );
+    fprintf( stderr, "Error message: %s\n", Pa_GetErrorText( err ) );
+    return -1;
+}
+
