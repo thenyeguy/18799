@@ -34,6 +34,6 @@
 
 int raw_to_wav(char *infile_name, char *outfile_name, int data_length);
 void make_header(char* header, int data_length);
-
+char * get_time_stamped_filename(char * prefix, char * suffix);
 
 #endif

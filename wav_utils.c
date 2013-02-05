@@ -3,7 +3,7 @@
 #include <strings.h>
 #include "wav_utils.h"
 #include "portaudio_utils.h"
-
+#include <time.h>
 /* 
 raw_to_wav: Convert a file of raw audio data to a wav file
 
@@ -112,4 +112,29 @@ void make_header(char* header, int data_length) {
 	printf("SampleRate: %d\n",((int *)header)[6]);
 	printf("ByteRate: %d\n",((int *)header)[7]);
 }
+
+
+char * get_time_stamped_filename(char * prefix,char * suffix){
+	time_t sys_time = time(NULL);
+    	//char * prefix = "./recordings/recorded-";
+    	char timestamp[32];
+	sprintf(timestamp,"%lu",(long unsigned) sys_time);
+        int prefix_length = strlen(prefix);
+    	int suffix_length = strlen(suffix);
+	int time_length = strlen(timestamp);
+    	int total_length = prefix_length + suffix_length + time_length;
+	char temp_filename[256];
+	snprintf(temp_filename, total_length+1, "%s%s%s", prefix, timestamp, suffix);
+		
+	//char wavFileName[256];
+	//char * wavFileName = (char * ) malloc(256);
+	//char *wav_suffix = ".wav";
+	int filename_length = strlen(temp_filename);
+	char * filename = (char *) malloc(filename_length);
+	snprintf(filename, filename_length+1, "%s%s%s", prefix, timestamp, suffix);
+
+	return filename;
+}
+
+
 

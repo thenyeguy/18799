@@ -129,6 +129,11 @@ int main(void)
        bytes_written +=  sizeof(sampleBlock);	
     }
     */
+    char * output_file_name = get_time_stamped_filename("/recordings/recorded-",".out");
+    char * output_wave_file_name = get_time_stamped_filename("/recordings/recorded-",".wav");
+	
+    printf(".out: %s\n",output_file_name);
+    printf(".wav: %s\n",output_wave_file_name);
     FILE * outputfile = fopen("wavefiletest.out","w");
     int bytes_written = 0;
 
