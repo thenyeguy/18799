@@ -129,14 +129,24 @@ int main(void)
        bytes_written +=  sizeof(sampleBlock);	
     }
     */
-    char * output_file_name = get_time_stamped_filename("/recordings/recorded-",".out");
-    char * output_wave_file_name = get_time_stamped_filename("/recordings/recorded-",".wav");
+
+
+    char * output_file_name = get_time_stamped_filename("./recordings/recorded-",".out");
+    char * output_wave_file_name = get_time_stamped_filename("./recordings/recorded-",".wav");
 	
     printf(".out: %s\n",output_file_name);
     printf(".wav: %s\n",output_wave_file_name);
-    FILE * outputfile = fopen("wavefiletest.out","w");
-    int bytes_written = 0;
 
+//    char * output_file_name = "./recordings/recorded-9.out";
+//    char * output_wave_file_name = "./recordings/recorded-9.wav";
+
+    FILE * outputfile = fopen(output_file_name,"w");
+    if(!outputfile){
+	printf("could not open file: %s\n",output_file_name);
+	exit(1);
+    }
+    int bytes_written = 0;
+    	
 
     //int i;
     //for( i=0; i<(NUM_SECONDS*SAMPLE_RATE)/FRAMES_PER_BUFFER; ++i )
@@ -165,7 +175,7 @@ int main(void)
     }
     
     
-    raw_to_wav("wavefiletest.out", "wavefiletest.wav", bytes_written);
+    raw_to_wav(output_file_name, output_wave_file_name, bytes_written);
     printf("Channels: %d\n",NUM_CHANNELS);    
     printf("Bytes Written: %d\n",bytes_written);
     printf("FRAMES_PER_BUFFER: %d\n",FRAMES_PER_BUFFER);
