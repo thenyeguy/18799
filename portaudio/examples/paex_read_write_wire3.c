@@ -47,12 +47,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include "portaudio.h"
-#include "wav_utils.h"
 
 /* #define SAMPLE_RATE  (17932) // Test failure to open with this value. */
 #define SAMPLE_RATE  (44100)
 #define FRAMES_PER_BUFFER (1024)
-#define NUM_CHANNELS    (1)
+#define NUM_CHANNELS    (2)
 #define NUM_SECONDS     (15)
 /* #define DITHER_FLAG     (paDitherOff)  */
 #define DITHER_FLAG     (0) /**/
@@ -69,13 +68,13 @@
 #define SAMPLE_SILENCE  (0.0f)
 #define CLEAR(a) memset( (a), 0, FRAMES_PER_BUFFER * NUM_CHANNELS * SAMPLE_SIZE )
 #define PRINTF_S_FORMAT "%.8f"
-#elif 1
+#elif 0
 #define PA_SAMPLE_TYPE  paInt16
 #define SAMPLE_SIZE (2)
 #define SAMPLE_SILENCE  (0)
 #define CLEAR(a) memset( (a), 0,  FRAMES_PER_BUFFER * NUM_CHANNELS * SAMPLE_SIZE )
 #define PRINTF_S_FORMAT "%d"
-#elif 0
+#elif 1
 #define PA_SAMPLE_TYPE  paInt24
 #define SAMPLE_SIZE (3)
 #define SAMPLE_SILENCE  (0)
@@ -160,44 +159,14 @@ int main(void)
     err = Pa_StartStream( stream );
     if( err != paNoError ) goto error;
     printf("Wire on. Will run %d seconds.\n", NUM_SECONDS); fflush(stdout);
-    /* 
-    FILE * outputfile = fopen("wavefiletest.out","w");
-    int bytes_written = 0;
-    for( i=0; i<(NUM_SECONDS*SAMPLE_RATE)/FRAMES_PER_BUFFER; ++i )
-    {
-       //printf("%d ",i);
-       //err = Pa_WriteStream( stream, sampleBlock, FRAMES_PER_BUFFER );
-       //if( err && CHECK_UNDERFLOW ) goto xrun;
-       err = Pa_ReadStream( stream, sampleBlock, FRAMES_PER_BUFFER );
-       if( err && CHECK_OVERFLOW ) goto xrun;
-       fwrite(sampleBlock,1,sizeof(sampleBlock),outputfile);
-       bytes_written +=  sizeof(sampleBlock);	
-    }
-    */
-    FILE * outputfile = fopen("wavefiletest.out","w");
-    int bytes_written = 0;
-
-
 
     for( i=0; i<(NUM_SECONDS*SAMPLE_RATE)/FRAMES_PER_BUFFER; ++i )
-    //while(1)
     {
-       //printf("%d ",i);
        err = Pa_WriteStream( stream, sampleBlock, FRAMES_PER_BUFFER );
        if( err && CHECK_UNDERFLOW ) goto xrun;
        err = Pa_ReadStream( stream, sampleBlock, FRAMES_PER_BUFFER );
        if( err && CHECK_OVERFLOW ) goto xrun;
-       fwrite(sampleBlock,1,numBytes,outputfile);
-       bytes_written +=  numBytes;	
     }
-    
-    
-    raw_to_wav("wavefiletest.out", "wavefiletest.wav", bytes_written);
-    printf("Channels: %d\n",NUM_CHANNELS);    
-    printf("Bytes Written: %d\n",bytes_written);
-    printf("FRAMES_PER_BUFFER: %d\n",FRAMES_PER_BUFFER);
-    printf("numBytes: %d\n",numBytes);
-
     err = Pa_StopStream( stream );
     if( err != paNoError ) goto error;
 
