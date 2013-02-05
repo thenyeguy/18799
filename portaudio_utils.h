@@ -1,10 +1,6 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include "portaudio.h"
-
-
 #ifndef AUDIOCONSTS
 #define AUDIOCONSTS
+#include "portaudio.h"
 
 /* Define the nessecary constants for portaudio sampling.
  * Per assignment specs, uses 16-bit integers for each sample. */

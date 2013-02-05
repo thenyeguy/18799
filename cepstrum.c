@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
-#include "feature_utils.h"
+#include "cepstrum_utils.h"
 
 
 int main()
@@ -13,9 +13,11 @@ int main()
     {
         if(i%4<2) ft[i] = 1;
         else ft[i] = -1;
+        printf("%1.0f    ",ft[i]);
     }
+    printf("\n\n");
 
-    initialize_feature_engine(32);
+    initialize_feature_engine(32,40);
     dtft(ft, fw);
     close_feature_engine();
 
