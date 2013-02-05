@@ -23,7 +23,8 @@ int main()
     initialize_portaudio(&stream);
     
     //Create buffer to read audio into
-    SAMPLE* samples = (SAMPLE *)malloc(NUM_CHANNELS * SAMPLES_PER_BUFFER * sizeof(SAMPLE));
+    int buffer_size = NUM_CHANNELS * SAMPLES_PER_BUFFER * sizeof(SAMPLE);
+    SAMPLE* samples = (SAMPLE *)malloc(buffer_size);
 
 
     //Sets up time stamped file name. There's gotta be a better way to do this...
@@ -58,9 +59,14 @@ int main()
 
     listening = true;
     counter = 0;
-	int dataCaptured = 0;
+    int dataCaptured = 0;
+    printf("Size of buffer: %d\n",buffer_size);
+    printf("Size of SAMPLES_PER_BUFFER: %d\n",SAMPLES_PER_BUFFER);
+
     while( counter < 4)
     {
+	printf("Counter: %d\n",counter);
+
         err = Pa_ReadStream(stream, samples, SAMPLES_PER_BUFFER);
 //        error_check("read stream",err);		//		<------- THAT LINE
         printf("error = %d\n", err);
@@ -78,7 +84,6 @@ int main()
         int average = sum/SAMPLES_PER_BUFFER;
         if(average < 250) listening = false;
         */
-        printf("Counter: %d\n",counter);
         counter++;
     }
 

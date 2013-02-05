@@ -47,6 +47,7 @@ int initialize_portaudio(PaStream** stream)
         Pa_OpenStream(stream, &inputParams, &outputParams,
                       SAMPLE_RATE, SAMPLES_PER_BUFFER, paNoFlag,
                       NULL, NULL));
+    printf("Initialized PortAudio with\nSAMPLE_RATE: %d\nSAMPLES_PER_BUFFER: %d\n",SAMPLE_RATE,SAMPLES_PER_BUFFER);
     return 0;
 }
 
