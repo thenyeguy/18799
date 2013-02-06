@@ -39,7 +39,7 @@ int initialize_portaudio(PaStream** stream)
         Pa_GetDeviceInfo(outputParams.device)->defaultHighOutputLatency;
     outputParams.hostApiSpecificStreamInfo = NULL;
 
-    printf("Using input device #%d and output device #%d.\n",
+    printf("\nUsing input device #%d and output device #%d.\n",
            inputParams.device, outputParams.device);
     printf("Sample rate: %d, buffer size: %d\n\n",SAMPLE_RATE,SAMPLES_PER_BUFFER);
 
