@@ -100,20 +100,6 @@ void make_header(char* header, int data_length) {
 	
 	//SubChunk2Size:	
 	int_header[10] = subchunk2size;
-
-	
-	int i;
-	for(i=0; i <44; i++){
-		if(i%4==0){
-			printf("\n");
-		}
-		printf("%02x ",((unsigned char *)header)[i]);
-	}
-	
-	printf("ChunkSize: %d\n",((int *)header)[1]);
-	printf("Chunk2Size: %d\n",((int *)header)[10]);
-	printf("SampleRate: %d\n",((int *)header)[6]);
-	printf("ByteRate: %d\n",((int *)header)[7]);
 }
 
 

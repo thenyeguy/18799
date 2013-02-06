@@ -1,6 +1,7 @@
 # Compiled sources
 *.o
 *.out
+*.wav
 
 # Vim stuff
 *.swp
