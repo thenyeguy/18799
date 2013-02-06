@@ -37,6 +37,7 @@ bool done_speaking(SAMPLE* buffer, int n)
         count++;
     }
     level /= count;
+    printf("level: %f\n", level);
 
     if(NAIVEFLOOR < level && level < NAIVETHRESHOLD)
         return true;
