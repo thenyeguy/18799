@@ -9,7 +9,7 @@
 #define THRESHOLD         1.0
 
 #define NAIVEFLOOR        0.00001
-#define NAIVETHRESHOLD    0.02
+#define NAIVETHRESHOLD    0.03
 
 /* window - takes in a buffer of audio samples its length, and returns true if it
  *          the speaker has stopped speaking */
