@@ -4,6 +4,7 @@
 #include <time.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <string.h>
 
 #include "endpoint.h"
 #include "portaudio.h"
@@ -15,7 +16,7 @@
  *            Currently performs a basic push-to-begin recording of user input,
  *            with a windowing function to determine when to stop audio. Writes
  *            the raw recorded data to a file recorded.out. */
-int main()
+int main(int argc, char* argv[])
 {
     //Initialize portaudio stream
     PaStream* stream = NULL;
