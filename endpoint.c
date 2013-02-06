@@ -21,7 +21,7 @@ bool done_speaking(SAMPLE* buffer, int n)
 
     //Ignore the first sample set, to let the user start speaking
     counter++;
-    if(counter < 2) return false;
+    if(counter < 4) return false;
 
     double current;
     double level = 0;
@@ -38,6 +38,8 @@ bool done_speaking(SAMPLE* buffer, int n)
     }
     level /= count;
 
+    printf("level: %f %d %d\n", level, NAIVEFLOOR < level, level <
+    NAIVETHRESHOLD);
     if(NAIVEFLOOR < level && level < NAIVETHRESHOLD)
         return true;
     else
