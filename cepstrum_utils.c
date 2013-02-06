@@ -38,18 +38,18 @@ void initialize_feature_engine(int fft_length, int dct_length)
 }
 
 
-void premphasize(double* window)
+void premphasize(double* window, int n)
 {
-    for(int i = dft_buffer_length-1; i > 0; i--)
+    for(int i = n-1; i > 0; i--)
         window[i] -= PREMPH_ALPHA*window[i-1];
 }
 
 
-void hamming_window(double* window)
+void hamming_window(double* window, int n)
 {
-    for(int i = 0; i < dft_buffer_length; i++)
+    for(int i = 0; i < n; i++)
     {
-        double weight = .054 - 0.46*cos(2*M_PI*i/dft_buffer_length);
+        double weight = .54 - 0.46*cos(2*M_PI*i/n);
         window[i] = window[i]*weight;
     }
 }
@@ -142,9 +142,10 @@ void log_mel_filter(double* freqs, int num_filters, double* log_spectra)
 
         //Convert the frequency values to indeces into the fft array
         //Rounds down and uses the closest freq
-        int lower_i = (int) (lower * (dft_buffer_length / SAMPLE_RATE));
-        int center_i = (int) (center * (dft_buffer_length / SAMPLE_RATE));
-        int upper_i = (int) (upper * (dft_buffer_length / SAMPLE_RATE));
+        double hz_to_i = ((double) dft_buffer_length)/((double) SAMPLE_RATE);
+        int lower_i = (int) (lower * hz_to_i);
+        int center_i = (int) (center * hz_to_i);
+        int upper_i = (int) (upper * hz_to_i);
 
         //Use a triangle filter for each mel filter, and normalize each filter
         //such that its area is 1

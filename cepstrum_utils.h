@@ -6,17 +6,17 @@
  */
 void initialize_feature_engine(int fft_length, int dct_length);
 
-/* premphasize - given a windowed signal, preemphasizes the signal to highboost
- *               it slighty for processing. Change the alpha to change the
- *               amount of high boost.
+/* premphasize - given a windowed signal of length n, preemphasizes the
+ *               signal to highboost it slighty for processing. Change the
+ *               alpha to change the amount of high boost.
  */
 #define PREMPH_ALPHA .95
-void premphasize(double* window);
+void premphasize(double* window, int n);
 
-/* hamming_window - takes an windowed array from our signal and performs a
- *                  hamming weight to smooth the edges to 0
+/* hamming_window - takes an windowed array of length n from our signal and
+ *                  performs a hamming weighting to smooth the edges to 0
  */
-void hamming_window(double* window);
+void hamming_window(double* window, int n);
 
 /* hz_to_mel - these pairs of functions convert between actual frequencies
  * mel_to_hz   and mel frequencies

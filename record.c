@@ -49,7 +49,7 @@ int main()
     while(listening)
     {
         Pa_ReadStream(stream, samples, SAMPLES_PER_BUFFER);
-        write(outputfile, samples, SAMPLES_PER_BUFFER);
+        write(outputfile, samples, SAMPLES_PER_BUFFER*sizeof(SAMPLE));
 		dataCaptured+=SAMPLES_PER_BUFFER;
 
         if(done_speaking(samples, SAMPLES_PER_BUFFER))
@@ -57,6 +57,7 @@ int main()
     }
 
     //Close portaudio and clean up   
+    printf("size: %d\n", dataCaptured);
     error_check("StopStream", Pa_StopStream(stream));
     close_portaudio(stream);
     close(outputfile);

@@ -1,7 +1,8 @@
 CC      = gcc
 OFLAGS  = -c -Wall -Werror -std=c99
 CFLAGS  = -lportaudio
-SOURCES = cepstrum_utils.c portaudio_utils.c endpoint.c
+SOURCES = cepstrum_vectors.c cepstrum_utils.c \
+          portaudio_utils.c endpoint.c
 OBJECTS = $(SOURCES:.c=.o)
 
 all: record cepstrum
