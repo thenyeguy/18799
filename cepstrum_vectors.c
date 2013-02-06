@@ -95,13 +95,15 @@ cepstrum_vectors* get_cepstrum_vectors(double* signal, int num_samples,
     double* window_dft = calloc(fft_length,sizeof(double));
     double* window_log_spectra = calloc(num_mel_filters, sizeof(double));
 
+
     //Generate each window using cepstrum utils
     //If we want a log file, then output each intermediary step
     for(int i = 0; i < num_vectors; i++)
     {
         //Generate the window, then premph and weight it
         double* start = signal+(i*samples_per_window);
-        for(int j = 0; j < samples_per_window; j++)
+        for(int j = 0; j < samples_per_window &&
+                       (i*samples_per_window+j < num_samples); j++)
             window[j] = start[j];
         premphasize(window, samples_per_window);
         hamming_window(window, samples_per_window);
@@ -125,6 +127,7 @@ cepstrum_vectors* get_cepstrum_vectors(double* signal, int num_samples,
         if(file_prefix != NULL)
             log_cepstrum(file_prefix, result->cepstra[i], num_cepstra);
     }
+
 
     //Clean up after ourselves and exit
     close_feature_engine();
