@@ -38,7 +38,7 @@ bool done_speaking(SAMPLE* buffer, int n)
     }
     level /= count;
 
-    if(level < NAIVETHRESHOLD)
+    if(NAIVEFLOOR < level && level < NAIVETHRESHOLD)
         return true;
     else
         return false;

@@ -11,9 +11,9 @@ typedef short SAMPLE;
 
 /* Define the recording constants for our streams. Try to use these constants
  * everywhere when possible. */
-#define SAMPLE_RATE        (16000)
+#define SAMPLE_RATE        (44100)		//Mac: 44100	PC: 16000
 #define NUM_CHANNELS       (1)
-#define SAMPLES_PER_BUFFER (SAMPLE_RATE/2)
+#define SAMPLES_PER_BUFFER (8*1024)
 
 #endif
 

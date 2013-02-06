@@ -41,6 +41,7 @@ int initialize_portaudio(PaStream** stream)
 
     printf("Using input device #%d and output device #%d.\n",
            inputParams.device, outputParams.device);
+    printf("Sample rate: %d, buffer size: %d\n\n",SAMPLE_RATE,SAMPLES_PER_BUFFER);
 
     //Open the stream!
     error_check("Pa_OpenStream",

@@ -629,7 +629,7 @@ static PaError InitializeDeviceInfo( PaMacAUHAL *auhalHostApi,
 
     VVDBUG(("InitializeDeviceInfo(): macCoreDeviceId=%ld\n", macCoreDeviceId));
 
-    memset(deviceInfo, 0, sizeof(*deviceInfo));
+    memset(deviceInfo, 0, sizeof(deviceInfo));
 
     deviceInfo->structVersion = 2;
     deviceInfo->hostApi = hostApiIndex;
@@ -1128,8 +1128,8 @@ static PaError OpenAndSetupOneAudioUnit(
                                    const double sampleRate,
                                    void *refCon )
 {
-    AudioComponentDescription desc;
-    AudioComponent comp;
+    ComponentDescription desc;
+    Component comp;
     /*An Apple TN suggests using CAStreamBasicDescription, but that is C++*/
     AudioStreamBasicDescription desiredFormat;
     OSStatus result = noErr;
@@ -1200,7 +1200,7 @@ static PaError OpenAndSetupOneAudioUnit(
     desc.componentFlags        = 0;
     desc.componentFlagsMask    = 0;
     /* -- find the component -- */
-    comp = AudioComponentFindNext( NULL, &desc );
+    comp = FindNextComponent( NULL, &desc );
     if( !comp )
     {
        DBUG( ( "AUHAL component not found." ) );
@@ -1209,7 +1209,7 @@ static PaError OpenAndSetupOneAudioUnit(
        return paUnanticipatedHostError;
     }
     /* -- open it -- */
-    result = AudioComponentInstanceNew( comp, audioUnit );
+    result = OpenAComponent( comp, audioUnit );
     if( result )
     {
        DBUG( ( "Failed to open AUHAL component." ) );
@@ -1562,7 +1562,7 @@ static PaError OpenAndSetupOneAudioUnit(
 #undef ERR_WRAP
 
     error:
-       AudioComponentInstanceDispose( *audioUnit );
+       CloseComponent( *audioUnit );
        *audioUnit = NULL;
        if( result )
           return PaMacCore_SetError( result, line, 1 );
@@ -2575,13 +2575,13 @@ static PaError CloseStream( PaStream* s )
        }
        if( stream->outputUnit && stream->outputUnit != stream->inputUnit ) {
           AudioUnitUninitialize( stream->outputUnit );
-          AudioComponentInstanceDispose( stream->outputUnit );
+          CloseComponent( stream->outputUnit );
        }
        stream->outputUnit = NULL;
        if( stream->inputUnit )
        {
           AudioUnitUninitialize( stream->inputUnit );
-          AudioComponentInstanceDispose( stream->inputUnit );
+          CloseComponent( stream->inputUnit );
           stream->inputUnit = NULL;
        }
        if( stream->inputRingBuffer.buffer )
@@ -2641,12 +2641,12 @@ static PaError StartStream( PaStream *s )
 
 // it's not clear from appl's docs that this really waits
 // until all data is flushed.
-static OSStatus BlockWhileAudioUnitIsRunning( AudioUnit audioUnit, AudioUnitElement element )
+static ComponentResult BlockWhileAudioUnitIsRunning( AudioUnit audioUnit, AudioUnitElement element )
 {
     Boolean isRunning = 1;
     while( isRunning ) {
        UInt32 s = sizeof( isRunning );
-       OSStatus err = AudioUnitGetProperty( audioUnit, kAudioOutputUnitProperty_IsRunning, kAudioUnitScope_Global, element,  &isRunning, &s );
+       ComponentResult err = AudioUnitGetProperty( audioUnit, kAudioOutputUnitProperty_IsRunning, kAudioUnitScope_Global, element,  &isRunning, &s );
        if( err )
           return err;
        Pa_Sleep( 100 );

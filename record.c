@@ -5,9 +5,10 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+#include "endpoint.h"
 #include "portaudio.h"
 #include "portaudio_utils.h"
-#include "endpoint.h"
+#include "wav_utils.h"
 
 
 /* record.c - main function for our working test of portaudio import
@@ -25,36 +26,35 @@ int main()
 
 
     //Sets up time stamped file name. There's gotta be a better way to do this...
-    time_t sys_time = time(NULL);
-    char * prefix = "./recordings/recorded-";
-    char timestamp[32];
-    sprintf(timestamp, "%lu", (long unsigned)sys_time);
-    char * suffix = ".out";
-    char dataFileName[256];
-	snprintf(dataFileName, sizeof(dataFileName), "%s%s%s", prefix,timestamp, suffix);
-	printf("Output will be stored in %s\n",dataFileName);
-    int outputfile = open(dataFileName, O_WRONLY|O_CREAT, 0644);
+    char * output_file_name = get_time_stamped_filename("./recordings/recorded-",".out");
+    char * output_wave_file_name = get_time_stamped_filename("./recordings/recorded-",".wav");
+    
+    printf(".out: %s\n",output_file_name);
+    printf(".wav: %s\n",output_wave_file_name);
+    int outputfile = open(output_file_name, O_WRONLY|O_CREAT, 0644);
     
     //Wait for the user to begin
     printf("\nPress enter to begin recording...\n");
     getchar();
 
-    //Run until windowing function signals the end, ignoring the
-    //  first sample to let the user begin talking
-    //Write the recorded data to an output file
+    //Run until windowing function signals the end
     error_check("StartStream",Pa_StartStream(stream));
 
     bool listening = true;
-	int dataCaptured = 0;
+    int dataCaptured = 0;
     while(listening)
     {
         Pa_ReadStream(stream, samples, SAMPLES_PER_BUFFER);
+        Pa_WriteStream(stream, samples, SAMPLES_PER_BUFFER);
         write(outputfile, samples, SAMPLES_PER_BUFFER*sizeof(SAMPLE));
-		dataCaptured+=SAMPLES_PER_BUFFER;
+        dataCaptured += SAMPLES_PER_BUFFER*sizeof(SAMPLE);
 
         if(done_speaking(samples, SAMPLES_PER_BUFFER))
             listening = false;
     }
+
+    //Write out to wav
+    raw_to_wav(output_file_name, output_wave_file_name, dataCaptured);
 
     //Close portaudio and clean up   
     printf("size: %d\n", dataCaptured);
