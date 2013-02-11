@@ -101,10 +101,15 @@ cepstrum_vectors* get_cepstrum_vectors(double* signal, int num_samples,
     for(int i = 0; i < num_vectors; i++)
     {
         //Generate the window, then premph and weight it
-        double* start = signal+(i*samples_per_window);
-        for(int j = 0; j < samples_per_window &&
-                       (i*samples_per_window+j < num_samples); j++)
-            window[j] = start[j];
+        int offset = i*SAMPLE_RATE*WINDOW_SLIDE/1000;
+        double* start = signal+offset;
+        for(int j = 0; j < samples_per_window; j++)
+        {
+            if(offset+j < num_samples)
+                window[j] = start[j];
+            else
+                window[j] = 0;
+        }
         premphasize(window, samples_per_window);
         hamming_window(window, samples_per_window);
         

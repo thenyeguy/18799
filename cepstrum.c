@@ -54,7 +54,7 @@ int main(int argc, char **argv)
     //Processing needs doubles, so copy over intoa  double buffer
     double* sample = calloc(sizeof(double), size);
     for(int i = 0; i < size; i++)
-        sample[i] = (double) buffer[i];
+        sample[i] = ((double) buffer[i]);// / 32768.0;
 
     get_cepstrum_vectors(sample, size, filter_num, 13, name);
 

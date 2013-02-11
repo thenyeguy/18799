@@ -23,7 +23,7 @@ bool done_speaking(SAMPLE* buffer, int n)
 
     //Ignore the first sample set, to let the user start speaking
     counter++;
-    if(counter < 4) return false;
+    //if(counter < 2) return false;
 
     double current;
     double level = 0;

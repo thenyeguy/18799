@@ -47,8 +47,14 @@ int main(int argc, char* argv[])
     {
         Pa_ReadStream(stream, samples, SAMPLES_PER_BUFFER);
         //Pa_WriteStream(stream, samples, SAMPLES_PER_BUFFER);
-        write(outputfile, samples, SAMPLES_PER_BUFFER*sizeof(SAMPLE));
-        dataCaptured += SAMPLES_PER_BUFFER*sizeof(SAMPLE);
+
+        //Filter out portaudio zeros
+        //Not sure why, but its messing up our data
+        if(samples[0] != 0)
+        {
+            write(outputfile, samples, SAMPLES_PER_BUFFER*sizeof(SAMPLE));
+            dataCaptured += SAMPLES_PER_BUFFER*sizeof(SAMPLE);
+        }
 
         if(done_speaking(samples, SAMPLES_PER_BUFFER))
             listening = false;
