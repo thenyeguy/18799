@@ -3,7 +3,7 @@
 close all force
 
 %% Code
-number_names = {'one' 'two' 'three' 'four'};
+number_names = {'one' 'two' 'three' 'four' 'five' 'six' 'seven' 'eight' 'nine'};
 
 number_of_number_names = length(number_names);
 number_of_recordings_per_number = 3;
@@ -21,8 +21,10 @@ for number_index = 1:length(number_names)
         cepstrum_string_array = [];
 
         while tline~=-1,
-            cepstrum_string_array = horzcat(cepstrum_string_array , cepstrum_13);
+            if(strcmp(cepstrum_13(1), 'nan') == 0)
+                cepstrum_string_array = horzcat(cepstrum_string_array , cepstrum_13);
 
+            end
             % Get next line
             tline = fgets(fid); 
             if tline==-1

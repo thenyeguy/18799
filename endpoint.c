@@ -14,10 +14,12 @@
 
 
 /* Simple, naive algorithm - averages the samples in the entire frame,
- * and if the average sample value is too low then you are done */
+ * and if the average sample value is too low enough times in a row
+ * then you are done */
 bool done_speaking(SAMPLE* buffer, int n)
 {
     static int counter = 0;
+    static int consecutive_frames = 0;
 
     //Ignore the first sample set, to let the user start speaking
     counter++;
@@ -37,9 +39,14 @@ bool done_speaking(SAMPLE* buffer, int n)
         count++;
     }
     level /= count;
-    printf("level: %f\n", level);
+    printf("level: %f\n", level, NAIVETHRESHOLD);
 
     if(NAIVEFLOOR < level && level < NAIVETHRESHOLD)
+        consecutive_frames++;
+    else
+        consecutive_frames = 0;
+
+    if(consecutive_frames > NUMFRAMESTOWAIT)
         return true;
     else
         return false;

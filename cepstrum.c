@@ -9,9 +9,9 @@
 
 int main(int argc, char **argv)
 {
-    if(argc != 2)
+    if(argc < 2)
     {
-        printf("Usage: ./cepstrum [file to read]\n");
+        printf("Usage: ./cepstrum [file to read] [optional number of mel filters]\n");
         printf("    Runs cepstrum vector analysis and outputs to cepstrum\n\n");
         printf("E.G. \"./cepstrum mytest\" reads in:\n");
         printf("         recordings/mytest.out\n");
@@ -25,6 +25,11 @@ int main(int argc, char **argv)
     char* name = argv[1];
     sprintf(data_path, "recordings/%s.out", argv[1]);
     printf("Reading recorded data from:\n    %s\n\n", data_path);
+
+    //Determine number of filters
+    int filter_num = 40;
+    if(argc > 2)
+        filter_num = atoi(argv[2]);
 
     //Open the file and determine its length to read in
     //Then close it when done
@@ -51,7 +56,7 @@ int main(int argc, char **argv)
     for(int i = 0; i < size; i++)
         sample[i] = (double) buffer[i];
 
-    get_cepstrum_vectors(sample, size, 40, 13, name);
+    get_cepstrum_vectors(sample, size, filter_num, 13, name);
 
     //Clean up
     printf("Completed anaylsis. Output files in analysis directory.\n");

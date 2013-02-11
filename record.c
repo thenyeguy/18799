@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
     while(listening)
     {
         Pa_ReadStream(stream, samples, SAMPLES_PER_BUFFER);
-        Pa_WriteStream(stream, samples, SAMPLES_PER_BUFFER);
+        //Pa_WriteStream(stream, samples, SAMPLES_PER_BUFFER);
         write(outputfile, samples, SAMPLES_PER_BUFFER*sizeof(SAMPLE));
         dataCaptured += SAMPLES_PER_BUFFER*sizeof(SAMPLE);
 
