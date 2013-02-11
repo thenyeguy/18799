@@ -22,14 +22,17 @@ int main(int argc, char **argv)
 
     //Determine the specified recording out file
     char data_path[256];
-    char* name = argv[1];
-    sprintf(data_path, "recordings/%s.out", argv[1]);
-    printf("Reading recorded data from:\n    %s\n\n", data_path);
 
-    //Determine number of filters
+	//Determine number of filters
     int filter_num = 40;
     if(argc > 2)
         filter_num = atoi(argv[2]);
+	
+	sprintf(data_path, "recordings/%s.out", argv[1]);
+    printf("Reading recorded data from:\n    %s\n\n", data_path);
+	
+	char name[256];
+	sprintf(name, "%s-%d", argv[1], filter_num);
 
     //Open the file and determine its length to read in
     //Then close it when done
