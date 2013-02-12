@@ -1,24 +1,49 @@
-CC      = gcc
-OFLAGS  = -c -Wall -Werror -std=c99 -g 
-CFLAGS  = -lportaudio
-SOURCES = cepstrum_vectors.c cepstrum_utils.c wav_utils.c \
-          portaudio_utils.c endpoint.c
-OBJECTS = $(SOURCES:.c=.o)
+# Recursively looks for matches
+percent_subdirs = 1
 
-all: record cepstrum
+# Specify compiler and output locations
+CC      = gcc
+SRCDIR  = src
+OBJDIR  = obj
+BINDIR  = bin
+
+# Automagically crawl the directory structure and find our source files
+SRCDIRS = $(shell ls src)
+SOURCES = $(shell find ${SRCDIR} \( -name "*.c" -and -not -name "*main.c" \) )
+OBJECTS = $(patsubst %.c,%.o,${SOURCES})
+
+# Automagically crawl the directory structure and find the compilable mains!
+OBJLOCS = $(addprefix ${OBJDIR}/,$(shell basename ${OBJECTS}))
+MAINSOURCES = $(shell find ${SRCDIR} \( -name "*.c" -and -name "*main.c" \))
+MAINS   = $(patsubst %_main.c,%,$(shell basename $(MAINSOURCES)))
+
+# Compiler flags
+CFLAGS  = -Wall -Werror -std=c99 -g $(addprefix -I./${SRCDIR}/,${SRCDIRS})
+LFLAGS  = -lportaudio -L./${OBJDIR}/
+
+
+# Handy shortcuts for make
+all: $(MAINS)
 full: clean all
 
-record: $(OBJECTS) record.o
-	$(CC) $(CFLAGS) -o record.out $(OBJECTS) record.o
 
-record2: $(OBJECTS) record2.o
-	$(CC) $(CFLAGS) -o record2.out $(OBJECTS) record2.o
+# Autogenerate compilation of main files
+$(MAINS): ${BINDIR} $(OBJECTS)
+	${CC} ${CFLAGS} -c $(shell find ${SRCDIR} \( -name "**$@_main.c" \) ) \
+		-o ${OBJDIR}/$@_main.o
+	$(CC) $(LFLAGS) ${OBJLOCS} ${OBJDIR}/$@_main.o -o ${BINDIR}/$@ 
 
-cepstrum: $(OBJECTS) cepstrum.o
-	$(CC) $(CFLAGS) -o cepstrum.out $(OBJECTS) cepstrum.o
 
-%.o: %.c
-	$(CC) $(OFLAGS) -o $@ $<
+# Autogenerate compilation of object files
+%.o: %.c ${OBJDIR}
+	${CC} ${CFLAGS} -c $< -o ${OBJDIR}/$(@F)
 
+
+# Manage generation and cleaning of output directories
+${OBJDIR}:
+	@mkdir -p ${OBJDIR}
+${BINDIR}:
+	@mkdir -p ${BINDIR}
 clean:
-	rm -rf *.o *.out
+	@rm -rf ${OBJDIR} 
+	@rm -rf ${BINDIR}
