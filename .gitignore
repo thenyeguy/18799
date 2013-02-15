@@ -1,4 +1,8 @@
-# Compiled sources
+# Output results
+bin
+obj
+
+# Binary data
 *.o
 *.out
 *.wav
@@ -6,4 +10,5 @@
 # Vim stuff
 *.swp
 
+# Mac stuff
 .DS_Store
