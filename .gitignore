@@ -5,3 +5,5 @@
 
 # Vim stuff
 *.swp
+
+.DS_Store
