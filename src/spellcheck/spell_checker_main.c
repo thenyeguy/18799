@@ -4,7 +4,7 @@
 int main(){
 	
 	char * word_one = "discovery"; 
-	char ** dictionary = get_dictionary("words.txt");
+	char ** dictionary = get_dictionary(DICTIONARY_PATH);
 	int n =7;
 	word_and_score * best_n_words = get_best_n_words(word_one,dictionary,n);
 	print_n_best_words(best_n_words,n);
