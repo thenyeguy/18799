@@ -45,7 +45,7 @@ sub write_out_text{
 	my $text_array_ref = shift;
 	my $out_file_path = shift;
 	open(OUTFILE,">$out_file_path");
-       	print OUTFILE join(' ',@{$text_array_ref});
+       	print OUTFILE join("\n",@{$text_array_ref});
 	close(OUTFILE);
 }
 

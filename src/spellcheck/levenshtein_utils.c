@@ -37,7 +37,7 @@ word_and_score * get_best_n_words(char * word_one,char ** dictionary, int n){
     
         for( i=0; i <DICTIONARY_LENGTH ; i++){
                 int levenshtein_distance = get_levenshtein_distance( word_one, dictionary[i]);
-                printf("%s: %d\n",dictionary[i],levenshtein_distance);
+                //printf("%s: %d\n",dictionary[i],levenshtein_distance);
     
                 if(levenshtein_distance < n_best_words[n-1].score){
                         int k=0;
