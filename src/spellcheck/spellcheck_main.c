@@ -1,11 +1,18 @@
-#include "spell_checker_main.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <levenshtein_utils.h>
 
 
-int main(){
-	
-	char * word_one = "discovery"; 
-	char ** dictionary = get_dictionary("words.txt");
-	int n =7;
+int main(int argc, char** argv){
+    if(argc < 2)
+    {
+        printf("Usage: ./spellcheck [word to check]\n");
+        exit(1);
+    }
+
+	char * word_one = argv[1]; 
+	char ** dictionary = get_dictionary("text/smalldict.txt");
+	int n = 100;
 	word_and_score * best_n_words = get_best_n_words(word_one,dictionary,n);
 	print_n_best_words(best_n_words,n);
 	free_dictionary(dictionary,DICTIONARY_LENGTH);
@@ -24,7 +31,7 @@ char ** endpoint_input_string(char * input_string){
 	input_string=input_string;
 	//Not Used Yet
 
-	/*
+    /*
 	int number_of_words=1;
 	int input_string_length=strlen(input_string);
 	int i;
@@ -47,7 +54,6 @@ char ** endpoint_input_string(char * input_string){
 		}
 		word_length++;
 	}
-	*/
+    */
 	return NULL;
 }
-

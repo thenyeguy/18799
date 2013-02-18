@@ -22,7 +22,7 @@ while(<INFILE>){
 	$line=~s/([^a-zA-Z_0-9 ])//g;
 	#print "$_\n";
 	#print "$line\n\n";
-	my @words_on_line = split(/\s+/,$line);
+	my @words_on_line = split(/\s+/,lc($line));
 	push(@text_array,@words_on_line);
 }
 =cut
