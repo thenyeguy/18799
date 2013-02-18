@@ -1,7 +1,9 @@
 #include "trellis_utils.h"
 #include <strings.h>
 
-#define DICTIONARY_LENGTH 235886
+//#define DICTIONARY_LENGTH 235886
+#define DICTIONARY_LENGTH 6618
+
 
 typedef struct{
 	char * word;

@@ -8,7 +8,7 @@
 #define MIN(a,b,c) ((c<((a<b)?a:b))?c:((a<b)?a:b))
 #define INT_MIN (1<<31)
 #define INT_MAX (~INT_MIN)
-
+#define PRINT_TRELLIS 0
 
 typedef struct {
 	int score;
@@ -23,6 +23,8 @@ void populate_trellis(trellis_node ** trellis, char * word_one, char * word_two,
 trellis_node ** initialize_trellis(int word_one_length, int word_two_length);
 
 int get_best_previous_score(trellis_node ** trellis,int i,int j,int word_one_length,int word_two_length);
+
+int get_next_best_score(trellis_node ** trellis,int i,int j,char * word_one, char * word_two,int word_one_length,int word_two_length);
 
 void free_trellis(trellis_node ** trellis,int word_one_length,int word_two_length);
 

@@ -12,7 +12,9 @@ void free_trellis(trellis_node ** trellis,int word_one_length,int word_two_lengt
 trellis_node ** build_trellis(char * word_one, char * word_two, int word_one_length, int word_two_length){
 	trellis_node ** trellis = initialize_trellis(word_one_length,word_two_length);
 	populate_trellis(trellis,word_one,word_two,word_one_length,word_two_length);
-	 
+	if(PRINT_TRELLIS){
+		print_trellis(trellis,word_one,word_two,word_one_length,word_two_length);
+	} 
 	return trellis;
 }
 
@@ -32,9 +34,59 @@ void populate_trellis(trellis_node ** trellis, char * word_one, char * word_two,
 				score=1;
 			}
 
-			trellis[j][i].score= score + get_best_previous_score(trellis,i,j,word_one_length,word_two_length);
+			//trellis[j][i].score= score + get_best_previous_score(trellis,i,j,word_one_length,word_two_length);
+			int should_be_score = get_next_best_score(trellis,i,j,word_one,word_two,word_one_length,word_two_length);
+			//printf("Should be score: %d\n",should_be_score);
+			trellis[j][i].score=should_be_score;
 		}
 	}
+}
+int get_next_best_score(trellis_node ** trellis,int i,int j,char * word_one, char * word_two,int word_one_length,int word_two_length){
+        int down = INT_MAX;
+        int left = INT_MAX;
+        int down_left = INT_MAX;
+        int flag=0;
+        int next_best_score;
+	int x = X(i);
+	int y = Y(word_two_length,j);
+	int diag_cost;
+
+	if(x==0){
+		return y;
+	}
+	if(y==0){
+		return x;
+	}	
+
+        if(word_one[x] == word_two[y]){
+        	diag_cost=0;
+        }   
+        else{
+		diag_cost=1;
+	}
+	
+	//Down
+        if(Y(word_two_length,j)>0){
+                down = trellis[j+1][i].score;
+                flag++;
+        }   
+        //Left
+        if(X(i)>0){
+                left = trellis[j][i-1].score;
+                flag++;
+        }   
+        //Down Left
+        if(Y(word_two_length,j)>0 && X(i)>0){
+                down_left = trellis[j+1][i-1].score;
+                flag++;
+        }   
+        if(flag==0){
+                next_best_score =  0;  
+        }   
+        else{
+                next_best_score =  MIN(down+1,left+1,down_left + diag_cost);
+        }   
+        return next_best_score;
 }
 
 int get_best_previous_score(trellis_node ** trellis,int i,int j,int word_one_length,int word_two_length){
