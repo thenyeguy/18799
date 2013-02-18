@@ -5,6 +5,7 @@
 #define DICTIONARY_LENGTH 6618
 
 
+
 typedef struct{
 	char * word;
 	int score;

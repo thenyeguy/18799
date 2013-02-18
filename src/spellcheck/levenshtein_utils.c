@@ -2,12 +2,14 @@
 
 
 char ** get_dictionary(char * dictionary_filepath){
-        //235886        
+
+	//Open file for reading dictionary
         FILE * filepath = fopen(dictionary_filepath,"r");
         int dictionary_length = DICTIONARY_LENGTH;
         char ** dictionary = (char **)malloc(dictionary_length * sizeof(char*));
         if(!dictionary){ printf("malloc failed..\n"); exit(1);}
 
+	//Read in dictionary into char * array
         int buffer_size = 80; 
         char line[buffer_size];
         int i = 0;
@@ -46,8 +48,18 @@ word_and_score * get_best_n_words(char * word_one,char ** dictionary, int n){
                         }   
                         char * new_word = (char *)malloc(strlen(dictionary[i])+1);
                         strcpy(new_word,dictionary[i]);
+
+			//Move other words down
+			int p;
+			free(n_best_words[n-1].word);
+			for( p=n-1; p>k; p--){
+				n_best_words[p].word = n_best_words[p-1].word;
+				n_best_words[p].score = n_best_words[p-1].score;
+			}
+
+			//Place new word into the set
                         n_best_words[k].score = levenshtein_distance;   
-                        free(n_best_words[k].word);
+                        //free(n_best_words[k].word);
                         n_best_words[k].word = new_word;
                 }    
         }   
@@ -91,7 +103,8 @@ void print_n_best_words(word_and_score * n_best_words, int n){
 	int p;
 	for(p=0; p<n; p++){
 		printf("%s: %d\n",n_best_words[p].word,n_best_words[p].score);
-	}   
+	}  
+	printf("\n\n"); 
 }
 
 void free_dictionary(char ** dictionary,int dictionary_size){
