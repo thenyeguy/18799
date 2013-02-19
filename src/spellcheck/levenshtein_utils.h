@@ -1,6 +1,8 @@
 #include "trellis_utils.h"
 #include <strings.h>
 
+
+//Lengths of the two dictionary files
 #define SMALLDICT_LENGTH 6618
 #define DICTIONARY_LENGTH 235886
 
