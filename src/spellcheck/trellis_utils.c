@@ -10,7 +10,7 @@ trellis_node** build_trellis(char* word_one, char* word_two,
 {
     trellis_node** trellis = alloc_trellis(word_one_length, word_two_length);
     populate_trellis(trellis, word_one, word_two, word_one_length,
-                     word_two_length, NONE);
+                     word_two_length, pruning);
 
 	if(PRINT_TRELLIS){
 		print_trellis(trellis,word_one,word_two,word_one_length,word_two_length);
@@ -88,7 +88,7 @@ void populate_trellis(trellis_node** trellis, char* word_one, char* word_two,
                 if(trellis[j][i].score < threshold)
                     check = true;
                 //Downleft
-                if(j < word_two_length-1 && trellis[j-1][i].score < threshold)
+                if(j > 0 && trellis[j-1][i].score < threshold)
                     check = true;
                 trellis[j][i+1].pruned = !check;
             }

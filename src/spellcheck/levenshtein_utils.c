@@ -70,7 +70,7 @@ int get_levenshtein_distance (char* word_one, char* word_two){
 
     trellis_node** trellis = build_trellis(null_prefix_word_one,
         null_prefix_word_two, word_one_length+1, word_two_length+1,
-        NONE);
+        ABSOLUTE);
 
     int levenshtein_distance = trellis[word_two_length][word_one_length].score;
 
