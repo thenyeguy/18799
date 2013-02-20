@@ -52,12 +52,24 @@ typedef struct {
 } trellis_node;
 
 
+typedef struct {
+    char* word_one;
+    int   word_one_len;
+
+    char* word_two;
+    int   word_two_len;
+
+    trellis_node** grid;
+    int distance;
+} search_trellis;
+
+
 /* build_trellis - given an input word 1 and a corpus word 2 and their lengths,
  *                 computes the final search trellis comparing those words.
  *                 If pruning is not NONE then performs pruning inside the
  *                 search trellis
  */
-trellis_node** build_trellis(char* word_one, char* word_two,
+search_trellis* build_trellis(char* word_one, char* word_two,
                              int word_one_length, int word_two_length,
                              prune_t pruning);
 
@@ -65,7 +77,8 @@ trellis_node** build_trellis(char* word_one, char* word_two,
 /* alloc_trellis - given the length of input word 1 and corpus word 2,
  *                 allocates the empty trellis structure in memory
  */
-trellis_node** alloc_trellis(int word_one_length, int word_two_length);
+search_trellis* alloc_trellis(char* word_one, char* word_two,
+                              int word_one_length, int word_two_length);
 
 
 /* populate_trellis - given an empty trellis structure, the input word 1 and
@@ -73,9 +86,7 @@ trellis_node** alloc_trellis(int word_one_length, int word_two_length);
  *                    with scores for every node. Performs pruning according
  *                    to the type specified.
  */
-void populate_trellis(trellis_node** trellis, char* word_one, char* word_two,
-                      int word_one_length, int word_two_length,
-                      prune_t pruning);
+void populate_trellis(search_trellis* searchtrellis, prune_t pruning);
 
 
 /* get_best_score - helper function for populate trellis...
@@ -83,18 +94,15 @@ void populate_trellis(trellis_node** trellis, char* word_one, char* word_two,
  *                  question, stores the best score leading to the
  *                  node given by (i,j) directly
  */
-void get_best_score(trellis_node** trellis, int i, int j,
-                    char* word_one, char* word_two,
-                    int word_one_length, int word_two_length);
+void get_best_score(search_trellis* searchtrellis, int i, int j);
 
 
 /* print_trellis - given a trellis and its corresponding words, print out the
  *                 scores in table format
  */
-void print_trellis(trellis_node** trellis, char* word_one, char* word_two,
-                   int word_one_length, int word_two_length);
+void print_trellis(search_trellis* searchtrellis);
 
 
 /* free_trellis - frees the given trellis structure
  */
-void free_trellis(trellis_node** trellis, int word_one_length, int word_two_length);
+void free_trellis(search_trellis* searchtrellis);

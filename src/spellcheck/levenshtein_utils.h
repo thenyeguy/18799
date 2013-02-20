@@ -22,6 +22,7 @@ int get_string_array_length(char ** string_array);
 typedef struct{
 	char* word;
 	int score;
+    search_trellis* trellis;
 } word_and_score;
 
 
@@ -42,7 +43,7 @@ word_and_score* get_best_n_words(char* word_one, char** dictionary,
 /* get_levenshtein_distance - given two words, computes their levenshtein
  *                             distance using a search trellis
  */
-int get_levenshtein_distance(char* word_one,char* word_two);
+search_trellis* get_levenshtein_distance(char* word_one,char* word_two);
 
 
 /* add_null_prefix - helper function for levensthein - takes a word and adds a
