@@ -26,6 +26,10 @@ void populate_string_trellis(int ** trellis, char ** string_array_one,char ** st
 	int str_one_len = get_string_array_length(string_array_one);
         int str_two_len = get_string_array_length(string_array_two);
 	
+	//int insertions = 0;
+	//int deletions = 0;
+	//int substitutions = 0;
+	
 	//printf("one: %d\t two: %d\n",str_one_len,str_two_len);
 
 	for(int i=0; i<str_one_len; i++){	
@@ -49,20 +53,31 @@ void populate_string_trellis(int ** trellis, char ** string_array_one,char ** st
 					diag_score = 1;
 				}
 				int weight = 1;
-				//int down_score = trellis[I(x)][J(y-1,str_two_len)];
-				//int left_score = trellis[I(x-1)][J(y,str_two_len)];
-				//int down_left_score = trellis[I(x-1)][J(y-1,str_two_len)];
 				int down_score = trellis[i][j+1];
 				int left_score = trellis[i-1][j];
 				int down_left_score = trellis[i-1][j+1];
-				//printf("d: %d\t l: %d\t dl: %d",down_score,left_score,down_left_score);
 				down_score+=weight;
 				left_score+=weight;
 				down_left_score+=diag_score;			
 
-	
+					
 				int next_score = MIN(down_score,left_score,down_left_score);
-//printf("(%d,%d)|(%d,%d)\td: %d\t l: %d\t dl: %d\tNext: %d\n",x,y,i,j,down_score,left_score,down_left_score,next_score);
+				/*
+				if(next_score==down_score){
+					insertions++;
+				}
+				else if(next_score==left_score){
+					deletions++;
+				}
+				else{
+					if(diag_score==0){
+						
+					}
+					else{
+						substitutions++;
+					}
+				}
+				*/
 				trellis[i][j]=next_score;
 				
 			}
@@ -71,7 +86,7 @@ void populate_string_trellis(int ** trellis, char ** string_array_one,char ** st
 		}
 	}
 	//print_string_trellis(trellis,str_two_len,str_one_len);
-
+	//printf("Insertions: %d\t Deletions: %d\t Substitutions: %d\n",insertions,deletions,substitutions);
 }
 
 int ** init_string_trellis(char ** string_array_one,char ** string_array_two){
