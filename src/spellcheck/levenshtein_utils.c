@@ -4,6 +4,60 @@
 #include "levenshtein_utils.h"
 
 
+
+
+
+int compute_levenshtein(char ** story_one, char** story_two){
+	//print_string_array(story_one);
+	//printf("len: %d\n",get_string_array_length(story_one));
+	int one_length = get_string_array_length(story_one);
+	int two_length = get_string_array_length(story_two);
+	int ** trellis = build_string_trellis(story_one,story_two);
+	return trellis[two_length-1][one_length-1];
+}
+
+
+
+
+
+char** get_null_prefix_dictionary(char* dictionary_filepath, int dict_length){
+    //235886        
+    FILE * filepath = fopen(dictionary_filepath,"r");
+    int dictionary_length = dict_length + 1;
+    char ** dictionary = (char **)malloc(dictionary_length * sizeof(char*));
+    if(!filepath){ printf("could not open dictionary...\n"); exit(1); }
+    if(!dictionary){ printf("malloc failed..\n"); exit(1);}
+
+    int line_length = 80; 
+    char line[line_length];
+    int i = 1;
+    while(fgets(line, line_length, filepath) != NULL && i<dict_length){
+        int word_length = strlen(line);
+        char * word = (char *)malloc(word_length+1);
+        int k;
+        for(k=0; k<word_length; k++){
+            word[k]=line[k];
+        }   
+        word[word_length-1]='\0';
+        dictionary[i]=word;
+        i++;    
+    } 
+  
+    //Add null prefix '*' to the beginning of the story
+    char * null_prefix = (char*)malloc(strlen(null_prefix)+1);
+    null_prefix[0] = '*';
+    null_prefix[1] = '\0';  	
+    dictionary[0] = null_prefix; 
+
+    fclose(filepath);
+    return dictionary;
+}
+
+
+/*
+ *	CODE FOR ONLY ONE CHARACTER
+*/
+
 char** get_dictionary(char* dictionary_filepath, int dict_length){
     //235886        
     FILE * filepath = fopen(dictionary_filepath,"r");

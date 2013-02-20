@@ -7,6 +7,18 @@
 #define DICTIONARY_LENGTH 235886
 
 
+
+
+
+int compute_levenshtein(char ** story_one, char** story_two);
+void print_string_array(char ** story);
+char** get_null_prefix_dictionary(char* dictionary_filepath, int dict_length);
+int get_string_array_length(char ** string_array);
+
+/*
+ *	Single Character code
+*/
+
 typedef struct{
 	char* word;
 	int score;

@@ -5,6 +5,22 @@
 #define INT_MIN (1<<31)
 #define INT_MAX (~INT_MIN)
 #define PRINT_TRELLIS false
+#define X(x) (x)
+#define Y(j,len) (((len)-(j))-1)
+#define I(i) (i)
+#define J(y,len) (((len)-y)-1)
+
+
+int ** init_string_trellis(char ** string_array_one,char ** string_array_two);
+int ** build_string_trellis(char ** string_array_one,char ** string_array_two);
+void populate_string_trellis(int ** trellis, char ** string_array_one,char ** string_array_two);
+int get_string_array_length(char ** string_array);
+
+
+/*
+ *	Single Character Trellis
+*/
+
 
 /* Pruning type for the trellis evalutation...
  *     NONE performs no pruning
