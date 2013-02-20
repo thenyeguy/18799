@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <strings.h>
 #include <stdlib.h>
-#include "levenshtein_utils.h"
+#include "word_levenshtein_utils.h"
 
 
-char** get_dictionary(char* dictionary_filepath, int dict_length){
+char** word_get_dictionary(char* dictionary_filepath, int dict_length){
     //235886        
     FILE * filepath = fopen(dictionary_filepath,"r");
     int dictionary_length = dict_length;
@@ -31,7 +31,7 @@ char** get_dictionary(char* dictionary_filepath, int dict_length){
 }
 
 
-word_and_score* get_best_n_words(char* word_one, char** dictionary,
+word_and_score* word_get_best_n_words(char* word_one, char** dictionary,
                                  int dict_length, int n){ 
     //N Best on first pass
     word_and_score * n_best_words = (word_and_score *) malloc(n*sizeof(word_and_score));
@@ -41,7 +41,7 @@ word_and_score* get_best_n_words(char* word_one, char** dictionary,
     }   
 
     for(int i=0; i < dict_length ; i++){
-        int levenshtein_distance = get_levenshtein_distance( word_one, dictionary[i]);
+        int levenshtein_distance = word_get_levenshtein_distance( word_one, dictionary[i]);
 	
         //printf("%s: %d\n",dictionary[i],levenshtein_distance);
 	
@@ -62,14 +62,14 @@ word_and_score* get_best_n_words(char* word_one, char** dictionary,
 }
 
 
-int get_levenshtein_distance (char* word_one, char* word_two){
+int word_get_levenshtein_distance (char* word_one, char* word_two){
     int word_one_length = strlen(word_one);
     int word_two_length = strlen(word_two);
 
-    char * null_prefix_word_one = add_null_prefix(word_one);
-    char * null_prefix_word_two = add_null_prefix(word_two);
+    char * null_prefix_word_one = word_add_null_prefix(word_one);
+    char * null_prefix_word_two = word_add_null_prefix(word_two);
 
-    trellis_node** trellis = build_trellis(null_prefix_word_one,
+    trellis_node** trellis = word_build_trellis(null_prefix_word_one,
         null_prefix_word_two, word_one_length+1, word_two_length+1,
         ABSOLUTE);
 
@@ -77,12 +77,12 @@ int get_levenshtein_distance (char* word_one, char* word_two){
 
     free(null_prefix_word_one);
     free(null_prefix_word_two);
-    free_trellis(trellis,word_one_length,word_two_length);
+    word_free_trellis(trellis,word_one_length,word_two_length);
     return levenshtein_distance;
 }
 
 
-char* add_null_prefix(char* word){
+char* word_add_null_prefix(char* word){
     char null_prefix = '*';
     int new_word_length = strlen(word)+1;
     char * null_prefix_word = (char*) malloc(new_word_length+1);
@@ -96,7 +96,7 @@ char* add_null_prefix(char* word){
 }
 
 
-void print_n_best_words(word_and_score* n_best_words, int n){
+void word_print_n_best_words(word_and_score* n_best_words, int n){
     printf("\n");
     for(int p=0; p<n; p++){
         printf("%s: %d\n",n_best_words[p].word,n_best_words[p].score);
@@ -104,7 +104,7 @@ void print_n_best_words(word_and_score* n_best_words, int n){
     printf("\n");
 }
 
-void free_dictionary(char** dictionary, int dictionary_size){
+void word_free_dictionary(char** dictionary, int dictionary_size){
     for(int i=0; i<dictionary_size; i++){
         free(dictionary[i]);
     }

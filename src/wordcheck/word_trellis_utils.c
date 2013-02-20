@@ -1,25 +1,26 @@
 #include <stdio.h>
 #include <strings.h>
 #include <stdlib.h>
-#include "trellis_utils.h"
+#include "word_trellis_utils.h"
 
 
-trellis_node** build_trellis(char* word_one, char* word_two,
+trellis_node** word_build_trellis(char* word_one, char* word_two,
                              int word_one_length, int word_two_length,
                              prune_t pruning)
 {
-    trellis_node** trellis = alloc_trellis(word_one_length, word_two_length);
-    populate_trellis(trellis, word_one, word_two, word_one_length,
+    trellis_node** trellis = word_alloc_trellis(word_one_length, word_two_length);
+    word_populate_trellis(trellis, word_one, word_two, word_one_length,
                      word_two_length, pruning);
-
-	if(PRINT_TRELLIS){
-		print_trellis(trellis,word_one,word_two,word_one_length,word_two_length);
+	/*
+	if(word_print_trellis){
+		word_print_trellis(trellis,word_one,word_two,word_one_length,word_two_length);
 	} 
+	*/
     return trellis;
 }
 
 
-trellis_node** alloc_trellis(int word_one_length, int word_two_length)
+trellis_node** word_alloc_trellis(int word_one_length, int word_two_length)
 {
     int malloc_height_size = word_two_length * sizeof(trellis_node*);
     int malloc_width_size = word_one_length * sizeof(trellis_node);
@@ -43,7 +44,7 @@ trellis_node** alloc_trellis(int word_one_length, int word_two_length)
 }
 
 
-void populate_trellis(trellis_node** trellis, char* word_one, char* word_two,
+void word_populate_trellis(trellis_node** trellis, char* word_one, char* word_two,
                       int word_one_length, int word_two_length,
                       prune_t pruning)
 {
@@ -66,7 +67,7 @@ void populate_trellis(trellis_node** trellis, char* word_one, char* word_two,
             if(trellis[j][i].pruned) continue;
 
             //Score this node
-            get_best_score(trellis, i, j, word_one, word_two,
+            word_get_best_score(trellis, i, j, word_one, word_two,
                            word_one_length, word_two_length);
 
             //Keep track of the beam threshold
@@ -97,7 +98,7 @@ void populate_trellis(trellis_node** trellis, char* word_one, char* word_two,
 }
 
 
-void get_best_score(trellis_node** trellis, int i, int j,
+void word_get_best_score(trellis_node** trellis, int i, int j,
                     char* word_one, char* word_two,
                     int word_one_length, int word_two_length)
 {
@@ -140,14 +141,15 @@ void get_best_score(trellis_node** trellis, int i, int j,
     }
 }
 
-
-void print_trellis(trellis_node** trellis, char* word_one, char* word_two,
+/*
+void word_print_trellis(trellis_node** trellis, char* word_one, char* word_two,
                    int word_one_length, int word_two_length)
 {
-    for(int j=word_two_length-1; j>=0; j--){
+	int j;
+    for(j=word_two_length-1; j>=0; j--){
         printf("%c\t",word_two[j]);
-
-        for(int i=0; i<word_one_length; i++){
+		int i;
+        for(i=0; i<word_one_length; i++){
             char dir;
             switch(trellis[j][i].dir)
             {
@@ -169,15 +171,15 @@ void print_trellis(trellis_node** trellis, char* word_one, char* word_two,
         printf("\n");
     }
     printf("\t");
-
-    for(int i=0; i<word_one_length; i++){
+	int i;
+    for(i=0; i<word_one_length; i++){
         printf("%c\t",word_one[i]);
     }
     printf("\n");
 }
+*/
 
-
-void free_trellis(trellis_node** trellis, int word_one_length, int word_two_length)
+void word_free_trellis(trellis_node** trellis, int word_one_length, int word_two_length)
 {
     word_one_length=word_one_length;
     int j;
