@@ -4,6 +4,115 @@
 #include "trellis_utils.h"
 
 
+int ** build_string_trellis(char ** string_array_one,char ** string_array_two){
+	int ** trellis = init_string_trellis(string_array_one,string_array_two);
+	populate_string_trellis(trellis,string_array_one,string_array_two);
+	
+	return trellis;
+}
+
+void print_string_trellis(int ** trellis,int height,int width){
+	for(int j=0; j<height; j++){
+		for(int i=0; i<width; i++){
+			printf("%d\t",trellis[i][j]);
+		}
+		printf("\n");
+	}
+	printf("\n"); 
+
+}
+
+void populate_string_trellis(int ** trellis, char ** string_array_one,char ** string_array_two){
+	int str_one_len = get_string_array_length(string_array_one);
+        int str_two_len = get_string_array_length(string_array_two);
+	
+	//printf("one: %d\t two: %d\n",str_one_len,str_two_len);
+
+	for(int i=0; i<str_one_len; i++){	
+		for(int j=str_two_len-1; j>=0; j--){
+			int x = X(i);
+			int y = Y(j,str_two_len);
+			char * one = string_array_one[x];
+                        char * two = string_array_two[y];
+			if(x==0){	
+				trellis[i][j]=y;
+			}
+			else if(y==0){
+				trellis[i][j]=x;
+			}
+			else{
+				int diag_score;
+				if(strcmp(one,two)==0){
+					diag_score = 0;
+				}
+				else{
+					diag_score = 1;
+				}
+				int weight = 1;
+				//int down_score = trellis[I(x)][J(y-1,str_two_len)];
+				//int left_score = trellis[I(x-1)][J(y,str_two_len)];
+				//int down_left_score = trellis[I(x-1)][J(y-1,str_two_len)];
+				int down_score = trellis[i][j+1];
+				int left_score = trellis[i-1][j];
+				int down_left_score = trellis[i-1][j+1];
+				//printf("d: %d\t l: %d\t dl: %d",down_score,left_score,down_left_score);
+				down_score+=weight;
+				left_score+=weight;
+				down_left_score+=diag_score;			
+
+	
+				int next_score = MIN(down_score,left_score,down_left_score);
+//printf("(%d,%d)|(%d,%d)\td: %d\t l: %d\t dl: %d\tNext: %d\n",x,y,i,j,down_score,left_score,down_left_score,next_score);
+				trellis[i][j]=next_score;
+				
+			}
+			//printf("comparing: %s - %s\n",one,two);
+			//printf("(%d,%d) = %d\n",x,y,trellis[i][j]);
+		}
+	}
+	//print_string_trellis(trellis,str_two_len,str_one_len);
+
+}
+
+int ** init_string_trellis(char ** string_array_one,char ** string_array_two){
+	int str_one_len = get_string_array_length(string_array_one);
+	int str_two_len = get_string_array_length(string_array_two);
+	int ** trellis = (int **) malloc(sizeof(int*)*str_two_len);
+	if(!trellis){
+		printf("problem\n");	
+		exit(1);
+	}
+	for(int i=0; i<str_two_len; i++){
+		trellis[i] = (int*)malloc(sizeof(int)*str_one_len);
+	}
+
+        return trellis;
+}
+
+
+void print_string_array(char ** string_array){
+        int i=0;
+        while(string_array[i]!=NULL){
+                printf("%d: %s\n",i,string_array[i]);
+                i++;
+        }   
+}
+
+int get_string_array_length(char ** string_array){
+        int i=0;
+        while(string_array[i]!=NULL){
+                i++;
+        }  
+        return i;
+}
+
+
+
+/*
+ *      CODE FOR ONLY ONE CHARACTER
+*/
+
+
 trellis_node** build_trellis(char* word_one, char* word_two,
                              int word_one_length, int word_two_length,
                              prune_t pruning)
