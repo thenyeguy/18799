@@ -42,8 +42,9 @@ word_and_score* get_best_n_words(char* word_one, char** dictionary,
 
     for(int i=0; i < dict_length ; i++){
         int levenshtein_distance = get_levenshtein_distance( word_one, dictionary[i]);
+	
         //printf("%s: %d\n",dictionary[i],levenshtein_distance);
-
+	
         if(levenshtein_distance < n_best_words[n-1].score){
             int k=0;
             while(n_best_words[k].score<=levenshtein_distance){
@@ -55,8 +56,8 @@ word_and_score* get_best_n_words(char* word_one, char** dictionary,
             free(n_best_words[k].word);
             n_best_words[k].word = new_word;
         }    
-    }   
-
+    }
+   
     return n_best_words;
 }
 

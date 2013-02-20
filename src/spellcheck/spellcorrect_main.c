@@ -51,8 +51,10 @@ int main(int argc, char **argv)
                 get_best_n_words(word, dictionary, SMALLDICT_LENGTH, 1);
 
             char* result;
-            if(result == NULL) result = word;
+            if(best->word == NULL) result = word;
             else               result = best->word;
+
+
 
             fprintf(out, "%s ", result);
             printf("%s\n", result);
