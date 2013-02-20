@@ -15,7 +15,7 @@ int ** init_string_trellis(char ** string_array_one,char ** string_array_two);
 int ** build_string_trellis(char ** string_array_one,char ** string_array_two);
 void populate_string_trellis(int ** trellis, char ** string_array_one,char ** string_array_two);
 int get_string_array_length(char ** string_array);
-
+void print_string_trellis(int ** trellis,int height,int width);
 
 /*
  *	Single Character Trellis

@@ -14,6 +14,7 @@ int compute_levenshtein(char ** story_one, char** story_two);
 void print_string_array(char ** story);
 char** get_null_prefix_dictionary(char* dictionary_filepath, int dict_length);
 int get_string_array_length(char ** string_array);
+void show_best_path(int ** trellis,int one_length,int two_length);
 
 /*
  *	Single Character code

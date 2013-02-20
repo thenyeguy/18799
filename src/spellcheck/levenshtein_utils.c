@@ -13,12 +13,44 @@ int compute_levenshtein(char ** story_one, char** story_two){
 	int one_length = get_string_array_length(story_one);
 	int two_length = get_string_array_length(story_two);
 	int ** trellis = build_string_trellis(story_one,story_two);
-	return trellis[two_length-1][one_length-1];
+	//print_string_trellis(trellis,two_length,one_length);
+	two_length = two_length;
+	show_best_path(trellis,one_length,two_length);
+	return trellis[one_length-1][0];
 }
 
+void show_best_path(int ** trellis,int one_length,int two_length){
+	int i = one_length-1;
+	int j = 0;
+	int insertions = 0;
+	int deletions = 0;
+	int substitutions = 0;
 
-
-
+	while(X(i)>0 && Y(j,two_length)>0){
+		int down = trellis[i][j+1];
+		int left = trellis[i-1][j];
+		int down_left = trellis[i-1][j+1];
+		int min = MIN(down,left,down_left);
+		if(down==min){
+			j++;
+			insertions++;
+		}
+		else if(left==min){
+			i--;
+			deletions++;
+		}
+		else{
+			if(trellis[i][j]!=trellis[i-1][j+1]){
+				substitutions++;
+			}
+			i--;
+			j++;
+			
+		}
+	}
+	printf("I: %d\tD: %d\tS: %d\n",insertions,deletions,substitutions);
+	
+}
 
 char** get_null_prefix_dictionary(char* dictionary_filepath, int dict_length){
     //235886        
