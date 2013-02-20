@@ -13,7 +13,9 @@ int compute_levenshtein(char ** story_one, char** story_two){
 	int one_length = get_string_array_length(story_one);
 	int two_length = get_string_array_length(story_two);
 	int ** trellis = build_string_trellis(story_one,story_two);
-	return trellis[two_length-1][one_length-1];
+	//print_string_trellis(trellis,two_length,one_length);
+	two_length = two_length;
+	return trellis[one_length-1][0];
 }
 
 
