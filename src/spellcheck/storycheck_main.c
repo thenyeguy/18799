@@ -17,9 +17,10 @@ char** story_one = get_null_prefix_dictionary("text/dictionary.txt", DICTIONARY_
     int distance = compute_levenshtein(story_one,story_two);	
 
     printf("Distance: %d\n",distance);
-
+/*
     free_dictionary(story_one,DICTIONARY_LENGTH);
     free_dictionary(story_two,DICTIONARY_LENGTH);
+*/
     return 0;
 }
 
