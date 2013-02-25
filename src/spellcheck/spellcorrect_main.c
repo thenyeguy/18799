@@ -44,7 +44,7 @@ int main(int argc, char **argv)
     char* word;
     while(fgets(line,5096,in) != NULL)
     {
-        for(word = strtok(line," "); word != NULL; word = strtok(NULL," "))
+        for(word = strtok(line," \n"); word != NULL; word = strtok(NULL," \n"))
         {
             printf("%s ... ",word); fflush(stdout);
             word_and_score* best =

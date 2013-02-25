@@ -127,9 +127,8 @@ word_and_score* get_best_n_words(char* word_one, char** dictionary,
     }   
 
     for(int i=0; i < dict_length ; i++){
-        int levenshtein_distance = get_levenshtein_distance( word_one, dictionary[i]);
-	
-        //printf("%s: %d\n",dictionary[i],levenshtein_distance);
+        search_trellis* trellis = get_levenshtein_distance(word_one, dictionary[i]);
+        int levenshtein_distance = trellis->distance;
 	
         if(levenshtein_distance < n_best_words[n-1].score){
             int k=0;
@@ -139,6 +138,7 @@ word_and_score* get_best_n_words(char* word_one, char** dictionary,
             char * new_word = (char *)malloc(strlen(dictionary[i])+1);
             strcpy(new_word,dictionary[i]);
             n_best_words[k].score = levenshtein_distance;   
+            n_best_words[k].trellis = trellis;
             free(n_best_words[k].word);
             n_best_words[k].word = new_word;
         }    
@@ -148,23 +148,17 @@ word_and_score* get_best_n_words(char* word_one, char** dictionary,
 }
 
 
-int get_levenshtein_distance (char* word_one, char* word_two){
+search_trellis* get_levenshtein_distance (char* word_one, char* word_two){
     int word_one_length = strlen(word_one);
     int word_two_length = strlen(word_two);
 
     char * null_prefix_word_one = add_null_prefix(word_one);
     char * null_prefix_word_two = add_null_prefix(word_two);
 
-    trellis_node** trellis = build_trellis(null_prefix_word_one,
+    search_trellis* trellis = build_trellis(null_prefix_word_one,
         null_prefix_word_two, word_one_length+1, word_two_length+1,
         ABSOLUTE);
-
-    int levenshtein_distance = trellis[word_two_length][word_one_length].score;
-
-    free(null_prefix_word_one);
-    free(null_prefix_word_two);
-    free_trellis(trellis,word_one_length,word_two_length);
-    return levenshtein_distance;
+    return trellis;
 }
 
 
@@ -186,6 +180,7 @@ void print_n_best_words(word_and_score* n_best_words, int n){
     printf("\n");
     for(int p=0; p<n; p++){
         printf("%s: %d\n",n_best_words[p].word,n_best_words[p].score);
+        print_trellis(n_best_words[p].trellis);
     }   
     printf("\n");
 }
