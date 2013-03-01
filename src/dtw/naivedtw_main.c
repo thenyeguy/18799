@@ -75,5 +75,5 @@ double score(void* test, void* template, int row, int col, dtw_trellis_dir dir)
     }
 
     //printf("Return: %1.4lf %1.4lf\n", score, -0.5*log(score));
-    return -0.5 * log(score);
+    return -1.0*score;
 }

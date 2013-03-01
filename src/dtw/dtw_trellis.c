@@ -49,7 +49,8 @@ bool dtw_fill_next_col(dtw_t* dtw)
         return true;
 
     //Score entire column
-    int column_max = DTW_MIN_SCORE;
+    double column_min = DTW_MAX_SCORE;
+    double column_max = DTW_MIN_SCORE;
     for(int i = 0; i < dtw->template_length; i++)
     {
         //If the node has been pruned, carry on
@@ -59,7 +60,9 @@ bool dtw_fill_next_col(dtw_t* dtw)
         double score = dtw_score_node(dtw,i);
 
         //Keep track of the beam threshold
-        if(dtw->pruning == DTW_BEAM_PRUNE && score > column_max)
+        if(score < column_min)
+            column_min = score;
+        if(score > column_max)
             column_max = score;
     }
 
@@ -73,7 +76,8 @@ bool dtw_fill_next_col(dtw_t* dtw)
     //Perform pruning if enabled
     if(dtw->pruning == DTW_BEAM_PRUNE)
     {
-        double threshold = column_max / dtw->pruning_threshold;
+        double window = abs(column_max) * dtw->pruning_threshold;
+        double threshold = column_max - window;
         for(int i = 0; i < dtw->template_length; i++)
         {
             bool check = false;
@@ -116,11 +120,12 @@ bool dtw_fill_next_col(dtw_t* dtw)
 double dtw_score_node(dtw_t* dtw, int row)
 {
     int col = dtw->last_column_i+1;
-    double left, downone, downtwo;
+    double left = DTW_MIN_SCORE;
+    double downone = DTW_MIN_SCORE;
+    double downtwo = DTW_MIN_SCORE;
     //Directly left
-    left =
-        dtw->scorer(dtw->test_data, dtw->template_data, row, col,
-                    DTW_DIR_LEFT) + dtw->last_col[row].score;
+    left = dtw->scorer(dtw->test_data, dtw->template_data,
+        row, col, DTW_DIR_LEFT) + dtw->last_col[row].score;
     //Left and down 1
     if(row > 0)
     {
@@ -137,17 +142,17 @@ double dtw_score_node(dtw_t* dtw, int row)
     //Determine the highest score and use that
     double score = DTW_MIN_SCORE;
     dtw_trellis_dir dir = DTW_DIR_NONE;
-    if(left > downone && left > downtwo)
+    if(left > downone && left > downtwo && left > score)
     {
         score = left;
         dir = DTW_DIR_LEFT;
     }
-    else if(downone > downtwo)
+    else if(downone > downtwo && downone > score)
     {
         score = downone;
         dir = DTW_DIR_DOWNONE;
     }
-    else
+    else if(downtwo > score)
     {
         score = downtwo;
         dir = DTW_DIR_DOWNTWO;
@@ -171,7 +176,8 @@ void dtw_print_struct(dtw_t* dtw)
         pruning = "NONE";
     else
         pruning = "BEAM";
-    printf("Using pruning method: %s\n", pruning);
+    printf("Using pruning method: %s, threshold: %1.4lf\n", pruning,
+           dtw->pruning_threshold);
     printf("So far, we have scored up to time t=%d, ", dtw->last_column_i);
     printf("with a best score of: %1.4f\n\n", dtw->score);
 }

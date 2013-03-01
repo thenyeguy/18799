@@ -5,15 +5,14 @@
 /* NOTE: current code is configured to maximize score. Changing it to minimize
  *       cost instead should be simple, but requires changes in a fwe places */
 #define DTW_MAX_SCORE DBL_MAX
-#define DTW_MIN_SCORE DBL_MIN
+#define DTW_MIN_SCORE (-1.0*DBL_MAX)
 
 
 /* Pruning type for the trellis evalutation...
  *     NONE performs no pruning
  *     BEAM rules out any evaluation that exceeds the best score by threshold
- * Threshold for pruning is a multiplicative factor. For example, if we use
- *     beam pruning with a threshold of 3, and our max column score is 15, then
- *     we prune out any node with a score less than (15/3 == 5)
+ * Threshold for pruning is multiplicative - the higher the score, the wider
+ *     the range.
  * The default threshold is not used anywhere within the library, but is
  *     provided for convienience.
  */
@@ -21,7 +20,7 @@ typedef enum {
     DTW_NO_PRUNE,
     DTW_BEAM_PRUNE
 } dtw_prune_t;
-#define DEFAULT_DTW_THRESHOLD 3
+#define DEFAULT_DTW_THRESHOLD .1
 
 
 /* Direction type - for indicating path directions */
