@@ -89,6 +89,7 @@ void raw_cepstrum_to_features(cepstrum_vectors* raws, feature_vectors* output)
         for(int j = 0; j < CEPSTRUM_DIMENSION; j++)
             output->features[i].values[j] -= mean[j];
 
+    /*
     //Then variance normalize
     double var[CEPSTRUM_DIMENSION];
     for(int i = 0; i < CEPSTRUM_DIMENSION; i++)
@@ -104,6 +105,7 @@ void raw_cepstrum_to_features(cepstrum_vectors* raws, feature_vectors* output)
     for(int i = 0; i < output->num_vectors; i++)
         for(int j = 0; j < CEPSTRUM_DIMENSION; j++)
             output->features[i].values[j] /= var[j];
+            */
 
     //Then compute single deltas - copy second single delta into first
     for(int i = 1; i < output->num_vectors; i++)

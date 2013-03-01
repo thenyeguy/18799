@@ -46,10 +46,9 @@ int main(int argc, char **argv)
     //Run until it completes
     while(!dtw_fill_next_col(dtw));
     //Print results
+    //print_feature_vectors(test);
+    //print_feature_vectors(template);
     dtw_print_struct(dtw);
-    //dtw_print_col(dtw);
-    print_feature_vectors(test);
-    print_feature_vectors(template);
     return 0;
 }
 
