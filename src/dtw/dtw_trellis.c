@@ -3,9 +3,10 @@
 #include "dtw_trellis.h"
 
 
-dtw_t* new_dtw(void* template_data, int template_length,
-               void* test_data,     int test_length,
-               dtw_prune_t prune, double (*scorer)(void*,void*,dtw_trellis_dir))
+dtw_t* new_dtw(void* test_data,     int test_length,
+               void* template_data, int template_length,
+               dtw_prune_t prune,   double pruning_threshold,
+               double (*scorer)(void*,void*,int,int,dtw_trellis_dir))
 {
     //Allocate dtw
     dtw_t* dtw = malloc(sizeof(dtw_t));
@@ -18,6 +19,7 @@ dtw_t* new_dtw(void* template_data, int template_length,
 
     //Store evaluation info
     dtw->pruning = prune;
+    dtw->pruning_threshold = pruning_threshold;
     dtw->scorer = scorer;
     dtw->last_column_i = 0;
     
@@ -28,7 +30,7 @@ dtw_t* new_dtw(void* template_data, int template_length,
     {
         //Score the first column with no travel direction
         dtw->last_col[i].score =
-            scorer(test_data, template_data+i, DTW_DIR_NONE);
+            scorer(test_data, template_data, i, 0, DTW_DIR_NONE);
         dtw->last_col[i].pruned = false;
         dtw->last_col[i].dir = DTW_DIR_NONE;
 
@@ -71,7 +73,7 @@ bool dtw_fill_next_col(dtw_t* dtw)
     //Perform pruning if enabled
     if(dtw->pruning == DTW_BEAM_PRUNE)
     {
-        double threshold = column_max / DTW_THRESHOLD;
+        double threshold = column_max / dtw->pruning_threshold;
         for(int i = 0; i < dtw->template_length; i++)
         {
             bool check = false;
@@ -104,30 +106,32 @@ bool dtw_fill_next_col(dtw_t* dtw)
     }
 
     //Store best score so far and update column count
-    dtw->score = dtw->last_col[dtw->template_length].score;
+    dtw->score = dtw->last_col[dtw->template_length-1].score;
     dtw->last_column_i++;
     //Return whether we scored the last column
     return dtw->last_column_i >= dtw->test_length;
 }
 
 
-double dtw_score_node(dtw_t* dtw, int n)
+double dtw_score_node(dtw_t* dtw, int row)
 {
+    int col = dtw->last_column_i+1;
     double left, downone, downtwo;
     //Directly left
     left =
-        dtw->scorer((dtw->test_data+n), (dtw->template_data+n), DTW_DIR_LEFT);
+        dtw->scorer(dtw->test_data, dtw->template_data, row, col,
+                    DTW_DIR_LEFT) + dtw->last_col[row].score;
     //Left and down 1
-    if(n > 0)
+    if(row > 0)
     {
-        downone = dtw->scorer((dtw->test_data+n), (dtw->template_data+n-1),
-            DTW_DIR_DOWNONE);
+        downone = dtw->scorer(dtw->test_data, dtw->template_data,
+            row-1, col, DTW_DIR_DOWNONE) + dtw->last_col[row-1].score;
     }
     //Left and down 2
-    if(n > 1)
+    if(row > 1)
     {
-        downtwo = dtw->scorer((dtw->test_data+n), (dtw->template_data+n-2),
-            DTW_DIR_DOWNTWO);
+        downtwo = dtw->scorer(dtw->test_data, dtw->template_data,
+            row-2, col, DTW_DIR_DOWNTWO) + dtw->last_col[row-2].score;
     }
 
     //Determine the highest score and use that
@@ -150,30 +154,30 @@ double dtw_score_node(dtw_t* dtw, int n)
     }
 
     //Store info back and finish
-    dtw->next_col[n].score = score;
-    dtw->next_col[n].dir = dir;
+    dtw->next_col[row].score = score;
+    dtw->next_col[row].dir = dir;
     return score;
 }
 
 
-void print_dtw_trellis(dtw_t* dtw)
+void dtw_print_struct(dtw_t* dtw)
 {
-    printf("Scoring DTW with (template:%p, len:%d) and (test: %p, len:%d)\n",
-           dtw->template_data, dtw->template_length,
-           dtw->test_data, dtw->test_length);
+    printf("Scoring DTW with (test: %p, len:%d) and (template:%p, len:%d)\n",
+           dtw->test_data, dtw->test_length,
+           dtw->template_data, dtw->template_length);
 
     char* pruning;
     if(dtw->pruning == DTW_NO_PRUNE)
-        pruning = "none";
+        pruning = "NONE";
     else
-        pruning = "beam";
+        pruning = "BEAM";
     printf("Using pruning method: %s\n", pruning);
     printf("So far, we have scored up to time t=%d, ", dtw->last_column_i);
     printf("with a best score of: %1.4f\n\n", dtw->score);
 }
 
 
-void print_dtw_col(dtw_t* dtw)
+void dtw_print_col(dtw_t* dtw)
 {
     printf("Time t=%d  |  ",dtw->last_column_i);
     for(int i = 0; i<dtw->template_length; i++)
@@ -196,7 +200,7 @@ void print_dtw_col(dtw_t* dtw)
         }
         double score = dtw->last_col[i].score;
         if(score == DTW_MIN_SCORE) score = -1.0;
-        printf("%s%1.4f\t",dir,score);
+        printf("%s%1.4f    ",dir,score);
     }
     printf("\n");
 }

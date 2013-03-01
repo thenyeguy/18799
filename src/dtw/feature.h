@@ -1,4 +1,4 @@
-#include "cepstrum_vectors.h"
+#include "../cepstrum/cepstrum_vectors.h"
 
 
 /* Number of cepstrum values used in recording. Should be 13. 
@@ -22,6 +22,9 @@ typedef struct {
     int num_vectors;
     feature* features;
 } feature_vectors;
+
+
+/* alloc_feature_vectors - allocates space for a feature */
 
 
 /* read_features_from_file - given a filename, imports a set of raw cepstrum
