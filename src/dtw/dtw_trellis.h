@@ -5,21 +5,22 @@
 /* NOTE: current code is configured to maximize score. Changing it to minimize
  *       cost instead should be simple, but requires changes in a fwe places */
 #define DTW_MAX_SCORE DBL_MAX
-#define DTW_MIN_SCORE DBL_MIN
+#define DTW_MIN_SCORE (-1.0*DBL_MAX)
 
 
 /* Pruning type for the trellis evalutation...
  *     NONE performs no pruning
  *     BEAM rules out any evaluation that exceeds the best score by threshold
- * Threshold for pruning is a multiplicative factor. For example, if we use
- *     beam pruning with a threshold of 3, and our max column score is 15, then
- *     we prune out any node with a score less than (15/3 == 5)
+ * Threshold for pruning is multiplicative - the higher the score, the wider
+ *     the range.
+ * The default threshold is not used anywhere within the library, but is
+ *     provided for convienience.
  */
 typedef enum {
     DTW_NO_PRUNE,
     DTW_BEAM_PRUNE
 } dtw_prune_t;
-#define DTW_THRESHOLD 3
+#define DEFAULT_DTW_THRESHOLD .1
 
 
 /* Direction type - for indicating path directions */
@@ -43,22 +44,25 @@ typedef struct {
  * Keeps track of the template and evaluation data. Columns represent time and
  *     rows in each column represent position in the template.
  * Holds a function pointer to the score function, that given a direction
- *     and the template/data node data, returns a score for that transition.
+ *     the test/template data, and state number, returns a score for
+ *     that transition.
  *     PROTOTYPE:
- *         double scorer(void* test_node, void* template_node, dtw_dir dir);
+ *         double scorer(void* test_data, void* template_data,
+ *                       int row, int col, dtw_dir dir);
  * The last_col contains the most recently scored column of data, up to the
  *     last_column_ith element of the test_data.
  * The next_col holds stats on whether the next node is pruned, and always has
  *     a score of MIN_SCORE. It is filled by fill_next_col when called.
  */
 typedef struct {
-    void* template_data;
-    int template_length;
     void* test_data;
     int test_length;
+    void* template_data;
+    int template_length;
 
     dtw_prune_t pruning;
-    double (*scorer)(void*,void*,dtw_trellis_dir);
+    double pruning_threshold;
+    double (*scorer)(void*,void*,int,int,dtw_trellis_dir);
 
     int last_column_i;
     dtw_trellis_node* last_col;
@@ -80,9 +84,10 @@ typedef struct {
  *           very beginning, what is the penalty for starting at any node of the
  *           template
  */
-dtw_t* new_dtw(void* template_data, int template_length,
-               void* test_data,     int test_length,
-               dtw_prune_t prune, double (*scorer)(void*,void*,dtw_trellis_dir));
+dtw_t* new_dtw(void* test_data,     int test_length,
+               void* template_data, int template_length,
+               dtw_prune_t prune,   double pruning_threshold,
+               double (*scorer)(void*,void*,int,int,dtw_trellis_dir));
 
 
 /* dtw_fill_next_column - given a dtw struct, first checks to see if 
@@ -100,13 +105,13 @@ bool dtw_fill_next_col(dtw_t* dtw);
  *                  from last_col. Stores result in the dtw struct and returns
  *                  the score.
  */
-double dtw_score_node(dtw_t* dtw, int n);
+double dtw_score_node(dtw_t* dtw, int row);
 
 
-/* print_dtw_trellis - given a dtw structure, prints out stats in human readable
- *                     format for debugging/insight.
+/* print_dtw_struct - given a dtw structure, prints out stats in human readable
+ *                    format for debugging/insight.
  */
-void dtw_print_trellis(dtw_t* dtw);
+void dtw_print_struct(dtw_t* dtw);
 
 
 /* print_dtw_col - given a dtw structure, prints out the last scored column in
