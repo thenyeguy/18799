@@ -4,6 +4,70 @@
 #include <math.h>
 #include "feature.h"
 
+//Want to include this for clustering :(
+//#include "gaussian.h"
+
+void cluster_templates(feature_vectors ** templates,int num_templates){
+	//Initialize K means cluster by assigning each vector to a cluster
+	printf("initializing clusters...\n");
+	int ** cluster_array = (int **)malloc(num_templates*sizeof(int*));	
+	for(int i=0; i<num_templates; i++){
+		int num_vectors = templates[i]->num_vectors;	
+		//Holds the cluster that each feature belongs to
+		int * vector_clusters = (int *)malloc(sizeof(int)*num_vectors);
+		int segment_size = num_vectors/NUM_CLUSTERS;
+		for(int j=0; j<num_vectors; j++){
+			if(j<(NUM_CLUSTERS*segment_size)){
+				vector_clusters[j] = j/segment_size;
+			}
+			else{
+				vector_clusters[j] = NUM_CLUSTERS - 1;
+			}
+			printf("%d",  vector_clusters[j]);
+		}
+		printf("\n");
+		cluster_array[i] = vector_clusters;
+	}
+	
+	//Initialize gaussian statistics for each cluster
+	//single_gaussian_params ** cluster_stats = (single_gaussian_params**) malloc(NUM_CLUSTERS*sizeof(single_gaussian_params*));
+	
+	//Iterate clustering until convergence
+	/*
+	do{
+		
+		
+
+
+	}while(1);	
+	*/
+	//Free cluster array
+	for(int i=0; i<num_templates; i++){
+		free(cluster_array[i]);
+	}
+	free(cluster_array);
+}
+
+
+
+feature_vectors** features_from_all_files(int argc, char** argv){
+	//Reading .out files from the command line
+	int number_of_feature_vectors = argc - FIRST_TEMPLATE_INDEX;
+
+	//Malloc space for each template feature vector
+	int malloc_size = number_of_feature_vectors*sizeof(feature_vectors *); 
+	feature_vectors ** templates = (feature_vectors **) malloc(malloc_size);
+
+	//Getting features from file for each template path on command line	
+	for( int i = 0 ; i<number_of_feature_vectors; i++){
+		int template_index = i + FIRST_TEMPLATE_INDEX;
+		feature_vectors * vects = features_from_file(argv[template_index]);
+		templates[i] = vects;
+	}	
+	
+	return templates;
+}
+
 
 feature_vectors* features_from_file(char* filename)
 {

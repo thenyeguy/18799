@@ -4,7 +4,6 @@
 #include "dtw_trellis.h"
 #include "feature.h"
 
-
 // Euclydian distance scorer
 double score(void* test, void* template, int row, int col, dtw_trellis_dir dir);
 
@@ -24,8 +23,12 @@ int main(int argc, char **argv)
     }
 
     //Currently only handles a single template, sorry
-    if(argc > 4)
+    if(argc > 4){
         printf("IGNORING EXTRA TEMPLATES... fix me :(\n\n");
+	int num_templates = argc - FIRST_TEMPLATE_INDEX;
+	feature_vectors ** templates = features_from_all_files(argc,argv);
+	cluster_templates(templates,num_templates);
+    }
     feature_vectors* test     = features_from_file(argv[2]);
     feature_vectors* template = features_from_file(argv[3]);
 
