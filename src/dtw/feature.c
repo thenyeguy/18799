@@ -5,7 +5,7 @@
 #include "feature.h"
 
 //Want to include this for clustering :(
-//#include "gaussian.h"
+#include "gaussian.h"
 
 void cluster_templates(feature_vectors ** templates,int num_templates){
 	//Initialize K means cluster by assigning each vector to a cluster
