@@ -12,9 +12,9 @@ void show_best_path(double** trellis,int one_length,int two_length){
 	int substitutions = 0;
 
 	while(X(i)>0 && Y(j,two_length)>0){
-		int down = trellis[i][j+1];
-		int left = trellis[i-1][j];
+		double left = trellis[i-1][j];
 		int down_left = trellis[i-1][j+1];
+		
 		int min = MIN(down,left,down_left);
 		if(down==min){
 			j++;

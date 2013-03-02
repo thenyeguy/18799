@@ -1,3 +1,7 @@
+#ifndef FEATURE_H
+
+#define FEATURE_H
+
 #include "../cepstrum/cepstrum_vectors.h"
 
 
@@ -63,3 +67,5 @@ void print_feature_vectors(feature_vectors* fs);
 /* free_feature_vectors - frees the memory allocated for feature_vectors, duh
  */
 void free_feature_vectors(feature_vectors* fs);
+
+#endif

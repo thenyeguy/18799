@@ -1,3 +1,7 @@
+#ifndef DTW_H 
+
+#define DTW_H
+
 #include "dtw_trellis.h"
 #include <strings.h>
 #include <math.h>
@@ -65,3 +69,5 @@ void free_dictionary(feature* dictionary, int dictionary_size);
 /* 	feature_distance - compute the distance between two feature vectors
 */
 double feature_distance(feature v1, feature v2);
+
+#endif

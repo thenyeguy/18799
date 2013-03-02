@@ -1,3 +1,7 @@
+#ifndef GAUSSIAN_H
+
+#define GAUSSIAN_H
+
 #include <feature.h>
 
 
@@ -31,3 +35,5 @@ void print_single_gaussian_params(single_gaussian_params* ps);
 /* free_single_gaussian_params - frees the single_gaussian_params struct :)
  */
 void free_single_gaussian_params(single_gaussian_params* ps);
+
+#endif

@@ -1,3 +1,7 @@
+#ifndef DTW_TRELLIS_H
+
+#define DTW_TRELLIS_H
+
 #include <float.h>
 #include <stdbool.h>
 
@@ -126,3 +130,5 @@ void dtw_print_col(dtw_t* dtw);
  *            as that is the user's responsibility
  */
 void free_dtw(dtw_t* dtw);
+
+#endif
