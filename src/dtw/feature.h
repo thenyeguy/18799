@@ -27,6 +27,19 @@ typedef struct {
 /* alloc_feature_vectors - allocates space for a feature */
 
 
+#define NUM_CLUSTERS 3
+/* cluster_templates - 	Runs Kmeans segmentation clustering on 
+ *			input feature_vectors */
+void cluster_templates(feature_vectors ** templates,int num_templates);
+
+
+#define FIRST_TEMPLATE_INDEX 3
+/* features_from_all_files -	Builds feature vectors for each template file passed
+ * 				in on the command line by calling 
+ * 				read_features_from_file ARGC number of times*/
+feature_vectors** features_from_all_files(int argc, char** argv);
+
+
 /* read_features_from_file - given a filename, imports a set of raw cepstrum
  *                           vectors, converts it to feature vectors, and 
  *                           returns the result.
