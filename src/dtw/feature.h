@@ -31,10 +31,13 @@ typedef struct {
 /* alloc_feature_vectors - allocates space for a feature */
 
 
-#define NUM_CLUSTERS 3
+#define NUM_CLUSTERS 4
 /* cluster_templates - 	Runs Kmeans segmentation clustering on 
  *			input feature_vectors */
 void cluster_templates(feature_vectors ** templates,int num_templates);
+
+/* print_cluster_count - 	Prints out the number of points in each cluster */
+void print_cluster_count(int * cluster_count);
 
 
 #define FIRST_TEMPLATE_INDEX 3
