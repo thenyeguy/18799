@@ -8,7 +8,7 @@
 /* Number of cepstrum values used in recording. Should be 13. 
  */
 #define CEPSTRUM_DIMENSION 13
-
+#define NULL_PREFIX NULL
 
 /* Struct to store a feature vector. A feature vector is composed of the 
  * normalized cepstrum values, their derivatives, and their double derivatives
