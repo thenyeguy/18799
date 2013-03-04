@@ -2,7 +2,7 @@
 
 #define GAUSSIAN_H
 
-#include <feature.h>
+#include "feature.h"
 
 
 /* Struct to store single gaussian parameters. Contains the mean model vector,

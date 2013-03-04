@@ -2,9 +2,8 @@
 
 #define FEATURE_H
 
-//#include <gaussian.h> //FIXME, need to include this to return gaussian
+//#include "gaussian.h" //FIXME, need to include this to return gaussian
 #include "../cepstrum/cepstrum_vectors.h"
-
 /* Number of cepstrum values used in recording. Should be 13. 
  */
 #define CEPSTRUM_DIMENSION 13
@@ -43,10 +42,6 @@ void cluster_templates(feature_vectors ** templates,int num_templates);
 /* print_cluster_count - 	Prints out the number of points in each cluster */
 void print_cluster_count(int * cluster_count);
 
-/* feature_distance -	Calculates the sum of squared differences between
- * 			two features */ 
-double feature_distance(feature one, feature two);
-
 #define FIRST_TEMPLATE_INDEX 3
 /* features_from_all_files -	Builds feature vectors for each template file passed
  * 				in on the command line by calling 
@@ -77,5 +72,9 @@ void print_feature_vectors(feature_vectors* fs);
 /* free_feature_vectors - frees the memory allocated for feature_vectors, duh
  */
 void free_feature_vectors(feature_vectors* fs);
+
+/* feature_distance - compute the distance between two features 
+*/
+double feature_distance(feature one, feature two);
 
 #endif

@@ -37,10 +37,12 @@ void cluster_templates(feature_vectors ** templates,int num_templates){
 	}
 	
 	//Initialize gaussian statistics for each cluster
-	single_gaussian_params ** cluster_stats = (single_gaussian_params**) malloc(NUM_CLUSTERS*sizeof(single_gaussian_params*));
+	single_gaussian_params ** cluster_stats = 
+		(single_gaussian_params**) malloc(NUM_CLUSTERS*sizeof(single_gaussian_params*));
 
 	//Create feature_vectors array for each cluster to send off for gaussians
-	feature_vectors * vectors_array = (feature_vectors*) malloc(NUM_CLUSTERS*sizeof(feature_vectors));
+	feature_vectors * vectors_array = 
+		(feature_vectors*) malloc(NUM_CLUSTERS*sizeof(feature_vectors));
 
 	//Keep track of the index in each cluster we are building
         int * cluster_index = (int*) malloc(NUM_CLUSTERS * sizeof(int));
