@@ -4,7 +4,6 @@
 #include <math.h>
 #include "feature.h"
 
-//Want to include this for clustering :(
 #include "gaussian.h"
 
 void cluster_templates(feature_vectors ** templates,int num_templates){
@@ -52,7 +51,6 @@ void cluster_templates(feature_vectors ** templates,int num_templates){
 	//Iterate clustering until convergence
 	do{
 		reclassify = 0;
-		print_cluster_count(cluster_count);
 
 		//Zero out the index for each cluster we will build
 		for(int i=0; i<NUM_CLUSTERS; i++){
@@ -76,7 +74,7 @@ void cluster_templates(feature_vectors ** templates,int num_templates){
 
 				//Grab feature from here
 				feature * old_feature = &(templates[i]->features[j]);
-				//print_feature(old_feature);
+
 				//Copy feature into feature array to pass into gaussian evaluation
 				memcpy(new_feature,old_feature,sizeof(feature));
 				
@@ -90,13 +88,7 @@ void cluster_templates(feature_vectors ** templates,int num_templates){
 			single_gaussian_params* cluster_gaus_params;
 			cluster_gaus_params = compute_single_gaussian_params(&(vectors_array[i]));
 			cluster_stats[i] = cluster_gaus_params;
-			//print_feature_vectors(        &(vectors_array[i]) );
-			//print_single_gaussian_params(cluster_stats[i]);	
 		}
-		//print_single_gaussian_params(cluster_stats[0]); 
-	        //print_feature_vectors(  &(vectors_array[0]) );
-
-
 
 		//Reevaluate each point given the gaussians
 		for(int i=0; i < num_templates; i++){
@@ -104,21 +96,19 @@ void cluster_templates(feature_vectors ** templates,int num_templates){
                         for(int j=0; j<num_vectors; j++){
                                 int my_cluster = cluster_array[i][j];
 				int new_cluster = my_cluster; //initialize to original cluster
-				double best = 0;
+				double best = MAXINT;
 				feature * point = &(templates[i]->features[j]);
-				//printf("-----------POINT---------\n");
-				//print_feature(point);
 				for(int k=0; k<NUM_CLUSTERS; k++){
 					single_gaussian_params * dist = cluster_stats[k];
-					//printf("-----------GAUSS---------\n");
-					//print_single_gaussian_params(dist);
-					//FIX ME, SHOULD BE A POSITIVE PROB
-					double probability = -single_gaussian_log_pdf(dist,point);
-					//printf("Probability of POINT: %f\n",probability);
-					if(probability>best){
-						best= probability;
+					feature * mean = &(dist->means);
+
+					double distance = feature_distance(*point,*mean);
+
+					if(distance<best){
+						best = distance;
 						new_cluster = k;
 					}
+					
 				}
 				
 				//Reclassify point if it's in the wrong cluster
@@ -136,21 +126,10 @@ void cluster_templates(feature_vectors ** templates,int num_templates){
 		for(int i=0; i <NUM_CLUSTERS;i++){
 			free(vectors_array[i].features);
 		}
-		printf("Number reclassified: %d\n",reclassify);
+
 		iterations++;
-	}while(iterations<1000 && reclassify>10);
+	}while(iterations<CONVERGE_ITERATIONS && reclassify>CONVERGE_THRESHOLD);
 	
-	printf("Done classifying!\n");
-	//print_single_gaussian_params(cluster_stats[0]); 
-       // print_feature_vectors(  &(vectors_array[0]) );
-	print_cluster_count(cluster_count);
-/*
-	printf("Printing Gaussians...\n");	
-	for(int k=0; k<NUM_CLUSTERS; k++){
-		single_gaussian_params * dist = cluster_stats[k];
-		print_single_gaussian_params(dist);
-	}
-*/
 	//Free everything!
 	for(int i=0; i<num_templates; i++){
 		free(cluster_array[i]);
@@ -160,8 +139,21 @@ void cluster_templates(feature_vectors ** templates,int num_templates){
 	free(cluster_index);
 
 	//need to return cluster_stats
-	cluster_stats = cluster_stats;
+	printf("Trying to return clustered stats\n");
+	//return cluster_stats;
 }
+
+double feature_distance(feature one, feature two){
+	double distance=0;	
+	for(int i=0; i< CEPSTRUM_DIMENSION; i++){
+		distance += pow(one.values[i] - two.values[i],2);
+		distance += pow(one.deltas[i] - two.deltas[i],2);
+		distance += pow(one.doubles[i] - two.doubles[i],2);
+	}
+	distance = pow(distance,0.5);
+	return distance;
+}
+
 
 void print_cluster_count(int * cluster_count){
 	for(int i=0; i<NUM_CLUSTERS; i++){
