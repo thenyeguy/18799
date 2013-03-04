@@ -8,15 +8,12 @@
 /* Number of cepstrum values used in recording. Should be 13. 
  */
 #define CEPSTRUM_DIMENSION 13
-<<<<<<< HEAD
 #define NULL_PREFIX NULL
-=======
 #define MININT (1<<31)
 #define MAXINT (~MININT)
 #define NUM_CLUSTERS 4
 #define CONVERGE_THRESHOLD 3
 #define CONVERGE_ITERATIONS 1000
->>>>>>> 39537a68cdc7271a9a432a659cb7202aec0ae759
 
 /* Struct to store a feature vector. A feature vector is composed of the 
  * normalized cepstrum values, their derivatives, and their double derivatives
