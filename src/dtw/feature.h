@@ -2,7 +2,7 @@
 
 #define FEATURE_H
 
-//#include "gaussian.h" //FIXME, need to include this to return gaussian
+#include "gaussian.h" //FIXME, need to include this to return gaussian
 #include "../cepstrum/cepstrum_vectors.h"
 /* Number of cepstrum values used in recording. Should be 13. 
  */
