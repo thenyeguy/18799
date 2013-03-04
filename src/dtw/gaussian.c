@@ -8,24 +8,41 @@ single_gaussian_params* compute_single_gaussian_params(feature_vectors* fs)
 {
     //Allocate the gaussian params
     single_gaussian_params* ps = malloc(sizeof(single_gaussian_params));
-    
+   
+    //Zero
+    for(int j = 0; j < CEPSTRUM_DIMENSION; j++){
+	ps->means.values[j] =0; 
+        ps->means.deltas[j] =0; 
+        ps->means.doubles[j] =0; 
+    } 
+ 
     //Calculate the model vector
     for(int i = 0; i < fs->num_vectors; i++)
     {
         for(int j = 0; j < CEPSTRUM_DIMENSION; j++)
-        {
-            ps->means.values[j] += fs->features[i].values[j];
-            ps->means.deltas[j] += fs->features[i].deltas[j];
-            ps->means.doubles[j] += fs->features[i].doubles[j];
+        {	
+            ps->means.values[j] += (fs->features[i].values[j] / fs->num_vectors);
+            ps->means.deltas[j] += (fs->features[i].deltas[j] / fs->num_vectors);
+            ps->means.doubles[j] += (fs->features[i].doubles[j] / fs->num_vectors);
         }
     }
+	//Moved the divice inside of the addition, double check! FIXME
+/*
     for(int j = 0; j < CEPSTRUM_DIMENSION; j++)
     {
         ps->means.values[j] /= fs->num_vectors;
         ps->means.deltas[j] /= fs->num_vectors;
         ps->means.doubles[j] /= fs->num_vectors;
     }
+*/
 
+    //Zero out variances
+    for(int j = 0; j < CEPSTRUM_DIMENSION; j++){
+	ps->covariances.values[j] =0;
+	ps->covariances.deltas[j] =0;
+	ps->covariances.doubles[j] =0;
+    }
+	
     //Calculate the diagonal covariances vector
     for(int i = 0; i < fs->num_vectors; i++)
     {
@@ -58,7 +75,7 @@ double single_gaussian_log_pdf(single_gaussian_params* ps, feature* test)
         result += 0.5 * log(2*M_PI * ps->covariances.values[i]);
         result += 0.5 * log(2*M_PI * ps->covariances.deltas[i]);
         result += 0.5 * log(2*M_PI * ps->covariances.doubles[i]);
-
+	
         result += 0.5 * pow(ps->covariances.values[i] - test->values[i], 2)
                 / ps->covariances.values[i];
         result += 0.5 * pow(ps->covariances.deltas[i] - test->deltas[i], 2)
