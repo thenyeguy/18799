@@ -2,17 +2,13 @@
 
 #define FEATURE_H
 
-//#include <gaussian.h> //FIXME, need to include this to return gaussian
+//#include "gaussian.h" //FIXME, need to include this to return gaussian
 #include "../cepstrum/cepstrum_vectors.h"
 
 /* Number of cepstrum values used in recording. Should be 13. 
  */
 #define CEPSTRUM_DIMENSION 13
-#define MININT (1<<31)
-#define MAXINT (~MININT)
-#define NUM_CLUSTERS 4
-#define CONVERGE_THRESHOLD 3
-#define CONVERGE_ITERATIONS 1000
+
 
 /* Struct to store a feature vector. A feature vector is composed of the 
  * normalized cepstrum values, their derivatives, and their double derivatives
@@ -35,12 +31,7 @@ typedef struct {
 /* alloc_feature_vectors - allocates space for a feature */
 
 
-/* cluster_templates - 	Runs Kmeans segmentation clustering on 
- *			input feature_vectors */
-void cluster_templates(feature_vectors ** templates,int num_templates);
 
-/* print_cluster_count - 	Prints out the number of points in each cluster */
-void print_cluster_count(int * cluster_count);
 
 /* feature_distance -	Calculates the sum of squared differences between
  * 			two features */ 
