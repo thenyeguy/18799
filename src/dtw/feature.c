@@ -6,17 +6,6 @@
 
 #include "gaussian.h"
 
-void cluster_templates(feature_vectors ** templates,int num_templates){
-	int iterations =0;
-	//Initialize K means cluster by assigning each vector to a cluster
-	//printf("initializing clusters...\n");
-	int ** cluster_array = (int **)malloc(num_templates*sizeof(int*));
-
-	//Initialize counter for each cluster
-	int * cluster_count = (int *)malloc(NUM_CLUSTERS*sizeof(int));
-	for(int i=0; i<NUM_CLUSTERS; i++){
-		cluster_count[i] = 0;
-	}
 
 	//Set each point to an initial cluster	
 	for(int i=0; i<num_templates; i++){
@@ -157,12 +146,6 @@ double feature_distance(feature one, feature two){
 }
 
 
-void print_cluster_count(int * cluster_count){
-	for(int i=0; i<NUM_CLUSTERS; i++){
-		printf("%d: %d\t",i,cluster_count[i]);
-	}	
-	printf("\n");
-}
 
 
 

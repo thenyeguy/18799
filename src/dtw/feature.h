@@ -14,6 +14,7 @@
 #define CONVERGE_THRESHOLD 3
 #define CONVERGE_ITERATIONS 1000
 
+
 /* Struct to store a feature vector. A feature vector is composed of the 
  * normalized cepstrum values, their derivatives, and their double derivatives
  */
@@ -36,12 +37,7 @@ typedef struct {
 /* alloc_feature_vectors - allocates space for a feature */
 
 
-/* cluster_templates - 	Runs Kmeans segmentation clustering on 
- *			input feature_vectors */
-void cluster_templates(feature_vectors ** templates,int num_templates);
 
-/* print_cluster_count - 	Prints out the number of points in each cluster */
-void print_cluster_count(int * cluster_count);
 
 #define FIRST_TEMPLATE_INDEX 3
 /* features_from_all_files -	Builds feature vectors for each template file passed

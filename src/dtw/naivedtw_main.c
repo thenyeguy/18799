@@ -3,6 +3,7 @@
 #include <math.h>
 #include "dtw_trellis.h"
 #include "feature.h"
+#include "cluster.h"
 
 // Euclydian distance scorer
 double score1(void* test, void* template, int row, int col, dtw_trellis_dir dir);
@@ -25,9 +26,15 @@ int main(int argc, char **argv)
     //Currently only handles a single template, sorry
     if(argc > 4){
         printf("IGNORING EXTRA TEMPLATES... fix me :(\n\n");
-	int num_templates = argc - FIRST_TEMPLATE_INDEX;
-	feature_vectors ** templates = features_from_all_files(argc,argv);
-	cluster_templates(templates,num_templates);
+		int num_templates = argc - FIRST_TEMPLATE_INDEX;
+		feature_vectors ** templates = features_from_all_files(argc,argv);
+		
+		// Now use gaussian parameters to calculate probabilities
+		single_gaussian_params ** gaussian_params = cluster_templates(templates,num_templates);
+		gaussian_params = gaussian_params;
+		for(int i =0; i<NUM_CLUSTERS; i++){
+			print_single_gaussian_params(gaussian_params[i]);
+		}		
     }
     feature_vectors* test     = features_from_file(argv[2]);
     feature_vectors* template = features_from_file(argv[3]);

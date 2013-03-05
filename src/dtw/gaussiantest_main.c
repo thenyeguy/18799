@@ -23,5 +23,13 @@ int main()
     printf("    if my math is correct.\n\n");
     print_single_gaussian_params(gp);
 
+    /*
+    printf("Evaluating the log pdf of each point relative to the mean\n");
+    printf("    %1.4lf    %1.4lf    %1.4lf\n",
+        single_gaussian_log_pdf(gp, &fs->features[0]),
+        single_gaussian_log_pdf(gp, &fs->features[1]),
+        single_gaussian_log_pdf(gp, &fs->features[2]));
+    */
+
     return 0;
 }

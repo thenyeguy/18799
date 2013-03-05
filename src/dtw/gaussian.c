@@ -8,14 +8,17 @@ single_gaussian_params* compute_single_gaussian_params(feature_vectors* fs)
 {
     //Allocate the gaussian params
     single_gaussian_params* ps = malloc(sizeof(single_gaussian_params));
-   
-    //Zero
+
+    //Zero the gaussian params
     for(int j = 0; j < CEPSTRUM_DIMENSION; j++){
-	ps->means.values[j] =0; 
+        ps->means.values[j] =0; 
         ps->means.deltas[j] =0; 
         ps->means.doubles[j] =0; 
+        ps->covariances.values[j] =0;
+        ps->covariances.deltas[j] =0;
+        ps->covariances.doubles[j] =0;
     } 
- 
+
     //Calculate the model vector
     for(int i = 0; i < fs->num_vectors; i++)
     {
@@ -26,23 +29,8 @@ single_gaussian_params* compute_single_gaussian_params(feature_vectors* fs)
             ps->means.doubles[j] += (fs->features[i].doubles[j] / fs->num_vectors);
         }
     }
-	//Moved the divice inside of the addition, double check! FIXME
-/*
-    for(int j = 0; j < CEPSTRUM_DIMENSION; j++)
-    {
-        ps->means.values[j] /= fs->num_vectors;
-        ps->means.deltas[j] /= fs->num_vectors;
-        ps->means.doubles[j] /= fs->num_vectors;
-    }
-*/
 
-    //Zero out variances
-    for(int j = 0; j < CEPSTRUM_DIMENSION; j++){
-	ps->covariances.values[j] =0;
-	ps->covariances.deltas[j] =0;
-	ps->covariances.doubles[j] =0;
-    }
-	
+
     //Calculate the diagonal covariances vector
     for(int i = 0; i < fs->num_vectors; i++)
     {
@@ -75,16 +63,37 @@ double single_gaussian_log_pdf(single_gaussian_params* ps, feature* test)
         result += 0.5 * log(2*M_PI * ps->covariances.values[i]);
         result += 0.5 * log(2*M_PI * ps->covariances.deltas[i]);
         result += 0.5 * log(2*M_PI * ps->covariances.doubles[i]);
-	
-        result += 0.5 * pow(ps->covariances.values[i] - test->values[i], 2)
-                / ps->covariances.values[i];
-        result += 0.5 * pow(ps->covariances.deltas[i] - test->deltas[i], 2)
-                / ps->covariances.deltas[i];
-        result += 0.5 * pow(ps->covariances.doubles[i] - test->doubles[i], 2)
-                / ps->covariances.doubles[i];
+
+        result += 0.5 * pow(ps->means.values[i] - test->values[i], 2)
+            / ps->covariances.values[i];
+        result += 0.5 * pow(ps->means.deltas[i] - test->deltas[i], 2)
+            / ps->covariances.deltas[i];
+        result += 0.5 * pow(ps->means.doubles[i] - test->doubles[i], 2)
+            / ps->covariances.doubles[i];
     }
 
     return -1.0*result;
+}
+
+
+double gaussian_scorer(void* test_p, void* template_p,
+                       int row, int col, dtw_trellis_dir dir)
+{
+    //Handle the case for time t=0
+    if(dir == DTW_DIR_NONE)
+    {
+        if(row == 0)
+            return 0.0;
+        else
+            return log(0.0);
+    }
+
+    //Get specified elements to compare
+    feature* test = (feature*) test_p;
+    single_gaussian_params* template = (single_gaussian_params*) template_p;
+    single_gaussian_params* ps = &template[row];
+
+    return single_gaussian_log_pdf(ps, test);
 }
 
 
