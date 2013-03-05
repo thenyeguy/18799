@@ -2,7 +2,7 @@
 
 #define FEATURE_H
 
-#include "gaussian.h" //FIXME, need to include this to return gaussian
+//#include "gaussian.h" //FIXME, need to include this to return gaussian
 #include "../cepstrum/cepstrum_vectors.h"
 /* Number of cepstrum values used in recording. Should be 13. 
  */
@@ -29,6 +29,7 @@ typedef struct {
 typedef struct {
     int num_vectors;
     feature* features;
+	char word_id[256];
 } feature_vectors;
 
 

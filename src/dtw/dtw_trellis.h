@@ -10,7 +10,8 @@
  *       cost instead should be simple, but requires changes in a fwe places */
 #define DTW_MAX_SCORE DBL_MAX
 #define DTW_MIN_SCORE (-1.0*DBL_MAX)
-
+#define SET_PRUNING DTW_NO_PRUNE
+#define PRUNING_THRESHOLD DEFAULT_DTW_THRESHOLD
 
 /* Pruning type for the trellis evalutation...
  *     NONE performs no pruning
