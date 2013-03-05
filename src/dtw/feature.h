@@ -38,6 +38,9 @@ typedef struct {
 
 
 
+/* feature_distance - Calculates the sum of squared differences between 
+*		two features */
+double feature_distance(feature one, feature two);
 
 #define FIRST_TEMPLATE_INDEX 3
 /* features_from_all_files -	Builds feature vectors for each template file passed
@@ -69,9 +72,5 @@ void print_feature_vectors(feature_vectors* fs);
 /* free_feature_vectors - frees the memory allocated for feature_vectors, duh
  */
 void free_feature_vectors(feature_vectors* fs);
-
-/* feature_distance - compute the distance between two features 
-*/
-double feature_distance(feature one, feature two);
 
 #endif

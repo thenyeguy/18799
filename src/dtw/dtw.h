@@ -21,55 +21,20 @@
 #define DEFAULT_PRUNING_THRESHOLD MAXINT
 
 
-/* get_null_prefix_dictionary_dtw: read a list of feature_vectors from a source
-	directory, add null prefixes for processing */
-feature_vectors** get_null_prefix_dictionary_dtw();
-
-
-/* show_best_dtw_path - TODO: do we need this?  
-	Insertion / deletion / substitution count may no longer be relevant for 
-	dtw
+/* main function for performing dtw.  when run on the command line with a 
+source cepstrum file and a library of cepstrum file templates, as well as 
+a value for how many matches to find, performs dtw on the data and prints out
+the n best matches.
 */
-void show_best_dtw_path(dtw_t trellis,int one_length,int two_length);
+void dtw_main(int argc, char* argv[]);
 
 
-typedef struct {
-	feature_vectors* features;
-	double score;
-    dtw_t* trellis;
-} features_and_score;
-
-
-/* get_features_from_file - reads a cepstrum analysis file into an array of 
-	features
- */
-feature_vectors* get_features_from_file(char* recording_name, int num_filters);
-
-
-/* get_best_n_words - given an input vector, dictionary, and the number of
-	words to return, scores the input vector against every vector in the 
-	dictionary and returns the n words in the dictionary that match best
+/* get_best_n_words - wrapper function which creates trellises from a 
+	dictionary, computes the best n matches, and prints the results
  */
 dtw_t** get_best_n_words_dtw(feature_vectors* input, 
 								feature_vectors** dictionary, int dict_length,
                                 int n);
-
-
-/* get_dtw_distance - scores a dtw trellis, returns a pointer to that trellis
-	(which contains the score)
- 	FIXME: unused for now, because it messes up pruning to score trellises one
-			at a time.
- */
-dtw_t* get_dtw_distance(feature_vectors* data1, feature_vectors* 
-	data2);
-
-
-/* add_null_prefix - helper function dtw - takes a feature vector sequence and
-	adds a null vector to the beginning of the sequence
- 
- 	FIXME: unused for now, relying on other factors not to need a null prefix
- */
-feature_vectors* add_null_prefix_dtw(feature_vectors* data);
 
 
 /* print_n_best_words - takes in a list of best words and its length and prints
@@ -113,6 +78,36 @@ double score(void* test, void* template, int test_index,
 /* dtw_usage - usage printout for dtw_main
 */
 void dtw_usage();
+
+
+
+/*
+	FIXME: The rest of these are unused for now, for various reasons.  We may
+	want to re-add one or more of them later on.
+*/
+
+/* get_null_prefix_dictionary_dtw: read a list of feature_vectors from a source
+	directory, add null prefixes for processing */
+feature_vectors** get_null_prefix_dictionary_dtw();
+
+
+/* get_dtw_distance - scores a dtw trellis, returns a pointer to that trellis
+	(which contains the score)
+ 	FIXME: unused for now, because it messes up pruning to score trellises one
+			at a time.
+ */
+dtw_t* get_dtw_distance(feature_vectors* data1, feature_vectors* 
+	data2);
+
+
+/* add_null_prefix - helper function dtw - takes a feature vector sequence and
+	adds a null vector to the beginning of the sequence
+ 
+ 	FIXME: unused for now, relying on other factors not to need a null prefix
+ */
+feature_vectors* add_null_prefix_dtw(feature_vectors* data);
+
+
 
 
 #endif

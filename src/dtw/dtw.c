@@ -34,11 +34,14 @@ void dtw_main(int argc, char* argv[]){
 dtw_t** get_best_n_words_dtw(feature_vectors* input, 
 	feature_vectors** dictionary, int dict_length, int n){ 
 
+	/// build the trellis array
 	dtw_t** trellis_list = get_trellis_list(input, dictionary, dict_length);
 
+	/// score the trellis array, and find the best n matches
 	dtw_t** best_n = 
 		get_best_n_from_trellis(trellis_list, dict_length, n);
 	
+	/// print the results
 	print_n_best_words_dtw(best_n, n);
 
 	return best_n;
