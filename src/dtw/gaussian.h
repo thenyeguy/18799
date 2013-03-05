@@ -1,8 +1,9 @@
 #ifndef GAUSSIAN_H
-
 #define GAUSSIAN_H
 
-#include <feature.h>
+#include "dtw_trellis.h"
+#include "feature.h"
+
 
 
 /* Struct to store single gaussian parameters. Contains the mean model vector,
@@ -17,14 +18,24 @@ typedef struct {
 
 /* compute_single_gaussian_params -
  *     Given a set of feature vectors fs, computes the mean and the square of
- *     the covariances of a gaussian distribution that best fits that data */
+ *     the covariances of a gaussian distribution that best fits that data
+ */
 single_gaussian_params* compute_single_gaussian_params(feature_vectors* fs);
 
 
 /* single_gaussian_pdf - given the parameters to a single gaussian distribution
  *                       and a test point, returns the log probability of a 
- *                       single gaussian evaluated at the test point */
+ *                       single gaussian evaluated at the test point
+ */
 double single_gaussian_log_pdf(single_gaussian_params* ps, feature* test);
+
+
+/* single_gaussian_scorer - a wrapper for single_gaussian_log_pdf, that fits
+ *                          the interface required by dtw_trellis, to return
+ *                          the probability for use in trellis evaluation
+ */
+double gaussian_scorer(void* test, void* template,
+                       int row, int col, dtw_trellis_dir dir);
 
 
 /* print_single_gaussian_params - prints params in human readable form
