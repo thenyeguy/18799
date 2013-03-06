@@ -29,14 +29,16 @@ full: clean all
 
 # Autogenerate compilation of main files
 $(MAINS): ${BINDIR} $(OBJECTS)
-	${CC} ${CFLAGS} -c $(shell find ${SRCDIR} \( -name "**$@_main.c" \) ) \
+	@echo Building bin/$@
+	@${CC} ${CFLAGS} -c $(shell find ${SRCDIR} \( -name "**$@_main.c" \) ) \
 		-o ${OBJDIR}/$@_main.o
-	$(CC) $(LFLAGS) ${OBJLOCS} ${OBJDIR}/$@_main.o -o ${BINDIR}/$@ 
+	@$(CC) $(LFLAGS) ${OBJLOCS} ${OBJDIR}/$@_main.o -o ${BINDIR}/$@ 
 
 
 # Autogenerate compilation of object files
 %.o: %.c ${OBJDIR}
-	${CC} ${CFLAGS} -c $< -o ${OBJDIR}/$(@F)
+	@echo Compiling $(@F)...
+	@${CC} ${CFLAGS} -c $< -o ${OBJDIR}/$(@F)
 
 
 # Manage generation and cleaning of output directories
