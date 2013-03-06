@@ -6,12 +6,13 @@
 #include "feature.h"
 
 
-dtw_t** get_best_n_from_trellis(dtw_t** trellis, int trellis_length, int n)
+dtw_t** get_best_n_from_trellis(dtw_t** trellis, int trellis_length, int n,
+                                double threshold)
 {
     bool done = false;
     while (!done)
     {
-        double column_max = DBL_MIN;
+        double column_max = DTW_MIN_SCORE;
         done = true;
 
         //Score
@@ -25,11 +26,11 @@ dtw_t** get_best_n_from_trellis(dtw_t** trellis, int trellis_length, int n)
         }
 
         //Reprune
-        double window = abs(column_max) * DEFAULT_DTW_THRESHOLD;
-        double threshold = column_max - window;
+        double window = abs(column_max) * threshold;
+        double abs_threshold = column_max - window;
         for (int i = 0; i<trellis_length; i++)
         {
-            dtw_prune_next_column(trellis[i], threshold);
+            dtw_prune_next_column(trellis[i], abs_threshold);
         }
     }
 

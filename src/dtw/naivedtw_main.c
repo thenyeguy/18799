@@ -49,7 +49,7 @@ int main(int argc, char **argv)
                                      prune, threshold);
 
     //Get n best
-    dtw_t** results = get_best_n_from_trellis(dtws, num_templates, 5);
+    dtw_t** results = get_best_n_from_trellis(dtws, num_templates, 5, threshold);
 
     //Print results
     print_naive_results(results, 5);

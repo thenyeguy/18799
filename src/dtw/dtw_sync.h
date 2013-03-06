@@ -16,10 +16,14 @@
 
 
 /* get_best_n_from_trellis - given an array of trellises already initialized,
- *                           performs the time-synchronous dtw, and stores the
- *                           n highest scoring results
+ *                           performs the time-synchronous dtw with given
+ *                           threshold.
+ *
+ *                           Scores the n highest scoring results in a new
+ *                           array
  */
-dtw_t** get_best_n_from_trellis(dtw_t** trellis, int trellis_length, int n);
+dtw_t** get_best_n_from_trellis(dtw_t** trellis, int trellis_length, int n,
+                                double threshold);
 
 
 /* insert - helper function for get_best_n... inserts the input into list in 

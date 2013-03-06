@@ -21,9 +21,12 @@ dtw_t* new_dtw(void* test_data,     int test_length,
     dtw->pruning = prune;
     dtw->pruning_threshold = pruning_threshold;
     dtw->scorer = scorer;
+
     dtw->last_column_i = 0;
-    dtw->score = DTW_MIN_SCORE;
+
     dtw->fully_pruned = false;
+    dtw->score = DTW_MIN_SCORE;
+    dtw->column_max = DTW_MIN_SCORE;
     
     //Allocate columns for scoring
     dtw->last_col = malloc(template_length*sizeof(dtw_trellis_node));
@@ -195,11 +198,13 @@ void dtw_print_struct(dtw_t* dtw)
         pruning = "NONE";
     else
         pruning = "BEAM";
-    printf("Using pruning method: %s, threshold: %1.4lf\n", pruning,
+    printf("Using pruning method: %s with threshold: %1.4lf, ", pruning,
            dtw->pruning_threshold);
-    printf("So far, we have scored up to time t=%d, ", dtw->last_column_i);
-    printf("with a best score of: %1.4f\n", dtw->score);
-    printf("We were %sfully pruned.\n\n", dtw->fully_pruned ? "" : "not ");
+    printf("we were %sfully pruned.\n", dtw->fully_pruned ? "" : "not ");
+    printf("So far, we have scored up to time t=%d.\n", dtw->last_column_i);
+    printf("    Our last column_max was: %1.4f\n", dtw->column_max);
+    printf("    Our best score of: %1.4f\n", dtw->score);
+    printf("\n");
 }
 
 

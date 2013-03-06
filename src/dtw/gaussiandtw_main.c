@@ -87,7 +87,7 @@ int main(int argc, char **argv)
            argv[2],threshold);
 
     //Get n best
-    dtw_t** results = get_best_n_from_trellis(dtws, 5, 5);
+    dtw_t** results = get_best_n_from_trellis(dtws, 5, 5, threshold);
 
     //Print results
     print_gaussian_results(results, 5);
