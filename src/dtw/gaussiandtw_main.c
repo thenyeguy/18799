@@ -63,31 +63,58 @@ int main(int argc, char **argv)
     feature_vectors** five_features = features_from_all_files(fives,5);
     gaussian_cluster* five_template = cluster_templates(five_features,5,"five");
 
+    char* sixs[5] = {"analysis/six1-40.out","analysis/six2-40.out",
+                     "analysis/six3-40.out","analysis/six4-40.out",
+                     "analysis/six4-40.out"};
+    feature_vectors** six_features = features_from_all_files(sixs,5);
+    gaussian_cluster* six_template = cluster_templates(six_features,5,"six");
+
+    char* sevens[5] = {"analysis/seven1-40.out","analysis/seven2-40.out",
+                     "analysis/seven3-40.out","analysis/seven4-40.out",
+                     "analysis/seven4-40.out"};
+    feature_vectors** seven_features = features_from_all_files(sevens,5);
+    gaussian_cluster* seven_template = cluster_templates(seven_features,5,"seven");
+
+    char* eights[5] = {"analysis/eight1-40.out","analysis/eight2-40.out",
+                     "analysis/eight3-40.out","analysis/eight4-40.out",
+                     "analysis/eight4-40.out"};
+    feature_vectors** eight_features = features_from_all_files(eights,5);
+    gaussian_cluster* eight_template = cluster_templates(eight_features,5,"eight");
+
+    char* nines[5] = {"analysis/nine1-40.out","analysis/nine2-40.out",
+                     "analysis/nine3-40.out","analysis/nine4-40.out",
+                     "analysis/nine4-40.out"};
+    feature_vectors** nine_features = features_from_all_files(nines,5);
+    gaussian_cluster* nine_template = cluster_templates(nine_features,5,"nine");
+
+    char* zeros[5] = {"analysis/zero1-40.out","analysis/zero2-40.out",
+                     "analysis/zero3-40.out","analysis/zero4-40.out",
+                     "analysis/zero4-40.out"};
+    feature_vectors** zero_features = features_from_all_files(zeros,5);
+    gaussian_cluster* zero_template = cluster_templates(zero_features,5,"zero");
+
     //Package these for using
-    gaussian_cluster** templates = malloc(5*sizeof(gaussian_cluster));
+    int num_templates = 10;
+    gaussian_cluster** templates = malloc(10*sizeof(gaussian_cluster));
     templates[0] = one_template;
     templates[1] = two_template;
     templates[2] = three_template;
     templates[3] = four_template;
     templates[4] = five_template;
-
+    templates[5] = six_template;
+    templates[6] = seven_template;
+    templates[7] = eight_template;
+    templates[8] = nine_template;
+    templates[9] = zero_template;
 
     //Create our trellis structures
-    dtw_t** dtws = get_gaussian_trellis(test, templates, 5, prune, threshold);
+    dtw_t** dtws = get_gaussian_trellis(test, templates, num_templates, prune, threshold);
 
-    // Now use gaussian parameters to calculate probabilities
-    //single_gaussian_params** gaussian_params = cluster_templates(templates,num_templates);
-    //gaussian_params = gaussian_params;
-    //for(int i =0; i<NUM_CLUSTERS; i++){
-        //print_single_gaussian_params(gaussian_params[i]);
-    //}		
-
-
-    printf("Comparing %s against 5 templates with threshold %1.4lf\n\n",
-           argv[2],threshold);
+    printf("Comparing %s against %d templates with threshold %1.4lf\n\n",
+           argv[2],num_templates,threshold);
 
     //Get n best
-    dtw_t** results = get_best_n_from_trellis(dtws, 5, 5, threshold);
+    dtw_t** results = get_best_n_from_trellis(dtws, num_templates, 5, threshold);
 
     //Print results
     print_gaussian_results(results, 5);
