@@ -1,5 +1,4 @@
 #ifndef DTW_TRELLIS_H
-
 #define DTW_TRELLIS_H
 
 #include <float.h>
@@ -12,6 +11,7 @@
 #define DTW_MIN_SCORE (-1.0*DBL_MAX)
 #define SET_PRUNING DTW_NO_PRUNE
 #define PRUNING_THRESHOLD DEFAULT_DTW_THRESHOLD
+
 
 /* Pruning type for the trellis evalutation...
  *     NONE performs no pruning
@@ -58,6 +58,12 @@ typedef struct {
  *     last_column_ith element of the test_data.
  * The next_col holds stats on whether the next node is pruned, and always has
  *     a score of MIN_SCORE. It is filled by fill_next_col when called.
+ *
+ * The fully_pruned bool represents whether or not a trellis has had every
+ *     possible path pruned out.
+ * The column_max is the max score seen in the last_col
+ * The score represents the best score so far for this trellis, and is updated
+ *     every iteration.
  */
 typedef struct {
     void* test_data;
@@ -72,6 +78,9 @@ typedef struct {
     int last_column_i;
     dtw_trellis_node* last_col;
     dtw_trellis_node* next_col;
+
+    bool fully_pruned;
+    double column_max;
     double score;
 } dtw_t;
 
@@ -103,6 +112,17 @@ dtw_t* new_dtw(void* test_data,     int test_length,
  *                    method in the dtw_t struct.
  */
 bool dtw_fill_next_col(dtw_t* dtw);
+
+
+/* dtw_prune_next_column - given a dtw struct and a threshold, prunes the next
+ *                         column using the specified absolute threshold.
+ *                         Called by dtw_fill_next_column with the threshold
+ *                         calculated for one node. Can choose to reprune with
+ *                         a more strict threshold on your own time.
+ *
+ *                         Returns dtw->fully_pruned.
+ */
+bool dtw_prune_next_column(dtw_t* dtw, double threshold);
 
 
 /* dtw_score_node - Helper for dtw_fill_next_col... Given a dtw and the row

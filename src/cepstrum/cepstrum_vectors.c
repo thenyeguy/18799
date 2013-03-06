@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include <math.h>
 #include <fcntl.h>
-#include "portaudio_utils.h"
+#include "../record/portaudio_utils.h"
 #include "cepstrum_utils.h"
 #include "cepstrum_vectors.h"
 
@@ -56,7 +56,7 @@ void log_cepstrum(char* file_prefix, double* cepstrum, int n)
 {
 
     char filename[256];
-    sprintf(filename, "./analysis/%s-cepstrum.out", file_prefix);
+    sprintf(filename, "./analysis/%s.out", file_prefix);
     FILE* out = fopen(filename, "a");
 
     for(int i = 0; i < n; i++)
@@ -113,16 +113,16 @@ cepstrum_vectors* get_cepstrum_vectors(double* signal, int num_samples,
         premphasize(window, samples_per_window);
         hamming_window(window, samples_per_window);
         
-        if(file_prefix != NULL)
+        if(CEPSTRUM_VERBOSE && file_prefix != NULL)
             log_window(file_prefix, window, fft_length);
 
         // Get the log spectra for the window
         dtft(window, window_dft);
         log_mel_filter(window_dft, num_mel_filters, window_log_spectra);
 
-        if(file_prefix != NULL)
+        if(CEPSTRUM_VERBOSE && file_prefix != NULL)
             log_dtft(file_prefix, window_dft, fft_length);
-        if(file_prefix != NULL)
+        if(CEPSTRUM_VERBOSE && file_prefix != NULL)
             log_logmel(file_prefix, window_log_spectra, num_mel_filters);
 
         // Get the cepstrum vector and store it in output

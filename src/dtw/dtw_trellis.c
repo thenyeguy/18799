@@ -22,6 +22,8 @@ dtw_t* new_dtw(void* test_data,     int test_length,
     dtw->pruning_threshold = pruning_threshold;
     dtw->scorer = scorer;
     dtw->last_column_i = 0;
+    dtw->score = DTW_MIN_SCORE;
+    dtw->fully_pruned = false;
     
     //Allocate columns for scoring
     dtw->last_col = malloc(template_length*sizeof(dtw_trellis_node));
@@ -47,9 +49,11 @@ bool dtw_fill_next_col(dtw_t* dtw)
     //If we have searched the whole trellis, return
     if(dtw->last_column_i >= dtw->test_length)
         return true;
+    //If we pruned the trellis, return
+    if(dtw->fully_pruned)
+        return true;
 
     //Score entire column
-    double column_min = DTW_MAX_SCORE;
     double column_max = DTW_MIN_SCORE;
     for(int i = 0; i < dtw->template_length; i++)
     {
@@ -60,8 +64,6 @@ bool dtw_fill_next_col(dtw_t* dtw)
         double score = dtw_score_node(dtw,i);
 
         //Keep track of the beam threshold
-        if(score < column_min)
-            column_min = score;
         if(score > column_max)
             column_max = score;
     }
@@ -73,11 +75,27 @@ bool dtw_fill_next_col(dtw_t* dtw)
     dtw->last_col = dtw->next_col;
     dtw->next_col = temp;
 
+    //Perform pruning
+    double window = abs(column_max) * dtw->pruning_threshold;
+    double threshold = column_max - window;
+    dtw_prune_next_column(dtw, threshold);
+
+    //Store best score so far and update state
+    dtw->last_column_i++;
+    dtw->column_max = column_max;
+    dtw->score = dtw->last_col[dtw->template_length-1].score;
+
+    //Return whether we scored the last column
+    return dtw->last_column_i >= dtw->test_length;
+}
+
+
+bool dtw_prune_next_column(dtw_t* dtw, double threshold)
+{
     //Perform pruning if enabled
     if(dtw->pruning == DTW_BEAM_PRUNE)
     {
-        double window = abs(column_max) * dtw->pruning_threshold;
-        double threshold = column_max - window;
+        bool fully_pruned = true;
         for(int i = 0; i < dtw->template_length; i++)
         {
             bool check = false;
@@ -95,7 +113,12 @@ bool dtw_fill_next_col(dtw_t* dtw)
             dtw->next_col[i].score = DTW_MIN_SCORE;
             dtw->next_col[i].pruned = !check;
             dtw->next_col[i].dir = DTW_DIR_NONE;
+
+            //If we check a node, then we aren't fully pruned
+            fully_pruned = fully_pruned && (!check);
         }
+        //Have we pruned every node?
+        dtw->fully_pruned = fully_pruned;
     }
     //Otherwise just blindly fill new column
     else
@@ -108,12 +131,8 @@ bool dtw_fill_next_col(dtw_t* dtw)
             dtw->next_col[i].dir = DTW_DIR_NONE;
         }
     }
-
-    //Store best score so far and update column count
-    dtw->score = dtw->last_col[dtw->template_length-1].score;
-    dtw->last_column_i++;
-    //Return whether we scored the last column
-    return dtw->last_column_i >= dtw->test_length;
+    
+    return dtw->fully_pruned;
 }
 
 
@@ -179,7 +198,8 @@ void dtw_print_struct(dtw_t* dtw)
     printf("Using pruning method: %s, threshold: %1.4lf\n", pruning,
            dtw->pruning_threshold);
     printf("So far, we have scored up to time t=%d, ", dtw->last_column_i);
-    printf("with a best score of: %1.4f\n\n", dtw->score);
+    printf("with a best score of: %1.4f\n", dtw->score);
+    printf("We were %sfully pruned.\n\n", dtw->fully_pruned ? "" : "not ");
 }
 
 

@@ -76,27 +76,6 @@ double single_gaussian_log_pdf(single_gaussian_params* ps, feature* test)
 }
 
 
-double gaussian_scorer(void* test_p, void* template_p,
-                       int row, int col, dtw_trellis_dir dir)
-{
-    //Handle the case for time t=0
-    if(dir == DTW_DIR_NONE)
-    {
-        if(row == 0)
-            return 0.0;
-        else
-            return log(0.0);
-    }
-
-    //Get specified elements to compare
-    feature* test = (feature*) test_p;
-    single_gaussian_params* template = (single_gaussian_params*) template_p;
-    single_gaussian_params* ps = &template[row];
-
-    return single_gaussian_log_pdf(ps, test);
-}
-
-
 void print_single_gaussian_params(single_gaussian_params* ps)
 {
     printf("Gaussian mean:\n");

@@ -4,41 +4,18 @@
 #include <math.h>
 #include "feature.h"
 
-#include "gaussian.h"
 
-
-
-double feature_distance(feature one, feature two){
-	double distance=0;	
-	for(int i=0; i< CEPSTRUM_DIMENSION; i++){
-		distance += pow(one.values[i] - two.values[i],2);
-		distance += pow(one.deltas[i] - two.deltas[i],2);
-		distance += pow(one.doubles[i] - two.doubles[i],2);
-	}
-	distance = pow(distance,0.5);
-	return distance;
-}
-
-
-
-
-
-feature_vectors** features_from_all_files(int argc, char** argv){
-	//Reading .out files from the command line
-	int number_of_feature_vectors = argc - FIRST_TEMPLATE_INDEX;
-
-	//Malloc space for each template feature vector
-	int malloc_size = number_of_feature_vectors*sizeof(feature_vectors *); 
-	feature_vectors ** templates = (feature_vectors **) malloc(malloc_size);
-
-	//Getting features from file for each template path on command line	
-	for( int i = 0 ; i<number_of_feature_vectors; i++){
-		int template_index = i + FIRST_TEMPLATE_INDEX;
-		feature_vectors * vects = features_from_file(argv[template_index]);
-		templates[i] = vects;
-	}	
-	
-	return templates;
+double feature_distance(feature* one, feature* two)
+{
+    double distance = 0;
+    for(int i=0; i< CEPSTRUM_DIMENSION; i++)
+    {
+        distance += pow(one->values[i] - two->values[i],2);
+        distance += pow(one->deltas[i] - two->deltas[i],2);
+        distance += pow(one->doubles[i] - two->doubles[i],2);
+    }
+    distance = pow(distance,0.5);
+    return distance;
 }
 
 
@@ -67,6 +44,7 @@ feature_vectors* features_from_file(char* filename)
     feature_vectors* fs = malloc(sizeof(feature_vectors));
     fs->num_vectors = lines;
     fs->features = malloc(lines*sizeof(feature));
+    strcpy(fs->word_id, filename);
 
     //For each line, read in the raw cepstrum
     //char line[512];
@@ -103,12 +81,29 @@ feature_vectors* features_from_file(char* filename)
 }
 
 
+feature_vectors** features_from_all_files(char** filenames, int num_files)
+{
+    //Malloc space for each template feature vector
+    int malloc_size = num_files*sizeof(feature_vectors*); 
+    feature_vectors** templates = (feature_vectors **) malloc(malloc_size);
+
+    //Getting features from file for each template path on command line	
+    for( int i = 0 ; i < num_files; i++)
+    {
+        feature_vectors* vects = features_from_file(filenames[i]);
+        templates[i] = vects;
+    }	
+
+    return templates;
+}
+
+
 void raw_cepstrum_to_features(cepstrum_vectors* raws, feature_vectors* output)
 {
     //First copy in the raw cepstrum
     for(int i = 0; i < output->num_vectors; i++)
         memcpy(&(output->features[i].values), raws->cepstra[i],
-               CEPSTRUM_DIMENSION*sizeof(double));
+                CEPSTRUM_DIMENSION*sizeof(double));
 
     //Then mean normalize
     double mean[CEPSTRUM_DIMENSION];
@@ -130,19 +125,19 @@ void raw_cepstrum_to_features(cepstrum_vectors* raws, feature_vectors* output)
     //Then variance normalize
     double var[CEPSTRUM_DIMENSION];
     for(int i = 0; i < CEPSTRUM_DIMENSION; i++)
-        var[i] = 0.0;
+    var[i] = 0.0;
 
     for(int i = 0; i < output->num_vectors; i++)
-        for(int j = 0; j < CEPSTRUM_DIMENSION; j++)
-            var[j] += pow(output->features[i].values[j], 2);
+    for(int j = 0; j < CEPSTRUM_DIMENSION; j++)
+    var[j] += pow(output->features[i].values[j], 2);
 
     for(int i = 0; i < CEPSTRUM_DIMENSION; i++)
-        var[i] = sqrt(var[i]/output->num_vectors);
+    var[i] = sqrt(var[i]/output->num_vectors);
 
     for(int i = 0; i < output->num_vectors; i++)
-        for(int j = 0; j < CEPSTRUM_DIMENSION; j++)
-            output->features[i].values[j] /= var[j];
-            */
+    for(int j = 0; j < CEPSTRUM_DIMENSION; j++)
+    output->features[i].values[j] /= var[j];
+     */
 
     //Then compute single deltas - copy second single delta into first
     for(int i = 1; i < output->num_vectors; i++)
@@ -174,7 +169,7 @@ void print_feature(feature* f)
     for(int i = 0; i < CEPSTRUM_DIMENSION; i++)
     {
         printf("\t %5.5f\t| %5.5f\t| %5.5f\n",
-               f->values[i], f->deltas[i], f->doubles[i]);
+                f->values[i], f->deltas[i], f->doubles[i]);
     }
 }
 

@@ -1,18 +1,12 @@
 #ifndef FEATURE_H
-
 #define FEATURE_H
 
-//#include "gaussian.h" //FIXME, need to include this to return gaussian
 #include "../cepstrum/cepstrum_vectors.h"
+
+
 /* Number of cepstrum values used in recording. Should be 13. 
  */
 #define CEPSTRUM_DIMENSION 13
-#define NULL_PREFIX NULL
-#define MININT (1<<31)
-#define MAXINT (~MININT)
-#define NUM_CLUSTERS 4
-#define CONVERGE_THRESHOLD 3
-#define CONVERGE_ITERATIONS 1000
 
 
 /* Struct to store a feature vector. A feature vector is composed of the 
@@ -34,33 +28,30 @@ typedef struct {
 } feature_vectors;
 
 
-/* alloc_feature_vectors - allocates space for a feature */
-
-
-
 /* feature_distance - Calculates the sum of squared differences between 
-*		two features */
-double feature_distance(feature one, feature two);
-
-#define FIRST_TEMPLATE_INDEX 3
-/* features_from_all_files -	Builds feature vectors for each template file passed
- * 				in on the command line by calling 
- * 				read_features_from_file ARGC number of times*/
-feature_vectors** features_from_all_files(int argc, char** argv);
+ *		              two features.
+ */
+double feature_distance(feature* one, feature* two);
 
 
-/* read_features_from_file - given a filename, imports a set of raw cepstrum
- *                           vectors, converts it to feature vectors, and 
- *                           returns the result.
+/* features_from_file - given a filename, imports a set of raw cepstrum vectors
+ *                      converts it to feature vectors, and returns the result.
  */
 feature_vectors* features_from_file(char* filename);
+
+
+/* features_from_all_files - given a list of filenames, returns an array of
+ *                           feature_vectors using features_from_file
+ */
+feature_vectors** features_from_all_files(char** filenames, int num_files);
 
 
 /* raw_cepstrum_to_features - given the series of raw cepstrum vectors, constructs
  *                            the feature vectors by normalizing the cepstra and
  *                            finding its deltas, then stores the result in the
  *                            specified output. Raw cepstrum is calculated by
- *                            the cepstrum_vectors library */
+ *                            the cepstrum_vectors library
+ */
 void raw_cepstrum_to_features(cepstrum_vectors* raws, feature_vectors* output);
 
 
@@ -68,6 +59,7 @@ void raw_cepstrum_to_features(cepstrum_vectors* raws, feature_vectors* output);
  */
 void print_feature(feature* f);
 void print_feature_vectors(feature_vectors* fs);
+
 
 /* free_feature_vectors - frees the memory allocated for feature_vectors, duh
  */

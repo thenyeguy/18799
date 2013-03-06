@@ -6,6 +6,10 @@
 #define WINDOW_SLIDE 10
 
 
+// Verbose log prints out window, dtft, and logmel in addition to cepstrum
+#define CEPSTRUM_VERBOSE false
+
+
 // Define struct to store cepstrum vector information in
 
 struct cepstrum_vectors
