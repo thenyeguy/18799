@@ -41,14 +41,12 @@ typedef struct {
 } pq_node;
     
 
-/* lextree_best_n_words - given a filled lextree, a test word, and the number
+/* lextree_closest_n_words - given a filled lextree, a test word, and the number
  *                        of matches to return, returns the n closest wors to
  *                        our input word and their edit distance
  */
 lextree_scored_word** lextree_closest_n_words(lextree* lex, char* word, int n);
-lextree_scored_word** lextree_closest_n_words2(lextree* lex, char* word, int n);
 
-lextree_scored_word** closest_n_words(lextree* lex, char* word, int n);
 
 /* lextree_add_to_result - helper function for lextree_closest_n_words.
  *                         Attempts to add a scored word to our list of best
