@@ -98,8 +98,8 @@ lextree_scored_word** lextree_closest_n_words2(lextree* lex, char* word, int n)
             new_node->substring[next->depth] = i+'a';
             new_node->substring[next->depth+1] = '\0';
 
-	    //Push to queue
-	    push_back(q,new_node);
+	    	//Push to queue
+	    	push_back(q,new_node);
         }
 	
         printf("d\b");
@@ -142,6 +142,7 @@ lextree_scored_word** lextree_closest_n_words2(lextree* lex, char* word, int n)
         	new_node->substring[next->depth+1] = '\0';
 
 	    	//push to front of queue
+			/// FIXME: this segfaults for now
 	    	push_front(q,new_node);
         }
 
