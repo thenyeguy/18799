@@ -39,10 +39,9 @@ lextree_scored_word** lextree_closest_n_words2(lextree* lex, char* word, int n)
         //printf("next...%d\n",queue_size(q));
         //Get next node, and potentially throw it away
         lexqueue_node* next = pop_front(q);
-	printf("Score: %d Substring: %s\n",next->score,next->substring);
+	//printf("Score: %d Substring: %s\n",next->score,next->substring);
 	
 	//Prune threshold=2?
-
 	if(next->score>2){
 		free(next);
 		continue;
@@ -52,7 +51,7 @@ lextree_scored_word** lextree_closest_n_words2(lextree* lex, char* word, int n)
         if(next->index > strlen(test_word) ||
            next->depth > lex->depth)
         {
-            printf("carry on\n");
+            //printf("carry on\n");
             continue;
         }
 	
@@ -62,7 +61,6 @@ lextree_scored_word** lextree_closest_n_words2(lextree* lex, char* word, int n)
         if(next->tree_node->is_full_word)
         {
             int num_deletions = strlen(test_word) - next->index - 1;
-	    printf("%s %d\n",next->substring,next->score);
             lextree_add_to_result(words, n, next->substring,
                 next->score + num_deletions);
         }
@@ -74,7 +72,6 @@ lextree_scored_word** lextree_closest_n_words2(lextree* lex, char* word, int n)
 
         // TODO: generate the next set of nodes to visit
         char test_char = test_word[next->index] - 'a';
-	//printf("TEST CHAR: %c\n",test_word[next->index]);
 
         printf("c\b");
         //Generate substituions
@@ -86,9 +83,10 @@ lextree_scored_word** lextree_closest_n_words2(lextree* lex, char* word, int n)
             // What to add - either 1 point for subsitution, or none for
             // exact match
             int score = 1;
-	    //printf("test: %d\t i: %d\n",test_char,i);
             if(test_char == i)
                 score = 0;
+		
+	    //printf("%c\t%d\t%d\t%d\n",test_word[next->index],test_char,i,score);
 
             lexqueue_node* new_node = malloc(sizeof(lexqueue_node));
             new_node->index = next->index + 1;

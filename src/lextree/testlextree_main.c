@@ -25,7 +25,7 @@ int main()
 
     free_lextree(lex);
 */
-    int n = 3;
+    int n = 10;
     lextree_scored_word** res2 = lextree_closest_n_words2(lex, "machine", n);
     for(int i=0; i<n; i++){
 	printf("%s %d\n",res2[i]->word,res2[i]->score);

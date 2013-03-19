@@ -69,6 +69,7 @@ void push_front(lexqueue * queue,lexqueue_node * node){
 		node->next = queue->head;
 		queue->head = node;
 	}
+	queue->size++;
 }
 
 void push_back(lexqueue * queue , lexqueue_node * node){
