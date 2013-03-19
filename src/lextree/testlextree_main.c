@@ -21,7 +21,7 @@ int main()
 
     //Try spellcheck
     int n = 10;
-    lextree_scored_word** res = lextree_closest_n_words(lex, "river", n);
+    lextree_scored_word** res = lextree_closest_n_words(lex, "monkeys", n);
     for(int i=0; i<n; i++) {
 		if(!res[i]){
 			printf("-----------\n");

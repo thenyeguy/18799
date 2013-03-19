@@ -73,7 +73,8 @@ lextree_scored_word** lextree_closest_n_words(lextree* lex, char* word, int n)
         //Update current column and pruning
         if(next->index > current_col) {
             current_col = next->index;
-			min_edit_distance = MAXINT;
+			min_edit_distance++;
+			//min_edit_distance = MAXINT;
 		}
 
         char test_char = test_word[next->index] - 'a';
