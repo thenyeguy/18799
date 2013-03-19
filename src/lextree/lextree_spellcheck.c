@@ -60,7 +60,8 @@ lextree_scored_word** lextree_closest_n_words2(lextree* lex, char* word, int n)
         //We may need to delete the rest of the word to make it match
         if(next->tree_node->is_full_word)
         {
-            int num_deletions = strlen(test_word) - next->index - 1;
+	    //Removed the -1 from num_deletions to get correct distances
+            int num_deletions = strlen(test_word) - next->index;
             lextree_add_to_result(words, n, next->substring,
                 next->score + num_deletions);
         }
