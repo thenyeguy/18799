@@ -217,25 +217,6 @@ int already_in_nbest(lextree_scored_word** words, int n, char* word) {
 }
 
 
-bool compare_priority(pq_data_t left_in, pq_data_t right_in)
-{
-    pq_node* left = (pq_node*) left_in;
-    pq_node* right = (pq_node*) right_in;
-
-    /* We want to the same column in each "trellis" in a row
-     * Do this by first priortizing the word index.
-     *
-     * Otherwise prioritize by lowest score so far
-     */
-    if(left->cur_word_i < right->cur_word_i)
-        return true;
-    else if(right->cur_word_i > left->cur_word_i)
-        return false;
-    else
-        return left->score <= right->score;
-}
-
-
 void lextree_print_n_best(lextree_scored_word** words, int n)
 {
     printf("\nBest %d words found:\n", n);

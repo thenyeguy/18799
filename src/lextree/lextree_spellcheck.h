@@ -2,7 +2,6 @@
 #define LEXTREE_SPELLCHECK_H
 
 #include "lextree.h"
-#include "../libraries/PQ.h"
 
 
 /* This spellcheck uses a relative beam pruning. This constant defines the
@@ -63,13 +62,6 @@ void lextree_add_to_result(lextree_scored_word** words, int n,
  */
 
  int already_in_nbest(lextree_scored_word** words, int n, char* word);
-
-
-/* compare_priority - a helper function for lextree_closest_n_words. Used for
- *                    the priority queue. Returns true of the left has higher
- *                    priority than the right
- */
-bool compare_priority(pq_data_t left_in, pq_data_t right_in);
 
 
 /* lextree_print_n_best - given a list of lextree_scored_words and its length,
