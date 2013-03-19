@@ -8,7 +8,9 @@ lextree* build_lextree_from_file(char* dictionary_path, int dict_size)
 {
     char buffer[256];
     FILE* file = fopen(dictionary_path,"r");
-
+    if(file==NULL){
+	printf("Failed to open file %s\n",dictionary_path);
+    }
     char** dictionary = malloc(dict_size*sizeof(char*));
     for(int i = 0; i < dict_size; i++)
     {

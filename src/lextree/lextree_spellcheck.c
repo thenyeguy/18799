@@ -2,6 +2,209 @@
 #include <stdio.h>
 #include <string.h>
 #include "lextree_spellcheck.h"
+#include "lexqueue_utils.h"
+
+
+
+lextree_scored_word** lextree_closest_n_words2(lextree* lex, char* word, int n)
+{
+    //Null prefix the word
+    char test_word[64] = "*";
+    strcpy(&test_word[1],word);
+
+    //Allocate results array
+    lextree_scored_word** words = calloc(n, sizeof(lextree_scored_word));
+
+    //Create first node to search, use calloc to zero fields
+    lexqueue_node* first = calloc(1,sizeof(lexqueue_node));
+    first->tree_node = lex->head;
+
+    lexqueue * q = init_queue();
+    push_back(q,first);
+    print_queue(q);
+    //Initialize current column, and the min edit distance in that column
+    //for pruning purposes
+    int current_col = 1;
+    current_col=current_col;
+    // What we do here is somewhat clever. Since we have lots of branching,
+    // directly visualizing the stacked trellis is really fucking hard. Instead,
+    // we generate the next nodes to check from the current node, and add them
+    // to a priority queue. We will then check them in a given order: everything
+    // in the same "column" of our "trellis", and then within that column the
+    // nodes with the lowest score first
+    
+    while(queue_size(q) > 0)
+    {
+        printf("next...%d\n",queue_size(q));
+        //Get next node, and potentially throw it away
+        //printf("%d %p\n", pq_number_of_entries(pq), pq_inspect_next(pq,NULL));
+        lexqueue_node* next = pop_front(q);
+        if(next == NULL)
+        {
+            printf("WTF\n");
+            continue;
+        }
+	
+	//Confused about this part
+        if(next->index > strlen(test_word) ||
+           next->depth > lex->depth)
+        {
+            printf("carry on\n");
+            continue;
+        }
+	
+        printf("a\b");
+        //If this is a full word, then add it to our results
+        //We may need to delete the rest of the word to make it match
+        if(next->tree_node->is_full_word)
+        {
+            int num_deletions = strlen(test_word) - next->index - 1;
+            lextree_add_to_result(words, n, next->substring,
+                next->score + num_deletions);
+        }
+	
+        printf("b\b");
+        //Update current column and pruning
+        if(next->index > current_col)
+            current_col = next->index;
+
+        // TODO: generate the next set of nodes to visit
+        char test_char = test_word[next->index] - 'a';
+	test_char=test_char;
+
+        printf("c\b");
+        //Generate substituions
+        for(int i = 0; i < 26; i++)
+        {
+            //Only check next child if we have a child node
+            if(next->tree_node->children[i] == NULL) continue;
+
+            // What to add - either 1 point for subsitution, or none for
+            // exact match
+            int score = 1;
+            if(test_char == i)
+                score = 0;
+
+            lexqueue_node* new_node = malloc(sizeof(lexqueue_node));
+            new_node->index = next->index + 1;
+            new_node->depth = next->depth + 1;
+            new_node->insertions = next->insertions;
+            new_node->deletions = next->deletions;
+            new_node->substitutions = next->substitutions + score;
+            new_node->score = next->score + score;
+            new_node->tree_node = next->tree_node->children[i];
+
+            //Build next word
+            strcpy(new_node->substring, next->substring);
+            new_node->substring[next->depth] = i+'a';
+            new_node->substring[next->depth+1] = '\0';
+
+	    //Push to queue
+	    push_back(q,new_node);
+        }
+	
+        printf("d\b");
+        //Generate insertions
+        for(int i = 0; i < 26; i++)
+        {
+            //Only check next child if we have a child node
+            if(next->tree_node->children[i] == NULL) continue;
+
+            lexqueue_node* new_node = malloc(sizeof(lexqueue_node));
+            new_node->index = next->index;
+            new_node->depth = next->depth + 1;
+            new_node->insertions = next->insertions + 1;
+            new_node->deletions = next->deletions;
+            new_node->substitutions = next->substitutions;
+            new_node->score = next->score + 1;
+            new_node->tree_node = next->tree_node->children[i];
+
+            //Build next word
+            strcpy(new_node->substring, next->substring);
+            new_node->substring[next->depth] = i+'a';
+            new_node->substring[next->depth+1] = '\0';
+
+	    //push to queue
+	    push_back(q,new_node);
+        }
+	
+        printf("e\b");
+        //Generate deletions
+        for(int i = 0; i < 26; i++)
+        {
+            lexqueue_node* new_node = malloc(sizeof(lexqueue_node));
+            new_node->index = next->index + 1;
+            new_node->depth = next->depth;
+            new_node->insertions = next->insertions;
+            new_node->deletions = next->deletions + 1;
+            new_node->substitutions = next->substitutions;
+            new_node->score = next->score + 1;
+            new_node->tree_node = next->tree_node;
+
+            //Build next word
+            strcpy(new_node->substring, next->substring);
+
+	    //push to front of queue
+	    push_front(q,new_node);
+        }
+
+        printf("f\b");
+        //Dispose of this node
+        free(next);
+    }
+
+    return words;
+}
+
+/*
+lextree_scored_word** closest_n_words(lextree* lex, char* word, int n)
+{
+    //Null prefix the word
+    char test_word[64] = "*";
+    strcpy(&test_word[1],word);
+
+    //Allocate results array
+    lextree_scored_word** words = calloc(n, sizeof(lextree_scored_word));
+
+    //initialize queue
+    lexqueue * queue = init_queue();
+    
+    //add lextree head to queue
+    push(queue,lex->head);
+
+    //while lexqueue has elements
+    while(queue->size>0){
+	//print_queue(queue);
+	printf("Queue size: %d\n",get_queue_size(queue));
+	
+	//pop first element, examine words
+	lexqueue_node * popped = pop(queue);
+		
+	for(int i=0; i<26; i++){
+		if(popped->tree_node->children[i]==NULL){
+			continue;
+		}
+		else{
+			push(queue, popped->tree_node->children[i]);
+		}
+		//printf("%d\n",push_back);
+		if(popped->tree_node->is_full_word==1){
+			//Found a leaf with no children, must be a word
+			//printf("WORD!\n");
+		}
+	}
+	free(popped);
+
+	//push valid words to end of queue
+	
+
+ 
+    }
+
+    return words;
+}
+
+*/
 
 
 /* TODO: Implement pruning.

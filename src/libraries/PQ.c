@@ -50,7 +50,7 @@
 
 #include "PQ.h"
 #include "alloc.h"
-
+#include <stdio.h>
 
 // ---------------------------------------------------------------------------
 // Integrity checks
@@ -366,7 +366,7 @@ pq_data_t pq_dequeue(pq_t queue, pq_status_t *status) {
     while ((this_queue->heap[index] == NULL) &&
            (index < this_queue->heap_count))
         index++;
-    
+
     // remember this index
     high_prio_index = index;
     index++;
@@ -394,7 +394,6 @@ pq_data_t pq_dequeue(pq_t queue, pq_status_t *status) {
     
     // adjust counters
     this_queue->entry_count--;
-    
     return this_entry;
 } // end pq_dequeue
 

@@ -19,10 +19,14 @@ int main()
     printf("Word zele in dictionary: %d\n", is_word_in_lextree(lex,"zele"));
 
     //Try spellcheck
+/*
     lextree_scored_word** res = lextree_closest_n_words(lex, "machine", 3);    
     lextree_print_n_best(res,3);
 
     free_lextree(lex);
+*/
 
+    lextree_scored_word** res2 = lextree_closest_n_words2(lex, "machine", 3);
+	res2=res2;
     return 0;
 }
