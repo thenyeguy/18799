@@ -39,15 +39,23 @@ lextree_scored_word** lextree_closest_n_words(lextree* lex, char* word, int n)
         //Get next node, and potentially throw it away
         lexqueue_node* next = pop_front(q);
 	
+	if(PRUNE){
 		if (next->score < min_edit_distance) {
 			min_edit_distance = next -> score;
 		}
-
-	// TODO: figure out a good pruning threshold, right now it's 2
-	if(next->score > min_edit_distance + LEXTREE_CLOSEST_PRUNING_THRESHOLD){
-		//printf("freed node with score %d\n", next->score);
-		free(next);
-		continue;
+	
+		// TODO: figure out a good pruning threshold, right now it's 2
+		if(next->score > min_edit_distance + LEXTREE_CLOSEST_PRUNING_THRESHOLD){
+			//printf("freed node with score %d\n", next->score);
+			free(next);
+			continue;
+		}
+	}
+	if(ABSOLUTE){
+		if(next->score > ABSOLUTE_THRESHOLD){
+			free(next);
+			continue;
+		}
 	}
 
     if(next->index > strlen(test_word) ||
@@ -63,9 +71,15 @@ lextree_scored_word** lextree_closest_n_words(lextree* lex, char* word, int n)
     {
 	//Removed the -1 from num_deletions to get correct distances
         int num_deletions = strlen(test_word) - next->index;
-	if(next->score+num_deletions<=min_edit_distance + LEXTREE_CLOSEST_PRUNING_THRESHOLD){
-        	lextree_add_to_result(words, n, next->substring,
-            	next->score + num_deletions);
+	if(PRUNE){
+		if(next->score+num_deletions<=min_edit_distance + LEXTREE_CLOSEST_PRUNING_THRESHOLD){
+        		lextree_add_to_result(words, n, next->substring,next->score + num_deletions);
+		}
+	}
+	if(ABSOLUTE){
+		if(next->score+num_deletions<=ABSOLUTE_THRESHOLD){
+			lextree_add_to_result(words, n, next->substring,next->score + num_deletions);
+		}
 	}
     }
 	
