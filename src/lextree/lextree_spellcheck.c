@@ -55,6 +55,9 @@ lextree_scored_word** lextree_closest_n_words2(lextree* lex, char* word, int n)
         printf("a\b");
         //If this is a full word, then add it to our results
         //We may need to delete the rest of the word to make it match
+	if(!next->tree_node){
+		printf("oh shit\n");
+	}
         if(next->tree_node->is_full_word)
         {
 	    //Removed the -1 from num_deletions to get correct distances
@@ -92,14 +95,14 @@ lextree_scored_word** lextree_closest_n_words2(lextree* lex, char* word, int n)
             new_node->substitutions = next->substitutions + score;
             new_node->score = next->score + score;
             new_node->tree_node = next->tree_node->children[i];
-
+	    
             //Build next word
             strcpy(new_node->substring, next->substring);
             new_node->substring[next->depth] = i+'a';
             new_node->substring[next->depth+1] = '\0';
 
-	    	//Push to queue
-	    	push_back(q,new_node);
+	    //Push to queue
+	    push_back(q,new_node);
         }
 	
         printf("d\b");
@@ -116,17 +119,21 @@ lextree_scored_word** lextree_closest_n_words2(lextree* lex, char* word, int n)
         new_node->score = next->score + 1;
         new_node->tree_node = next->tree_node;
 
+
         //Build next word
         strcpy(new_node->substring, next->substring);
 
         //push to queue
-	    push_back(q,new_node);
+	push_back(q,new_node);
 
 	
         printf("e\b");
         //Generate deletions
         for(int i = 0; i < 26; i++)
         {
+	    //Only check next child if we have a child node
+            if(next->tree_node->children[i] == NULL) continue;
+
             lexqueue_node* new_node = malloc(sizeof(lexqueue_node));
             new_node->index = next->index;
             new_node->depth = next->depth + 1;
@@ -136,14 +143,13 @@ lextree_scored_word** lextree_closest_n_words2(lextree* lex, char* word, int n)
             new_node->score = next->score + 1;
             new_node->tree_node = next->tree_node->children[i];
 
-			//Build next word
-        	strcpy(new_node->substring, next->substring);
-        	new_node->substring[next->depth] = i+'a';
-        	new_node->substring[next->depth+1] = '\0';
+	    //Build next word
+            strcpy(new_node->substring, next->substring);
+       	    new_node->substring[next->depth] = i+'a';
+            new_node->substring[next->depth+1] = '\0';
 
-	    	//push to front of queue
-			/// FIXME: this segfaults for now
-	    	push_front(q,new_node);
+	    //push to front of queue
+	    push_front(q,new_node);
         }
 
         printf("f\b");
