@@ -162,7 +162,7 @@ pq_t pq_new_queue(pq_counter_t capacity,
     } // end if
     
     // calculate heap size
-    heap_size = _heap_size_for_capacity(capacity);
+//    heap_size = _heap_size_for_capacity(capacity);
     
     // allocate new queue
     new_queue = ALLOCATE(sizeof(pq_s) + heap_size * sizeof(bq_node_p));

@@ -59,6 +59,14 @@ void lextree_add_to_result(lextree_scored_word** words, int n,
                            char* word, int score);
 
 
+/* already_in_nbest - helper function for lextree_add_to_result.  looks in 
+ *					  the list "words" for "word". returns the word's index 
+ *					  in the list if it is there, and -1 if it is not.
+ */
+
+ int already_in_nbest(lextree_scored_word** words, int n, char* word);
+
+
 /* compare_priority - a helper function for lextree_closest_n_words. Used for
  *                    the priority queue. Returns true of the left has higher
  *                    priority than the right

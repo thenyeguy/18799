@@ -361,6 +361,27 @@ void lextree_add_to_result(lextree_scored_word** words, int n,
     lextree_scored_word* node = malloc(sizeof(lextree_scored_word));
     strcpy(node->word, word);
     node->score = score;
+	
+	int index = already_in_nbest(words, n, word);
+
+	if (-1 != index) {
+		/// word is already in the list
+		if (words[index]->score > score) {
+			/// we've found an instance with a better score; ignore that instance
+			/// and shift everything back to make space for the new instance
+			while (index > 0 && words[index-1]->score > score) {
+				words[index] = words[index-1];
+				index--;
+			}
+			strcpy(words[index]->word, word);
+			words[index]->score = score;
+			return;
+		}
+
+		else
+			/// the instance in the list already has a better score
+			return;
+	}
 
     for(int i = 0; i < n; i++)
     {
@@ -384,6 +405,19 @@ void lextree_add_to_result(lextree_scored_word** words, int n,
             return;
         }
     }
+}
+
+int already_in_nbest(lextree_scored_word** words, int n, char* word) {
+	for (int i = 0; i < n; i++) {
+		if (!words[i])
+			/// reached the end of the list
+			break;
+
+		if (!strcmp(words[i]->word, word)) {
+			return i;
+		}
+	}
+	return -1;
 }
 
 
