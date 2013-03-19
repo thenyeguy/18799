@@ -10,7 +10,8 @@ lextree_scored_word** lextree_closest_n_words2(lextree* lex, char* word, int n)
 {
     //Null prefix the word
     char test_word[64] = "*";
-    strcpy(&test_word[1],word);
+    //strcpy(&test_word[1],word);
+    strcpy(&test_word[0],word);
 
     //Allocate results array
     lextree_scored_word** words = calloc(n, sizeof(lextree_scored_word));
@@ -41,12 +42,12 @@ lextree_scored_word** lextree_closest_n_words2(lextree* lex, char* word, int n)
 	printf("Score: %d Substring: %s\n",next->score,next->substring);
 	
 	//Prune threshold=2?
-/*
-	if(next->score>3){
+
+	if(next->score>2){
 		free(next);
 		continue;
 	}
-*/
+
 	//Confused about this part
         if(next->index > strlen(test_word) ||
            next->depth > lex->depth)
@@ -61,6 +62,7 @@ lextree_scored_word** lextree_closest_n_words2(lextree* lex, char* word, int n)
         if(next->tree_node->is_full_word)
         {
             int num_deletions = strlen(test_word) - next->index - 1;
+	    printf("%s %d\n",next->substring,next->score);
             lextree_add_to_result(words, n, next->substring,
                 next->score + num_deletions);
         }
@@ -72,7 +74,7 @@ lextree_scored_word** lextree_closest_n_words2(lextree* lex, char* word, int n)
 
         // TODO: generate the next set of nodes to visit
         char test_char = test_word[next->index] - 'a';
-	test_char=test_char;
+	//printf("TEST CHAR: %c\n",test_word[next->index]);
 
         printf("c\b");
         //Generate substituions
@@ -84,6 +86,7 @@ lextree_scored_word** lextree_closest_n_words2(lextree* lex, char* word, int n)
             // What to add - either 1 point for subsitution, or none for
             // exact match
             int score = 1;
+	    //printf("test: %d\t i: %d\n",test_char,i);
             if(test_char == i)
                 score = 0;
 
@@ -369,7 +372,7 @@ void lextree_add_to_result(lextree_scored_word** words, int n,
             return;
         }
 
-        if(score > words[i]->score)
+        if(score < words[i]->score)
         {
             lextree_scored_word* temp1 = node;
             lextree_scored_word* temp2 = words[i];
