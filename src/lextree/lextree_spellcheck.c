@@ -9,7 +9,7 @@
 lextree_scored_word** lextree_closest_n_words2(lextree* lex, char* word, int n)
 {
     //Null prefix the word
-    char test_word[64] = "*";
+    char test_word[LT_WORD_LENGTH] = "*";
     //strcpy(&test_word[1],word);
     strcpy(&test_word[0],word);
 
@@ -36,13 +36,11 @@ lextree_scored_word** lextree_closest_n_words2(lextree* lex, char* word, int n)
     
     while(queue_size(q) > 0)
     {
-        //printf("next...%d\n",queue_size(q));
         //Get next node, and potentially throw it away
         lexqueue_node* next = pop_front(q);
-	//printf("Score: %d Substring: %s\n",next->score,next->substring);
 	
 	//Prune threshold=2?
-	if(next->score>2){
+	if(next->score>LEXTREE_CLOSEST_PRUNING_THRESHOLD){
 		free(next);
 		continue;
 	}
@@ -51,7 +49,6 @@ lextree_scored_word** lextree_closest_n_words2(lextree* lex, char* word, int n)
         if(next->index > strlen(test_word) ||
            next->depth > lex->depth)
         {
-            //printf("carry on\n");
             continue;
         }
 	
@@ -71,7 +68,6 @@ lextree_scored_word** lextree_closest_n_words2(lextree* lex, char* word, int n)
         if(next->index > current_col)
             current_col = next->index;
 
-        // TODO: generate the next set of nodes to visit
         char test_char = test_word[next->index] - 'a';
 
         printf("c\b");
@@ -87,7 +83,6 @@ lextree_scored_word** lextree_closest_n_words2(lextree* lex, char* word, int n)
             if(test_char == i)
                 score = 0;
 		
-	    //printf("%c\t%d\t%d\t%d\n",test_word[next->index],test_char,i,score);
 
             lexqueue_node* new_node = malloc(sizeof(lexqueue_node));
             new_node->index = next->index + 1;
@@ -147,7 +142,7 @@ lextree_scored_word** lextree_closest_n_words2(lextree* lex, char* word, int n)
         	new_node->substring[next->depth+1] = '\0';
 
 	    	//push to front of queue
-	    	//push_front(q,new_node);
+	    	push_front(q,new_node);
         }
 
         printf("f\b");

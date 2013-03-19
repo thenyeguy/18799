@@ -8,14 +8,14 @@
 /* This spellcheck uses a relative beam pruning. This constant defines the
  * pruning threshold used.
  */
-#define LEXTREE_CLOSEST_PRUNING THRESHOLD 3
-
+#define LEXTREE_CLOSEST_PRUNING_THRESHOLD 2
+#define LT_WORD_LENGTH 64
 
 /* lextree_scored_word is a pair that contains a word and its edit distance.
  *                     CURRENTLY ASSUMES WORDS AT MOST 64 CHARS LONG.
  */
 typedef struct {
-    char word[64];
+    char word[LT_WORD_LENGTH];
     int score;
 } lextree_scored_word;
 
@@ -37,7 +37,7 @@ typedef struct {
     int score;
 
     lextree_node* cur_node;
-    char word_so_far[64];
+    char word_so_far[LT_WORD_LENGTH];
 } pq_node;
     
 
