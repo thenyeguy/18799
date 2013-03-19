@@ -108,48 +108,46 @@ lextree_scored_word** lextree_closest_n_words2(lextree* lex, char* word, int n)
         }
 	
         printf("d\b");
-        //Generate insertions
-        for(int i = 0; i < 26; i++)
-        {
-            //Only check next child if we have a child node
-            if(next->tree_node->children[i] == NULL) continue;
 
-            lexqueue_node* new_node = malloc(sizeof(lexqueue_node));
-            new_node->index = next->index;
-            new_node->depth = next->depth + 1;
-            new_node->insertions = next->insertions + 1;
-            new_node->deletions = next->deletions;
-            new_node->substitutions = next->substitutions;
-            new_node->score = next->score + 1;
-            new_node->tree_node = next->tree_node->children[i];
+        //Generate insertion
+		/// no need to check child nodes, since we're not moving further
+		/// in the lextree
+        lexqueue_node* new_node = malloc(sizeof(lexqueue_node));
+        new_node->index = next->index + 1;
+        new_node->depth = next->depth;
+        new_node->insertions = next->insertions + 1;
+        new_node->deletions = next->deletions;
+        new_node->substitutions = next->substitutions;
+        new_node->score = next->score + 1;
+        new_node->tree_node = next->tree_node;
 
-            //Build next word
-            strcpy(new_node->substring, next->substring);
-            new_node->substring[next->depth] = i+'a';
-            new_node->substring[next->depth+1] = '\0';
+        //Build next word
+        strcpy(new_node->substring, next->substring);
 
-	    //push to queue
+        //push to queue
 	    push_back(q,new_node);
-        }
+
 	
         printf("e\b");
         //Generate deletions
         for(int i = 0; i < 26; i++)
         {
             lexqueue_node* new_node = malloc(sizeof(lexqueue_node));
-            new_node->index = next->index + 1;
-            new_node->depth = next->depth;
+            new_node->index = next->index;
+            new_node->depth = next->depth + 1;
             new_node->insertions = next->insertions;
             new_node->deletions = next->deletions + 1;
             new_node->substitutions = next->substitutions;
             new_node->score = next->score + 1;
-            new_node->tree_node = next->tree_node;
+            new_node->tree_node = next->tree_node->children[i];
 
-            //Build next word
-            strcpy(new_node->substring, next->substring);
+			//Build next word
+        	strcpy(new_node->substring, next->substring);
+        	new_node->substring[next->depth] = i+'a';
+        	new_node->substring[next->depth+1] = '\0';
 
-	    //push to front of queue
-	    //push_front(q,new_node);
+	    	//push to front of queue
+	    	//push_front(q,new_node);
         }
 
         printf("f\b");
