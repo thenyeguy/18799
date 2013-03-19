@@ -17,10 +17,11 @@ int main()
     printf("Word zzz in dictionary: %d\n", is_word_in_lextree(lex,"zzz"));
     printf("Word zel in dictionary: %d\n", is_word_in_lextree(lex,"zel"));
     printf("Word zele in dictionary: %d\n", is_word_in_lextree(lex,"zele"));
+    printf("Word murder in dictionary: %d\n", is_word_in_lextree(lex,"murder"));
 
     //Try spellcheck
     int n = 10;
-    lextree_scored_word** res = lextree_closest_n_words(lex, "murder", n);
+    lextree_scored_word** res = lextree_closest_n_words(lex, "river", n);
     for(int i=0; i<n; i++) {
 		if(!res[i]){
 			printf("-----------\n");

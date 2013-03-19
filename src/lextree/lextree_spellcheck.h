@@ -9,6 +9,8 @@
  */
 #define LEXTREE_CLOSEST_PRUNING_THRESHOLD 2
 #define LT_WORD_LENGTH 64
+#define MININT (1<<31)
+#define MAXINT (~MININT)
 
 /* lextree_scored_word is a pair that contains a word and its edit distance.
  *                     CURRENTLY ASSUMES WORDS AT MOST 64 CHARS LONG.
