@@ -20,9 +20,14 @@ int main()
 
     //Try spellcheck
     int n = 10;
-    lextree_scored_word** res = lextree_closest_n_words(lex, "arrive", n);
+    lextree_scored_word** res = lextree_closest_n_words(lex, "murder", n);
     for(int i=0; i<n; i++) {
-		printf("%s %d\n",res[i]->word,res[i]->score);
+		if(!res[i]){
+			printf("-----------\n");
+		}
+		else{
+			printf("%s %d\n",res[i]->word,res[i]->score);
+		}
     }
     return 0;
 }
