@@ -32,6 +32,7 @@ lexqueue * init_queue(){
 	lexqueue * queue = (lexqueue *) malloc(sizeof(lexqueue));
 	queue->size = 0;
 	queue->head = NULL;
+    queue->tail = NULL;
 	return queue;
 }
 
@@ -64,6 +65,7 @@ void push_front(lexqueue * queue,lexqueue_node * node){
 	lexqueue_node * temp = queue->head;
         if(!temp){
                 queue->head = node;
+                queue->tail = node;
         }
 	else{
 		node->next = queue->head;
@@ -76,13 +78,11 @@ void push_back(lexqueue * queue , lexqueue_node * node){
 	lexqueue_node * temp = queue->head;
 	if(!temp){
 		queue->head = node;
+        queue->tail = node;
 	}
 	else{	
-		while(temp->next){
-			temp = temp->next;
-		}
-		temp->next = node;
-		node->next = NULL;
+		queue->tail->next = node;
+		queue->tail = node;
 	}
 	queue->size ++;
 }

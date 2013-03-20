@@ -32,6 +32,7 @@ typedef struct lexqueue_node {
 
 typedef struct lexqueue {
 	lexqueue_node *head;
+    lexqueue_node *tail;
 	int size;
 } lexqueue;
 

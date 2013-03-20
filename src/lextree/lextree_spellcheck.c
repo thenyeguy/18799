@@ -29,6 +29,8 @@ lextree_scored_word** lextree_closest_n_words(lextree* lex, char* word, int n,
 	int min_edit_distance = MAXINT; 
 
 
+    int seen = 0;
+    int pruned = 0;
 	// What we do here is somewhat clever. Since we have lots of branching,
 	// directly visualizing the stacked trellis is really fucking hard. Instead,
 	// we generate the next nodes to check from the current node, and add them
@@ -38,10 +40,13 @@ lextree_scored_word** lextree_closest_n_words(lextree* lex, char* word, int n,
 	{
 		//Get next node
 		lexqueue_node* next = pop_front(q);
+        printf("%d %d %s\n", next->index, next->score, next->substring);
 
+        seen++;
         //Toss this node if we have passed the last column
         if(next->index > strlen(word))
         {
+            pruned++;
             free(next);
             continue;
         }
@@ -53,6 +58,7 @@ lextree_scored_word** lextree_closest_n_words(lextree* lex, char* word, int n,
         {
             current_col = next->index;
             min_edit_distance++;
+            printf("%d/%d %d\n", pruned, seen, q->size);
         }
 
         //Update pruning for next column
@@ -63,6 +69,7 @@ lextree_scored_word** lextree_closest_n_words(lextree* lex, char* word, int n,
         if(min_edit_distance+LEXTREE_CLOSEST_PRUNING_THRESHOLD > 0 &&
            next->score > min_edit_distance + LEXTREE_CLOSEST_PRUNING_THRESHOLD)
         {
+            pruned++;
             free(next);
             continue;
         }

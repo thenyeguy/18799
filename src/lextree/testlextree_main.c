@@ -26,5 +26,9 @@ int main()
     lextree_scored_word** res = lextree_closest_n_words(lex, "monkeys", n, false);
     lextree_print_n_best(res, n);
 
+    //Try segmenting
+    res = lextree_closest_n_words(lex, "monkeysee", n, true);
+    lextree_print_n_best(res, n);
+
     return 0;
 }
