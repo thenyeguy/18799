@@ -5,15 +5,11 @@
 #include "lexqueue_utils.h"
 
 
-lextree_scored_word** lextree_closest_n_words(lextree* lex, char* word, int n,
-                                              bool segment)
+lextree_scored_string** lextree_closest_n(lextree* lex, char* string, int n,
+                                          bool segment)
 {
-	//Null prefix the word
-	char test_word[LT_WORD_LENGTH];// = "*";
-	strcpy(&test_word[0],word);
-
 	//Allocate results array
-	lextree_scored_word** words = calloc(n, sizeof(lextree_scored_word));
+	lextree_scored_string** strings = calloc(n, sizeof(lextree_scored_string));
 
 	//Create first node to search, use calloc to zero fields
 	lexqueue_node* first = calloc(1,sizeof(lexqueue_node));
@@ -29,8 +25,6 @@ lextree_scored_word** lextree_closest_n_words(lextree* lex, char* word, int n,
 	int min_edit_distance = MAXINT; 
 
 
-    int seen = 0;
-    int pruned = 0;
 	// What we do here is somewhat clever. Since we have lots of branching,
 	// directly visualizing the stacked trellis is really fucking hard. Instead,
 	// we generate the next nodes to check from the current node, and add them
@@ -40,13 +34,11 @@ lextree_scored_word** lextree_closest_n_words(lextree* lex, char* word, int n,
 	{
 		//Get next node
 		lexqueue_node* next = pop_front(q);
-        printf("%d %d %s\n", next->index, next->score, next->substring);
 
-        seen++;
+
         //Toss this node if we have passed the last column
-        if(next->index > strlen(word))
+        if(next->index > strlen(string))
         {
-            pruned++;
             free(next);
             continue;
         }
@@ -58,7 +50,6 @@ lextree_scored_word** lextree_closest_n_words(lextree* lex, char* word, int n,
         {
             current_col = next->index;
             min_edit_distance++;
-            printf("%d/%d %d\n", pruned, seen, q->size);
         }
 
         //Update pruning for next column
@@ -69,18 +60,16 @@ lextree_scored_word** lextree_closest_n_words(lextree* lex, char* word, int n,
         if(min_edit_distance+LEXTREE_CLOSEST_PRUNING_THRESHOLD > 0 &&
            next->score > min_edit_distance + LEXTREE_CLOSEST_PRUNING_THRESHOLD)
         {
-            pruned++;
             free(next);
             continue;
         }
 
 
 
-        //printf("%d %s %d\n", next->index, next->substring, next->score);
         //Check if we reached a terminal node
-		if(next->tree_node->is_full_word && next->index == strlen(word))
+		if(next->tree_node->is_full_word && next->index == strlen(string))
 		{
-			lextree_add_to_result(words, n, next->substring,next->score);
+			lextree_add_to_result(strings, n, next->substring,next->score);
             free(next);
 			continue;
 		}
@@ -92,29 +81,35 @@ lextree_scored_word** lextree_closest_n_words(lextree* lex, char* word, int n,
             {
                 // If we are segmenting, allow recursion
                 // Slap on a space and loop back to the head of the lextree
-                lexqueue_node* temp = next;
-                next = calloc(1,sizeof(lexqueue_node));
-                next->tree_node = lex->head;
-                next->index = temp->index;
-                next->depth = temp->depth + 1;
-                next->insertions = temp->insertions + 1;
-                next->deletions = temp->deletions;
-                next->substitutions = temp->substitutions;
-                next->score = temp->score+1;
-                
-                // insert a space to the new "next" node
-                strcpy(next->substring, temp->substring);
-                next->substring[temp->depth] = ' ';
-                next->substring[temp->depth+1] = '\0';
+                lexqueue_node* new_node = calloc(1,sizeof(lexqueue_node));
+                new_node->tree_node = lex->head;
+                new_node->index = next->index;
+                new_node->depth = next->depth + 1;
+                new_node->insertions = next->insertions;
+                new_node->deletions = next->deletions + 1;
+                new_node->substitutions = next->substitutions;
+                new_node->score = next->score+1;
 
-                push_back(q,next);
-                free(temp);
+                // If the next char is a space, consume instead of deleting
+                if(string[next->index] == ' ')
+                {
+                    new_node->index++;
+                    new_node->deletions--;
+                    new_node->score--;
+                }
+                
+                // insert a space to the new "new_node" node
+                strcpy(new_node->substring, next->substring);
+                new_node->substring[next->depth] = ' ';
+                new_node->substring[next->depth+1] = '\0';
+
+                push_front(q,new_node);
             }
         }
 
 
         //Generate children traversal now
-		char test_char = test_word[next->index] - 'a';
+		char test_char = string[next->index] - 'a';
 
 
 		//Generate substituions
@@ -194,32 +189,33 @@ lextree_scored_word** lextree_closest_n_words(lextree* lex, char* word, int n,
 			push_front(q,new_node);
 		}
 
+
 		//Dispose of this node
 		free(next);
 	}
 
-	return words;
+	return strings;
 }
 
 
-void lextree_add_to_result(lextree_scored_word** words, int n,
-		char* word, int score)
+void lextree_add_to_result(lextree_scored_string** strings, int n,
+		char* string, int score)
 {
-	lextree_scored_word* node = malloc(sizeof(lextree_scored_word));
-	strcpy(node->word, word);
+	lextree_scored_string* node = malloc(sizeof(lextree_scored_string));
+	strcpy(node->string, string);
 	node->score = score;
 
-	int index = already_in_nbest(words, n, word);
+	int index = already_in_nbest(strings, n, string);
 
 	if (-1 != index) {
 		/// word is already in the list
 		/// if the instance in the list has a higher cost, replace it with this one
-		if (words[index]->score > score) {
-			while (index > 0 && words[index-1]->score > score) {
-				words[index] = words[index-1];
+		if (strings[index]->score > score) {
+			while (index > 0 && strings[index-1]->score > score) {
+				strings[index] = strings[index-1];
 				index--;
 			}
-			words[index] = node;
+			strings[index] = node;
 		}
 
 		return;
@@ -228,34 +224,34 @@ void lextree_add_to_result(lextree_scored_word** words, int n,
 	for(int i = 0; i < n; i++)
 	{
 		//If we see an empty slot, then put our item at the bottom
-		if(words[i] == NULL)
+		if(strings[i] == NULL)
 		{
-			words[i] = node;
+			strings[i] = node;
 			return;
 		}
 
-		if(score < words[i]->score)
+		if(score < strings[i]->score)
 		{
-			lextree_scored_word* temp1 = node;
-			lextree_scored_word* temp2 = words[i];
+			lextree_scored_string* temp1 = node;
+			lextree_scored_string* temp2 = strings[i];
 			for (int j = i; j < n; j++)
 			{
-				words[j] = temp1;
+				strings[j] = temp1;
 				temp1 = temp2;
-				if (j+1 < n) temp2 = words[j+1];
+				if (j+1 < n) temp2 = strings[j+1];
 			}
 			return;
 		}
 	}
 }
 
-int already_in_nbest(lextree_scored_word** words, int n, char* word) {
+int already_in_nbest(lextree_scored_string** strings, int n, char* string) {
 	for (int i = 0; i < n; i++) {
-		if (!words[i])
+		if (!strings[i])
 			/// reached the end of the list
 			break;
 
-		if (!strcmp(words[i]->word, word)) {
+		if (!strcmp(strings[i]->string, string)) {
 			return i;
 		}
 	}
@@ -263,30 +259,30 @@ int already_in_nbest(lextree_scored_word** words, int n, char* word) {
 }
 
 
-void lextree_print_n_best(lextree_scored_word** words, int n)
+void lextree_print_n_best(lextree_scored_string** strings, int n)
 {
-	printf("\nBest %d words found:\n", n);
+	printf("\nBest %d matches found:\n", n);
 	for(int i = 0; i < n; i++)
 	{
 		//If we ran out of words...
-		if(words[i] == NULL)
+		if(strings[i] == NULL)
 			return;
 
-		printf("\t%s:\t%d\n", words[i]->word, words[i]->score);
+		printf("\t%s:\t%d\n", strings[i]->string, strings[i]->score);
 	}
 	printf("\n");
 }
 
 
-void lextree_free_n_best(lextree_scored_word** words, int n)
+void lextree_free_n_best(lextree_scored_string** strings, int n)
 {
 	for(int i = 0; i < n; i++)
 	{
 		//If we ran out of words...
-		if(words[i] == NULL)
+		if(strings[i] == NULL)
 			break;
 
-		free(words[i]);
+		free(strings[i]);
 	}
-	free(words);
+	free(strings);
 }

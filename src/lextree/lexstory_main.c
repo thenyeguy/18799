@@ -52,9 +52,9 @@ int main(int argc, char **argv)
         for(word = strtok(line," \n"); word != NULL; word = strtok(NULL," \n"))
         {
             printf("%s ... ",word); fflush(stdout);
-			lextree_scored_word** word_matches =
-                lextree_closest_n_words(lex, word, 1, false);
-            char* result = word_matches[0] ? word_matches[0]->word : NULL;
+			lextree_scored_string** matches =
+                lextree_closest_n(lex, word, 1, false);
+            char* result = matches[0] ? matches[0]->string : NULL;
 
             fprintf(out, "%s ", result);
             printf("%s\n", result);
