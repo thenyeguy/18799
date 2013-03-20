@@ -57,30 +57,58 @@ lextree_scored_word** lextree_closest_n_words(lextree* lex, char* word, int n)
 				continue;
 			}
 		}
-		if(next->index > strlen(test_word) ||
-				next->depth > lex->depth)
+
+
+	/// TODO: Make sure this is no longer necessary and will be taken care of by pruning
+	/*	
+		if(next->index > strlen(test_word) || next->depth > lex->depth)
 		{
+			/// this is where we really go home.
 			continue;
 		}
+	*/
+
 
 		printf("a\b");
-		//If this is a full word, then add it to our results
-		//We may need to delete the rest of the word to make it match
 
 		if(next->tree_node->is_full_word)
 		{
-			//Removed the -1 from num_deletions to get correct distances
-			int num_deletions = strlen(test_word) - next->index;
-
-			if(PRUNE){
-				if(next->score+num_deletions<=min_edit_distance + LEXTREE_CLOSEST_PRUNING_THRESHOLD){
-					lextree_add_to_result(words, n, next->substring,next->score + num_deletions);
+			if (next->index == strlen(test_word)-1) {
+				/// we're done here, pack it up and GO HOME TEAM
+				if(PRUNE){
+					if(next->score<=min_edit_distance + LEXTREE_CLOSEST_PRUNING_THRESHOLD){
+						lextree_add_to_result(words, n, next->substring,next->score);
+					}
 				}
+				if(ABSOLUTE){
+					if(next->score<=ABSOLUTE_THRESHOLD){
+						lextree_add_to_result(words, n, next->substring,next->score);
+					}
+				}
+				continue;
 			}
-			if(ABSOLUTE){
-				if(next->score+num_deletions<=ABSOLUTE_THRESHOLD){
-					lextree_add_to_result(words, n, next->substring,next->score + num_deletions);
-				}
+
+			else {
+				/// slap on a space and loop back around to the head of the lextree
+				lexqueue_node* temp = next;
+				next = calloc(1,sizeof(lexqueue_node));
+				next -> tree_node = lex->head;
+				
+				/// insert a space to the new "next" node
+				strcpy(next->substring, temp->substring);
+				next->substring[index] = ' ';
+				next->substring[index+1] = '\0';
+
+				next->index = temp->index;
+				next->depth = temp->depth + 1;
+				next->insertions = temp->insertions + 1;
+				next->deletions = temp->deletions;
+				next->substitutions = temp->substitutions;
+				next->score = temp->score+1;
+
+				/// TODO: free temp
+
+				/// now we continue just like normal, and add the next nodes to visit to the queue.
 			}
 		}
 
