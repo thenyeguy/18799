@@ -9,7 +9,7 @@
 lextree_scored_word** lextree_closest_n_words(lextree* lex, char* word, int n)
 {
 	//Null prefix the word
-	char test_word[LT_WORD_LENGTH] = "*";
+	char test_word[LT_WORD_LENGTH];// = "*";
 	strcpy(&test_word[0],word);
 
 	//Allocate results array
@@ -115,7 +115,7 @@ lextree_scored_word** lextree_closest_n_words(lextree* lex, char* word, int n)
 			new_node->substitutions = next->substitutions + score;
 			new_node->score = next->score + score;
 			new_node->tree_node = next->tree_node->children[i];
-			
+			new_node->next = NULL;
 
 			//Build next word
 			strcpy(new_node->substring, next->substring);
@@ -124,7 +124,7 @@ lextree_scored_word** lextree_closest_n_words(lextree* lex, char* word, int n)
 
 			//Push to queue
 			push_back(q,new_node);
-			printf("this should print 26 times yo %d\n", i);	
+			//printf("this should print 26 times yo %d\n", i);	
 		}
 
 		printf("d\b");
@@ -140,7 +140,7 @@ lextree_scored_word** lextree_closest_n_words(lextree* lex, char* word, int n)
 		new_node->substitutions = next->substitutions;
 		new_node->score = next->score + 1;
 		new_node->tree_node = next->tree_node;
-
+		new_node->next = NULL;
 
 		//Build next word
 		strcpy(new_node->substring, next->substring);
@@ -164,6 +164,7 @@ lextree_scored_word** lextree_closest_n_words(lextree* lex, char* word, int n)
 			new_node->substitutions = next->substitutions;
 			new_node->score = next->score + 1;
 			new_node->tree_node = next->tree_node->children[i];
+			new_node->next = NULL;		
 
 			//Build next word
 			strcpy(new_node->substring, next->substring);
