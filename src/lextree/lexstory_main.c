@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "lextree.h"
 #include "lextree_spellcheck.h"
 
@@ -51,13 +52,8 @@ int main(int argc, char **argv)
         for(word = strtok(line," \n"); word != NULL; word = strtok(NULL," \n"))
         {
             printf("%s ... ",word); fflush(stdout);
-			lextree_scored_word**	
-			
-            char* result;
-            if(best->word == NULL) result = word;
-            else               result = best->word;
-
-
+			lextree_scored_word** word_matches = lextree_closest_n_words(lex, word, 1);
+            char* result = word_matches[0] ? word_matches[0]->word : NULL;
 
             fprintf(out, "%s ", result);
             printf("%s\n", result);
