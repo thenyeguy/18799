@@ -1,6 +1,7 @@
 #ifndef LEXTREE_SPELLCHECK_H
 #define LEXTREE_SPELLCHECK_H
 
+#include <stdbool.h>
 #include "lextree.h"
 
 
@@ -8,9 +9,7 @@
  * pruning threshold used.
  */
 #define LEXTREE_CLOSEST_PRUNING_THRESHOLD 2
-#define PRUNE 1
-#define ABSOLUTE_THRESHOLD 2
-#define ABSOLUTE 1
+ 
 #define LT_WORD_LENGTH 64
 #define MININT (1<<31)
 #define MAXINT (~MININT)
@@ -47,9 +46,12 @@ typedef struct {
 
 /* lextree_closest_n_words - given a filled lextree, a test word, and the number
  *                        of matches to return, returns the n closest wors to
- *                        our input word and their edit distance
+ *                        our input word and their edit distance. If segment is
+ *                        true, then we search for multiple words and insert
+ *                        spaces
  */
-lextree_scored_word** lextree_closest_n_words(lextree* lex, char* word, int n);
+lextree_scored_word** lextree_closest_n_words(lextree* lex, char* word, int n,
+                                              bool segment);
 
 
 /* lextree_add_to_result - helper function for lextree_closest_n_words.

@@ -5,8 +5,8 @@
 #include "lexqueue_utils.h"
 
 
-
-lextree_scored_word** lextree_closest_n_words(lextree* lex, char* word, int n)
+lextree_scored_word** lextree_closest_n_words(lextree* lex, char* word, int n,
+                                              bool segment)
 {
 	//Null prefix the word
 	char test_word[LT_WORD_LENGTH];// = "*";
@@ -19,7 +19,8 @@ lextree_scored_word** lextree_closest_n_words(lextree* lex, char* word, int n)
 	lexqueue_node* first = calloc(1,sizeof(lexqueue_node));
 	first->tree_node = lex->head;
 
-	lexqueue * q = init_queue();
+    //Create queue to keep track of nodes
+	lexqueue* q = init_queue();
 	push_back(q,first);
 
 	//Initialize current column, and the min edit distance in that column
@@ -27,101 +28,102 @@ lextree_scored_word** lextree_closest_n_words(lextree* lex, char* word, int n)
 	int current_col = 1;
 	int min_edit_distance = MAXINT; 
 
+    int pruned = 0;
+    int seen = 0;
+    int added = 0;
+
 	// What we do here is somewhat clever. Since we have lots of branching,
 	// directly visualizing the stacked trellis is really fucking hard. Instead,
 	// we generate the next nodes to check from the current node, and add them
 	// to a priority queue. We will then check them in a given order: everything
-	// in the same "column" of our "trellis", and then within that column the
-	// nodes with the lowest score first
-
+	// in the same "column" of our "trellis", so as to prune correctly
 	while(queue_size(q) > 0)
 	{
-		//Get next node, and potentially throw it away
+        seen++;
+		//Get next node
 		lexqueue_node* next = pop_front(q);
 
-		if(PRUNE){
-			if (next->score < min_edit_distance) {
-				min_edit_distance = next -> score;
-			}
-
-			// TODO: figure out a good pruning threshold, right now it's 2
-			if(next->score > min_edit_distance + LEXTREE_CLOSEST_PRUNING_THRESHOLD){
-				//printf("freed node with score %d\n", next->score);
-				free(next);
-				continue;
-			}
-		}
-		if(ABSOLUTE){
-			if(next->score > ABSOLUTE_THRESHOLD){
-				free(next);
-				continue;
-			}
-		}
+        //Toss this node if we have passed the last column
+        if(next->index > strlen(word))
+        {
+            free(next);
+            continue;
+        }
 
 
-	/// TODO: Make sure this is no longer necessary and will be taken care of by pruning
-	/*	
-		if(next->index > strlen(test_word) || next->depth > lex->depth)
+        //Update pruning information
+        //If we have a new column, reset the pruning
+        if(current_col < next->index)
+        {
+            current_col = next->index;
+            min_edit_distance++;
+            printf("pruning: %d\n", min_edit_distance+LEXTREE_CLOSEST_PRUNING_THRESHOLD);
+            printf("    %d %d %d\n", pruned, seen, q->size);
+        }
+
+        //Update pruning for next column
+        if(next->score < min_edit_distance)
+            min_edit_distance = next->score;
+
+        //Toss this node if it exceeds the pruning threshold
+        if(min_edit_distance+LEXTREE_CLOSEST_PRUNING_THRESHOLD > 0 &&
+           next->score > min_edit_distance + LEXTREE_CLOSEST_PRUNING_THRESHOLD)
+        {
+            pruned++;
+            free(next);
+            continue;
+        }
+
+
+
+        //printf("%d %s %d\n", next->index, next->substring, next->score);
+        //Check if we reached a terminal node
+		if(next->tree_node->is_full_word && next->index == strlen(word))
 		{
-			/// this is where we really go home.
+            added++;
+			lextree_add_to_result(words, n, next->substring,next->score);
+            free(next);
 			continue;
 		}
-	*/
+
+        //Handle reaching the end of a word in the lextree
+        if(next->tree_node->is_full_word)
+        {
+            if(segment)
+            {
+                // If we are segmenting, allow recursion
+                // Slap on a space and loop back to the head of the lextree
+                lexqueue_node* temp = next;
+                next = calloc(1,sizeof(lexqueue_node));
+                next->tree_node = lex->head;
+                next->index = temp->index;
+                next->depth = temp->depth + 1;
+                next->insertions = temp->insertions + 1;
+                next->deletions = temp->deletions;
+                next->substitutions = temp->substitutions;
+                next->score = temp->score+1;
+                
+                // insert a space to the new "next" node
+                strcpy(next->substring, temp->substring);
+                next->substring[temp->depth] = ' ';
+                next->substring[temp->depth+1] = '\0';
+
+                push_back(q,next);
+                free(temp);
+            }
+            else
+            {
+                //If we aren't segmenting, we have nothing further to do
+                free(next);
+                continue;
+            }
+        }
 
 
-		printf("a\b");
-
-		if(next->tree_node->is_full_word)
-		{
-			if (next->index == strlen(test_word)-1) {
-				/// we're done here, pack it up and GO HOME TEAM
-				if(PRUNE){
-					if(next->score<=min_edit_distance + LEXTREE_CLOSEST_PRUNING_THRESHOLD){
-						lextree_add_to_result(words, n, next->substring,next->score);
-					}
-				}
-				if(ABSOLUTE){
-					if(next->score<=ABSOLUTE_THRESHOLD){
-						lextree_add_to_result(words, n, next->substring,next->score);
-					}
-				}
-				continue;
-			}
-
-			else {
-				/// slap on a space and loop back around to the head of the lextree
-				lexqueue_node* temp = next;
-				next = calloc(1,sizeof(lexqueue_node));
-				next -> tree_node = lex->head;
-				
-				/// insert a space to the new "next" node
-				strcpy(next->substring, temp->substring);
-				next->substring[temp->index] = ' ';
-				next->substring[temp->index+1] = '\0';
-
-				next->index = temp->index;
-				next->depth = temp->depth + 1;
-				next->insertions = temp->insertions + 1;
-				next->deletions = temp->deletions;
-				next->substitutions = temp->substitutions;
-				next->score = temp->score+1;
-
-				/// TODO: free temp
-
-				/// now we continue just like normal, and add the next nodes to visit to the queue.
-			}
-		}
-
-		printf("b\b");
-		//Update current column and pruning
-		if(next->index > current_col) {
-			current_col = next->index;
-			min_edit_distance++;
-			//min_edit_distance = MAXINT;
-		}
-
+        //Generate children traversal now
 		char test_char = test_word[next->index] - 'a';
-		printf("c\b");
+
+
 		//Generate substituions
 		for(int i = 0; i < 26; i++)
 		{
@@ -133,7 +135,6 @@ lextree_scored_word** lextree_closest_n_words(lextree* lex, char* word, int n)
 			int score = 1;
 			if(test_char == i)
 				score = 0;
-			
 
 			lexqueue_node* new_node = malloc(sizeof(lexqueue_node));
 			new_node->index = next->index + 1;
@@ -152,10 +153,8 @@ lextree_scored_word** lextree_closest_n_words(lextree* lex, char* word, int n)
 
 			//Push to queue
 			push_back(q,new_node);
-			//printf("this should print 26 times yo %d\n", i);	
 		}
 
-		printf("d\b");
 
 		//Generate insertion
 		/// no need to check child nodes, since we're not moving further
@@ -176,11 +175,10 @@ lextree_scored_word** lextree_closest_n_words(lextree* lex, char* word, int n)
 		//push to queue
 		push_back(q,new_node);
 
-		printf("e\b");
+
 		//Generate deletions
 		for(int i = 0; i < 26; i++)
 		{
-
 			//Only check next child if we have a child node
 			if(next->tree_node->children[i] == NULL) continue;
 
@@ -203,12 +201,11 @@ lextree_scored_word** lextree_closest_n_words(lextree* lex, char* word, int n)
 			push_front(q,new_node);
 		}
 
-		printf("f\b");
-
 		//Dispose of this node
 		free(next);
 	}
 
+    printf("%d %d %d\n", added, pruned, seen);
 	return words;
 }
 
@@ -283,7 +280,7 @@ void lextree_print_n_best(lextree_scored_word** words, int n)
 		if(words[i] == NULL)
 			return;
 
-		printf("\t%s (score %d)\n", words[i]->word, words[i]->score);
+		printf("\t%s:\t%d\n", words[i]->word, words[i]->score);
 	}
 	printf("\n");
 }

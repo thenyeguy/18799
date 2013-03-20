@@ -8,9 +8,9 @@ int main(int argc, char **argv)
 {
     if(argc < 2)
     {
-        printf("Usage: ./spellcheck [file to check]\n");
-        printf("    Correct \n\n");
-        printf("E.G. \"./spellcheck mytest\" reads in:\n");
+        printf("Usage: ./lextree-storycheck [file to check]\n");
+        printf("    Corrects a story word by word.\n\n");
+        printf("E.G. \"./lextree-storycheck mytest\" reads in:\n");
         printf("         text/mytest.txt\n");
         printf("     and saves files such as:\n");
         printf("         text/mytest.out\n");
@@ -24,6 +24,7 @@ int main(int argc, char **argv)
 	
 	char name[256];
 	sprintf(name, "text/%s.out", argv[1]);
+    printf("Writing corrected data to:\n    %s\n\n", name);
 
     //Open the file and determine its length to read in
     //Then close it when done
@@ -40,7 +41,6 @@ int main(int argc, char **argv)
 
 	// TODO: make this a macro
 	int dict_size = 6250;
-	
 	lextree* lex = build_lextree_from_file("text/dict-assn4.txt", dict_size);
 
     //Read line by line, then tokenize each line word by word
@@ -52,7 +52,8 @@ int main(int argc, char **argv)
         for(word = strtok(line," \n"); word != NULL; word = strtok(NULL," \n"))
         {
             printf("%s ... ",word); fflush(stdout);
-			lextree_scored_word** word_matches = lextree_closest_n_words(lex, word, 1);
+			lextree_scored_word** word_matches =
+                lextree_closest_n_words(lex, word, 1, false);
             char* result = word_matches[0] ? word_matches[0]->word : NULL;
 
             fprintf(out, "%s ", result);
