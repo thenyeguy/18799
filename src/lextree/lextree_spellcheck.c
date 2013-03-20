@@ -96,8 +96,8 @@ lextree_scored_word** lextree_closest_n_words(lextree* lex, char* word, int n)
 				
 				/// insert a space to the new "next" node
 				strcpy(next->substring, temp->substring);
-				next->substring[index] = ' ';
-				next->substring[index+1] = '\0';
+				next->substring[temp->index] = ' ';
+				next->substring[temp->index+1] = '\0';
 
 				next->index = temp->index;
 				next->depth = temp->depth + 1;
