@@ -30,7 +30,7 @@ full: clean all
 # Autogenerate compilation of main files
 $(MAINS): ${BINDIR} $(OBJECTS)
 	@echo Building bin/$@
-	@${CC} ${CFLAGS} -c $(shell find ${SRCDIR} \( -name "**$@_main.c" \) ) \
+	@${CC} ${CFLAGS} -c $(shell find ${SRCDIR} \( -name "$@_main.c" \) ) \
 		-o ${OBJDIR}/$@_main.o
 	@$(CC) $(LFLAGS) ${OBJLOCS} ${OBJDIR}/$@_main.o -o ${BINDIR}/$@ 
 

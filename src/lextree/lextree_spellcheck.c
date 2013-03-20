@@ -28,9 +28,6 @@ lextree_scored_word** lextree_closest_n_words(lextree* lex, char* word, int n,
 	int current_col = 1;
 	int min_edit_distance = MAXINT; 
 
-    int pruned = 0;
-    int seen = 0;
-    int added = 0;
 
 	// What we do here is somewhat clever. Since we have lots of branching,
 	// directly visualizing the stacked trellis is really fucking hard. Instead,
@@ -39,7 +36,6 @@ lextree_scored_word** lextree_closest_n_words(lextree* lex, char* word, int n,
 	// in the same "column" of our "trellis", so as to prune correctly
 	while(queue_size(q) > 0)
 	{
-        seen++;
 		//Get next node
 		lexqueue_node* next = pop_front(q);
 
@@ -57,8 +53,6 @@ lextree_scored_word** lextree_closest_n_words(lextree* lex, char* word, int n,
         {
             current_col = next->index;
             min_edit_distance++;
-            printf("pruning: %d\n", min_edit_distance+LEXTREE_CLOSEST_PRUNING_THRESHOLD);
-            printf("    %d %d %d\n", pruned, seen, q->size);
         }
 
         //Update pruning for next column
@@ -69,7 +63,6 @@ lextree_scored_word** lextree_closest_n_words(lextree* lex, char* word, int n,
         if(min_edit_distance+LEXTREE_CLOSEST_PRUNING_THRESHOLD > 0 &&
            next->score > min_edit_distance + LEXTREE_CLOSEST_PRUNING_THRESHOLD)
         {
-            pruned++;
             free(next);
             continue;
         }
@@ -80,7 +73,6 @@ lextree_scored_word** lextree_closest_n_words(lextree* lex, char* word, int n,
         //Check if we reached a terminal node
 		if(next->tree_node->is_full_word && next->index == strlen(word))
 		{
-            added++;
 			lextree_add_to_result(words, n, next->substring,next->score);
             free(next);
 			continue;
@@ -110,12 +102,6 @@ lextree_scored_word** lextree_closest_n_words(lextree* lex, char* word, int n,
 
                 push_back(q,next);
                 free(temp);
-            }
-            else
-            {
-                //If we aren't segmenting, we have nothing further to do
-                free(next);
-                continue;
             }
         }
 
@@ -205,7 +191,6 @@ lextree_scored_word** lextree_closest_n_words(lextree* lex, char* word, int n,
 		free(next);
 	}
 
-    printf("%d %d %d\n", added, pruned, seen);
 	return words;
 }
 
