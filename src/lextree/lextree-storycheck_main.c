@@ -8,8 +8,9 @@ int main(int argc, char **argv)
 {
     if(argc < 2)
     {
-        printf("Usage: ./lextree-storycheck [file to check]\n");
-        printf("    Corrects a story word by word.\n\n");
+        printf("Usage: ./lextree-storycheck [-s] [file to check]\n");
+        printf("    Corrects a story word by word.\n");
+        printf("    If you provide the -s flag then it segments as well.\n\n");
         printf("E.G. \"./lextree-storycheck mytest\" reads in:\n");
         printf("         text/mytest.txt\n");
         printf("     and saves files such as:\n");
@@ -17,13 +18,30 @@ int main(int argc, char **argv)
         exit(1);
     }
 
+
+    //Read dictionary
+	// TODO: make this a macro
+	int dict_size = 6250;
+	lextree* lex = build_lextree_from_file("text/dict-assn4.txt", dict_size);
+
+
+    //Determine string and segmentation properties
+    bool segment = false;
+    char* file = argv[1];
+    if(argc > 2 && strcmp(file,"-s") == 0)
+    {
+        segment = true;
+        file = argv[2];
+    }
+
+
     //Determine the specified recording out file
     char data_path[256];
-	sprintf(data_path, "text/%s.txt", argv[1]);
+	sprintf(data_path, "text/%s.txt", file);
     printf("Reading text data from:\n    %s\n\n", data_path);
 	
 	char name[256];
-	sprintf(name, "text/%s.out", argv[1]);
+	sprintf(name, "text/%s.out", file);
     printf("Writing corrected data to:\n    %s\n\n", name);
 
     //Open the file and determine its length to read in
@@ -37,11 +55,6 @@ int main(int argc, char **argv)
     }
 
 
-    //Read dictionary
-
-	// TODO: make this a macro
-	int dict_size = 6250;
-	lextree* lex = build_lextree_from_file("text/dict-assn4.txt", dict_size);
 
     //Read line by line, then tokenize each line word by word
     //Output the corresponding best word match
@@ -53,8 +66,8 @@ int main(int argc, char **argv)
         {
             printf("%s ... ",word); fflush(stdout);
 			lextree_scored_string** matches =
-                lextree_closest_n(lex, word, 1, false);
-            char* result = matches[0] ? matches[0]->string : NULL;
+                lextree_closest_n(lex, word, 1, segment);
+            char* result = matches[0] ? matches[0]->string : "---";
 
             fprintf(out, "%s ", result);
             printf("%s\n", result);
@@ -68,5 +81,3 @@ int main(int argc, char **argv)
 
     return 0;
 }
-
-

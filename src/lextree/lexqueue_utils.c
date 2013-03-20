@@ -1,101 +1,106 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 #include "lexqueue_utils.h"
 
-int queue_size(lexqueue * queue){
-	return queue->size;
-}
 
-void print_queue(lexqueue * queue){
-	printf("======QUEUE=====\n");
-	lexqueue_node * temp = queue->head;
-	printf("Size: %d\n",queue->size);
-	while(temp){
-		print_queue_node(temp);
-		temp = temp->next;
-	}
-
-}
-
-void print_queue_node(lexqueue_node * queue_node){
-	printf("%c\n",queue_node->tree_node->c);
-
-/*	printf("Children:\n");
-	for(int i=0; i<26; i++){
-		if(queue_node->tree_node->children[i]!=NULL){
-			printf("%c",queue_node->tree_node->children[i]->c);
-		}
-	}
-*/
-	printf("\n");
-}
-
-lexqueue * init_queue(){
-	lexqueue * queue = (lexqueue *) malloc(sizeof(lexqueue));
-	queue->size = 0;
-	queue->head = NULL;
+lexqueue* init_queue()
+{
+    lexqueue* queue = (lexqueue *) malloc(sizeof(lexqueue));
+    queue->size = 0;
+    queue->head = NULL;
     queue->tail = NULL;
-	return queue;
+    return queue;
 }
 
 
-lexqueue_node * pop_front(lexqueue * queue){
-	if(queue->size==0){
-		return NULL;
-	}
-	else if(queue->size==1){
-		lexqueue_node * last_node = queue->head;
-		queue->head=NULL;
-		queue->size--;
-		return last_node;
-	}
-	else{
-		lexqueue_node * popped = queue->head;
-		queue->head = queue->head->next;
-		queue->size--;
-		return popped;
-	}
-}
-/*
-void push(lexqueue * queue , lextree_node * node){
-	lexqueue_node * new_node = init_lexqueue_node(node);
-	append_node(queue,new_node);
-}
-*/
-
-void push_front(lexqueue * queue,lexqueue_node * node){
-	lexqueue_node * temp = queue->head;
-        if(!temp){
-                queue->head = node;
-                queue->tail = node;
-        }
-	else{
-		node->next = queue->head;
-		queue->head = node;
-	}
-	queue->size++;
+int queue_size(lexqueue* queue)
+{
+    return queue->size;
 }
 
-void push_back(lexqueue * queue , lexqueue_node * node){
-	lexqueue_node * temp = queue->head;
-	if(!temp){
-		queue->head = node;
+
+lexqueue_node* pop_front(lexqueue* queue)
+{
+    if(queue->size==0)
+    {
+        return NULL;
+    }
+    else if(queue->size==1)
+    {
+        lexqueue_node* last_node = queue->head;
+        queue->head=NULL;
+        queue->size--;
+        return last_node;
+    }
+    else
+    {
+        lexqueue_node* popped = queue->head;
+        queue->head = queue->head->next;
+        queue->size--;
+        return popped;
+    }
+}
+
+
+void push_front(lexqueue* queue, lexqueue_node* node)
+{
+    lexqueue_node* temp = queue->head;
+    if(!temp)
+    {
+        queue->head = node;
         queue->tail = node;
-	}
-	else{	
-		queue->tail->next = node;
-		queue->tail = node;
-	}
-	queue->size ++;
+    }
+    else
+    {
+        node->next = queue->head;
+        queue->head = node;
+    }
+    queue->size++;
 }
-/*
-lexqueue_node * init_lexqueue_node(lextree_node * tree_node){
-	lexqueue_node * node = (lexqueue_node *) malloc(sizeof(lexqueue_node));
-	node->tree_node = tree_node;
-	node->score = 0;
-	node->substring[0] = tree_node->c;
-	node->index = 1;
-	node->next = NULL;
-	return node;
+
+void push_back(lexqueue* queue, lexqueue_node* node){
+    lexqueue_node* temp = queue->head;
+    if(!temp)
+    {
+        queue->head = node;
+        queue->tail = node;
+    }
+    else
+    {	
+        queue->tail->next = node;
+        queue->tail = node;
+    }
+    queue->size++;
 }
-*/
 
 
+void print_queue(lexqueue* queue)
+{
+    printf("======QUEUE=====\n");
+    lexqueue_node* temp = queue->head;
+    printf("Size: %d\n",queue->size);
+    while(temp)
+    {
+        print_queue_node(temp);
+        temp = temp->next;
+    }
+
+}
+
+
+void print_queue_node(lexqueue_node* queue_node)
+{
+    printf("%c\n",queue_node->tree_node->c);
+
+    /*
+       printf("Children:\n");
+       for(int i=0; i<26; i++){
+       if(queue_node->tree_node->children[i]!=NULL){
+       printf("%c",queue_node->tree_node->children[i]->c);
+       }
+       }
+     */
+
+    printf("\n");
+}

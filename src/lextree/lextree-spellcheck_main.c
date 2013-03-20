@@ -9,7 +9,7 @@ int main(int argc, char **argv)
     if(argc < 2)
     {
         printf("Usage: ./lextree-spellcheck [-s] [string]\n");
-        printf("    Returns up to 10 close matches to a string.\n\n");
+        printf("    Returns up to 10 close matches to a string.\n");
         printf("    If you provide the -s flag then it segments as well.\n\n");
         exit(1);
     }

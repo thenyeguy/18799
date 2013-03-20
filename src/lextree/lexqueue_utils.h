@@ -1,9 +1,6 @@
 #ifndef LEXQUEUE_H
 #define LEXQUEUE_H
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 #include "lextree.h"
 
 
@@ -13,6 +10,8 @@
  *
  *         Also stores the number of kind of edits seen in that word up to this
  *         point, and the word we have built so far.
+ *
+ *         Additionally holds a pointer to the next element in our queue
  */
 typedef struct lexqueue_node {
 	int index;
@@ -36,13 +35,32 @@ typedef struct lexqueue {
 	int size;
 } lexqueue;
 
+
+/* init_queue - allocates an empty lexqueue
+ */
 lexqueue* init_queue();
+
+
+/* queue_size - given a lexqueue, returns the size of that queue
+ */
 int queue_size(lexqueue* queue);
-//void push(lexqueue * queue , lextree_node * node);
+
+
+/* pop_front - given a lexqueue, removes the front node from the queue and
+ *             returns it
+ */
 lexqueue_node* pop_front(lexqueue* queue);
+
+
+/* push_* - given a lexqueue and a new node, place this node at either the front
+ *            or back of the queue
+ */
 void push_back(lexqueue* queue, lexqueue_node* node);
 void push_front(lexqueue* queue, lexqueue_node* node);
-lexqueue_node* init_lexqueue_node(lextree_node* tree_node);
+
+
+/* print_* - prints a human readable form of their argument
+ */
 void print_queue(lexqueue* queue);
 void print_queue_node(lexqueue_node* queue_node);
 
