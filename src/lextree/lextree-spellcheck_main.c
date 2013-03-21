@@ -33,11 +33,17 @@ int main(int argc, char **argv)
     }
 
 
+    //Run the spellcheck
     printf("Spellchecking \"%s\"...\n", string);
     int n = 10;
     lextree_scored_string** results =
         lextree_closest_n(lex, string, n, segment);
     lextree_print_n_best(results, 10);
+
+
+    //Clean up - not strictly nessecary but makes it easier to test for leaks
+    lextree_free_n_best(results,10);
+    free_lextree(lex);
 
     return 0;
 }

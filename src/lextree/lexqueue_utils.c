@@ -22,24 +22,13 @@ int queue_size(lexqueue* queue)
 
 lexqueue_node* pop_front(lexqueue* queue)
 {
-    if(queue->size==0)
+    lexqueue_node* popped = queue->head;
+    if(popped)
     {
-        return NULL;
-    }
-    else if(queue->size==1)
-    {
-        lexqueue_node* last_node = queue->head;
-        queue->head=NULL;
+        queue->head = popped->next;
         queue->size--;
-        return last_node;
     }
-    else
-    {
-        lexqueue_node* popped = queue->head;
-        queue->head = queue->head->next;
-        queue->size--;
-        return popped;
-    }
+    return popped;
 }
 
 

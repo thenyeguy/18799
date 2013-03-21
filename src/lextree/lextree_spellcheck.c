@@ -24,6 +24,8 @@ lextree_scored_string** lextree_closest_n(lextree* lex, char* string, int n,
     int current_col = 1;
     int min_edit_distance = MAXINT; 
 
+    int seen = 0;
+    int pruned = 0;
 
     // What we do here is somewhat clever. Since we have lots of branching,
     // directly visualizing the stacked trellis is really fucking hard. Instead,
@@ -34,11 +36,13 @@ lextree_scored_string** lextree_closest_n(lextree* lex, char* string, int n,
     {
         //Get next node
         lexqueue_node* next = pop_front(q);
+        seen++;
 
 
         //Toss this node if we have passed the last column
         if(next->index > strlen(string))
         {
+            pruned++;
             free(next);
             continue;
         }
@@ -50,6 +54,8 @@ lextree_scored_string** lextree_closest_n(lextree* lex, char* string, int n,
         {
             current_col = next->index;
             min_edit_distance++;
+            printf("Column %d, threshold %d. Pruned %d/%d, %d more.\n",
+                   current_col, min_edit_distance, pruned, seen, q->size);
         }
 
         //Update pruning for next column
@@ -57,9 +63,9 @@ lextree_scored_string** lextree_closest_n(lextree* lex, char* string, int n,
             min_edit_distance = next->score;
 
         //Toss this node if it exceeds the pruning threshold
-        if(min_edit_distance+LEXTREE_CLOSEST_PRUNING_THRESHOLD > 0 &&
-                next->score > min_edit_distance + LEXTREE_CLOSEST_PRUNING_THRESHOLD)
+        if(next->score > min_edit_distance + LEXTREE_CLOSEST_PRUNING_THRESHOLD)
         {
+            pruned++;
             free(next);
             continue;
         }
@@ -195,10 +201,6 @@ lextree_scored_string** lextree_closest_n(lextree* lex, char* string, int n,
 void lextree_add_to_result(lextree_scored_string** strings, int n,
                            char* string, int score)
 {
-    lextree_scored_string* node = malloc(sizeof(lextree_scored_string));
-    strcpy(node->string, string);
-    node->score = score;
-
     int index = already_in_nbest(strings, n, string);
 
     if (-1 != index) {
@@ -206,6 +208,7 @@ void lextree_add_to_result(lextree_scored_string** strings, int n,
         /// if the instance in the list has a higher cost, replace it with this one
         if (strings[index]->score > score)
         {
+            lextree_scored_string* node = strings[index];
             while (index > 0 && strings[index-1]->score > score)
             {
                 strings[index] = strings[index-1];
@@ -222,12 +225,20 @@ void lextree_add_to_result(lextree_scored_string** strings, int n,
         //If we see an empty slot, then put our item at the bottom
         if(strings[i] == NULL)
         {
+            lextree_scored_string* node = malloc(sizeof(lextree_scored_string));
+            strcpy(node->string, string);
+            node->score = score;
+
             strings[i] = node;
             return;
         }
 
         if(score < strings[i]->score)
         {
+            lextree_scored_string* node = malloc(sizeof(lextree_scored_string));
+            strcpy(node->string, string);
+            node->score = score;
+
             lextree_scored_string* temp1 = node;
             lextree_scored_string* temp2 = strings[i];
             for (int j = i; j < n; j++)
@@ -236,6 +247,8 @@ void lextree_add_to_result(lextree_scored_string** strings, int n,
                 temp1 = temp2;
                 if (j+1 < n) temp2 = strings[j+1];
             }
+
+            free(temp2);
             return;
         }
     }
