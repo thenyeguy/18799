@@ -1,12 +1,14 @@
 #ifndef GRAPH_UTILS_H
 #define GRAPH_UTILS_H
+#include <stdio.h>
+#include <stdlib.h>
 
 /* graph	Represents a grammar graph. Holds an array of each node 
  * 		contained in the graph. The interconnections are specified
  * 		within each graph node.
  */
 typedef struct graph{
-	graph_node * nodes;
+	struct graph_node * nodes;
 	int num_nodes;
 }graph;
 
@@ -15,7 +17,7 @@ typedef struct graph{
  * 		an HMM to another node in the graph.
  */
 typedef struct graph_node{
-	transition * transition_list;
+	struct transition * transition_list;
 	int num_transitions;
 }graph_node;
 
@@ -23,8 +25,8 @@ typedef struct graph_node{
  * 		an HMM into another node.
  */
 typedef struct transition{
-	hidden_markov hmm;
-	graph_node next;
+	struct hidden_markov * hmm;
+	struct graph_node * next;
 }transition;
 
 /* hidden_markov	Place holder for the markov model developed previously.
@@ -36,6 +38,13 @@ typedef struct transition{
 typedef struct hidden_markov{
 
 }hidden_markov;
+
+
+
+//TODO Comment functions
+graph * build_graph(char * filename);
+graph * init_graph(int num_nodes);
+
 
 #endif
 
