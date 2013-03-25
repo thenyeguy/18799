@@ -1,8 +1,20 @@
 #include "graph_utils.h"
 
 graph * build_graph(char * filename){
-	filename = filename;
 	graph * grammar_graph = init_graph(4);
+	FILE * file = fopen(filename,"r");
+	if(NULL==file){
+		printf("Error opening file: %s\n",filename);
+		exit(0);
+	}
+	int buffer_size = 100;
+	char buffer[buffer_size];
+	while (fgets(buffer, buffer_size, file) != NULL){
+		printf("%s\n",buffer);
+	}
+
+
+	fclose(file);
 	return grammar_graph;
 }
 
