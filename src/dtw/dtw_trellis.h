@@ -8,7 +8,7 @@
 /* NOTE: current code is configured to maximize score. Changing it to minimize
  *       cost instead should be simple, but requires changes in a fwe places */
 #define DTW_MAX_SCORE DBL_MAX
-#define DTW_MIN_SCORE (-1.0*DBL_MAX)
+#define DTW_MIN_SCORE (log(0.0))
 #define SET_PRUNING DTW_NO_PRUNE
 #define PRUNING_THRESHOLD DEFAULT_DTW_THRESHOLD
 
@@ -42,6 +42,7 @@ typedef struct {
 	double score;
     bool pruned;
     dtw_trellis_dir dir;
+    void* backpointer;
 } dtw_trellis_node;
 
 
@@ -75,6 +76,9 @@ typedef struct {
     double pruning_threshold;
     double (*scorer)(void*,void*,int,int,dtw_trellis_dir);
 
+    double incoming_score;
+    void* incoming_backpointer;
+
     int last_column_i;
     dtw_trellis_node* last_col;
     dtw_trellis_node* next_col;
@@ -102,6 +106,13 @@ dtw_t* new_dtw(void* test_data,     int test_length,
                void* template_data, int template_length,
                dtw_prune_t prune,   double pruning_threshold,
                double (*scorer)(void*,void*,int,int,dtw_trellis_dir));
+
+
+/* dtw_set_incoming - given a dtw struct, sets the incoming data from the row 
+ *                    below it in a matrix of trellises. Used to "stack" virtual
+ *                    trellises on top of each other
+ */
+void dtw_set_incoming(dtw_t* dtw, double score, void* backpointer);
 
 
 /* dtw_fill_next_column - given a dtw struct, first checks to see if 

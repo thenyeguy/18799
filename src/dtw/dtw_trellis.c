@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 #include "dtw_trellis.h"
 
 
@@ -23,6 +24,8 @@ dtw_t* new_dtw(void* test_data,     int test_length,
     dtw->scorer = scorer;
 
     dtw->last_column_i = 0;
+    dtw->incoming_score = 0.0;
+    dtw->incoming_backpointer = NULL;
 
     dtw->fully_pruned = false;
     dtw->score = DTW_MIN_SCORE;
@@ -33,17 +36,25 @@ dtw_t* new_dtw(void* test_data,     int test_length,
     dtw->next_col = malloc(template_length*sizeof(dtw_trellis_node));
     for(int i = 0; i < template_length; i++)
     {
-        //Score the first column with no travel direction
-        dtw->last_col[i].score =
-            scorer(test_data, template_data, i, 0, DTW_DIR_NONE);
+        //Score the first column as all impossible
+        //We can enter the trellis from the bottom left corner (incoming)
+        dtw->last_col[i].score = log(0.0);
         dtw->last_col[i].pruned = false;
         dtw->last_col[i].dir = DTW_DIR_NONE;
+        dtw->last_col[i].backpointer = NULL;
 
         //Don't start pruning until next iteration
         dtw->next_col[i].score = DTW_MIN_SCORE;
         dtw->next_col[i].pruned = false;
     }
     return dtw;
+}
+
+
+void dtw_set_incoming(dtw_t* dtw, double score, void* backpointer)
+{
+    dtw->incoming_score = score;
+    dtw->incoming_backpointer = backpointer;
 }
 
 
@@ -103,13 +114,13 @@ bool dtw_prune_next_column(dtw_t* dtw, double threshold)
         {
             bool check = false;
             //Left
-            if(dtw->last_col[i].score > threshold)
+            if(dtw->last_col[i].score >= threshold)
                 check = true;
             //Left and down one
-            if(i > 0 && dtw->last_col[i-1].score > threshold)
+            if(i > 0 && dtw->last_col[i-1].score >= threshold)
                 check = true;
             //Left and down two
-            if(i > 1 && dtw->last_col[i-2].score > threshold)
+            if(i > 1 && dtw->last_col[i-2].score >= threshold)
                 check = true;
 
             //Fill node
@@ -134,6 +145,10 @@ bool dtw_prune_next_column(dtw_t* dtw, double threshold)
             dtw->next_col[i].dir = DTW_DIR_NONE;
         }
     }
+
+    //Empty out incoming score
+    dtw->incoming_score = DTW_MIN_SCORE;
+    dtw->incoming_backpointer = NULL;
     
     return dtw->fully_pruned;
 }
@@ -143,46 +158,67 @@ double dtw_score_node(dtw_t* dtw, int row)
 {
     int col = dtw->last_column_i+1;
     double left = DTW_MIN_SCORE;
+    void* left_bk = NULL;
     double downone = DTW_MIN_SCORE;
+    void* downone_bk = NULL;
     double downtwo = DTW_MIN_SCORE;
+    void* downtwo_bk = NULL;
     //Directly left
     left = dtw->scorer(dtw->test_data, dtw->template_data,
         row, col, DTW_DIR_LEFT) + dtw->last_col[row].score;
+    left_bk = dtw->last_col[row].backpointer;
     //Left and down 1
     if(row > 0)
     {
         downone = dtw->scorer(dtw->test_data, dtw->template_data,
             row-1, col, DTW_DIR_DOWNONE) + dtw->last_col[row-1].score;
+        downone_bk = dtw->last_col[row-1].backpointer;
+    }
+    else
+    {
+        downone = dtw->incoming_score;
+        downone_bk = dtw->incoming_backpointer;
     }
     //Left and down 2
     if(row > 1)
     {
         downtwo = dtw->scorer(dtw->test_data, dtw->template_data,
             row-2, col, DTW_DIR_DOWNTWO) + dtw->last_col[row-2].score;
+        downtwo_bk = dtw->last_col[row-2].backpointer;
+    }
+    else if(row == 1)
+    {
+        downtwo = dtw->incoming_score;
+        downtwo_bk = dtw->incoming_backpointer;
     }
 
     //Determine the highest score and use that
     double score = DTW_MIN_SCORE;
+    void* back = NULL;
     dtw_trellis_dir dir = DTW_DIR_NONE;
     if(left > downone && left > downtwo && left > score)
     {
         score = left;
+        back = left_bk;
         dir = DTW_DIR_LEFT;
     }
     else if(downone > downtwo && downone > score)
     {
         score = downone;
+        back = downone_bk;
         dir = DTW_DIR_DOWNONE;
     }
     else if(downtwo > score)
     {
         score = downtwo;
+        back = downtwo_bk;
         dir = DTW_DIR_DOWNTWO;
     }
 
     //Store info back and finish
     dtw->next_col[row].score = score;
     dtw->next_col[row].dir = dir;
+    dtw->next_col[row].backpointer = back;
     return score;
 }
 
@@ -230,7 +266,6 @@ void dtw_print_col(dtw_t* dtw)
                 break;
         }
         double score = dtw->last_col[i].score;
-        if(score == DTW_MIN_SCORE) score = -1.0;
         printf("%s%1.4f    ",dir,score);
     }
     printf("\n");
