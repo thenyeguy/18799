@@ -28,8 +28,9 @@ dtw_t* new_dtw(void* test_data,     int test_length,
     dtw->incoming_backpointer = NULL;
 
     dtw->fully_pruned = false;
-    dtw->score = DTW_MIN_SCORE;
     dtw->column_max = DTW_MIN_SCORE;
+    dtw->score = DTW_MIN_SCORE;
+    dtw->backpointer = NULL;
     
     //Allocate columns for scoring
     dtw->last_col = malloc(template_length*sizeof(dtw_trellis_node));
@@ -98,6 +99,7 @@ bool dtw_fill_next_col(dtw_t* dtw)
     dtw->last_column_i++;
     dtw->column_max = column_max;
     dtw->score = dtw->last_col[dtw->template_length-1].score;
+    dtw->backpointer = dtw->last_col[dtw->template_length-1].backpointer;
 
     //Return whether we scored the last column
     return dtw->last_column_i >= dtw->test_length;

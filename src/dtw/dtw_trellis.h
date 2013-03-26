@@ -2,6 +2,7 @@
 #define DTW_TRELLIS_H
 
 #include <float.h>
+#include <math.h>
 #include <stdbool.h>
 
 
@@ -86,6 +87,7 @@ typedef struct {
     bool fully_pruned;
     double column_max;
     double score;
+    void* backpointer;
 } dtw_t;
 
 
