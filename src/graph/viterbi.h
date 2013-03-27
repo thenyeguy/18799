@@ -25,6 +25,7 @@ struct viterbi_node {
 
     double best_score;
     void* best_backpointer;
+    char* best_word;
 };
 
 
@@ -39,15 +40,16 @@ struct viterbi_edge {
 };
 
 
-/* visit_request - represents a request to update the score at a given node.
- *                 If it has a higher score than the last visit to this node,
- *                 update the visited information
+/* A backpointer is simply a linked list that traces back to a root node.
+ * Contains the word along this edge, and the total length of the string so far
+ * Contains the time it was created and its score.
  */
-typedef struct {
-    viterbi_node* node;
+typedef struct backpointer {
+    char* word;
+    int len;
     double score;
-    void* backpointer;
-} viterbi_visit_requst;
+    struct backpointer* prev;
+} backpointer;
 
 
 /* viterbi_search - given a grammar to describe our HMM models and their
@@ -55,9 +57,17 @@ typedef struct {
  *                  the maximal score for the given test input. Returns a string
  *                  describing the recognized speech.
  *
- *                  Uses pruning threshold given, if prune is true
+ *                  Uses pruning threshold given, if prune is true. Returns best
+ *                  n results found.
  */
-char* viterbi_search(graph grammar, feature_vectors* test,
-                     bool prune, double threshold);
+char** viterbi_search(graph grammar, feature_vectors* test,
+                      bool prune, double threshold, int n);
+
+
+/* add_backpointer_to_results - given a backpointer list and the backpointer,
+ *                              adds to the list, sorted by score
+ */
+void add_backpointer_to_results(backpointer** results, int n,
+                                backpointer* backpointer);
 
 #endif

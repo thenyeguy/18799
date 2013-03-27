@@ -1,11 +1,13 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "../libraries/queue.h"
+#include "../dtw/cluster.h"
 #include "viterbi.h"
 
 
-char* viterbi_search(graph grammar, feature_vectors* test,
-                     bool prune, double threshold)
+char** viterbi_search(graph grammar, feature_vectors* test,
+                      bool prune, double threshold, int n)
 {
     /* First, we have to traverse the grammar we read in, and use it to
      * construct the equivalent evaluation data so we can track state
@@ -18,8 +20,9 @@ char* viterbi_search(graph grammar, feature_vectors* test,
     //Initialize dtw_set_incoming with zeros
     
 
-    /* Now, we traverse the graph, one time instant per step
+    /* Now, we traverse the graph, one time instant per step.
      */
+    backpointer** results = malloc(n*sizeof(backpointer*));
     for(int t = 0; t < test->num_vectors; t++)
     {
         //Reset node entry scores
@@ -38,11 +41,17 @@ char* viterbi_search(graph grammar, feature_vectors* test,
             dtw_fill_next_col(edge.trellis);
 
             //Get score from trellis and visit a node
+            //If we have the best score seen into this node, then update it
             double score = edge.trellis->score;
-            if(score > DTW_MIN_SCORE)
+            if(score > DTW_MIN_SCORE && score > edge.next->best_score)
             {
+                //Get the template used for its word
+                gaussian_cluster* template = edge.trellis->template_data;
+
+                //Update the best seen score into this node
                 edge.next->best_score = score;
                 edge.next->best_backpointer = edge.trellis->backpointer;
+                edge.next->best_word = template->word_id;
             }
             
             //Keep pruning information
@@ -56,9 +65,18 @@ char* viterbi_search(graph grammar, feature_vectors* test,
         for(int i = 0; i < num_nodes; i++)
         {
             viterbi_node node = nodes[i];
+            backpointer* prev = node.best_backpointer;
 
-            //TODO: Add to backpointer table
-            void* backpointer;
+            //Create backpointers
+            backpointer* backpointer = malloc(sizeof(backpointer));
+            backpointer->word = node.best_word;
+            backpointer->len = strlen(node.best_word) + prev->len;
+            backpointer->score = node.best_score;
+            backpointer->prev = node.best_backpointer;
+
+            //Add to our best table if we are at the end of time
+            if(t == test->num_vectors-1)
+                add_backpointer_to_results(results, n, backpointer);
 
             //Set incoming to each edge
             for(int j = 0; j < node.num_edges; j++)
@@ -78,11 +96,52 @@ char* viterbi_search(graph grammar, feature_vectors* test,
     }
 
 
-    /* Finally, search the backpointer table for the best score that terminated
-     * at the last time instant, then follow it to reconstruct our result.
-     * TODO
+    /* Finally, convert the best n backpointers to string
      */
-    char* result = "";
+    char** result_strings = malloc(10*sizeof(char*));
+    for(int i = 0; i < n; i++)
+    {
+        backpointer* p = results[i];
+        char* s = malloc(p->len*sizeof(char) + 1);
 
-    return result;
+        //Follow back, copy into word
+        while(p != NULL)
+        {
+            int segment_start = p->len - strlen(p->word);
+            strncpy(&s[segment_start], p->word, strlen(p->word));
+            p = p->prev;
+        }
+    }
+
+    return result_strings;
+}
+
+
+void add_backpointer_to_results(backpointer** results, int n,
+                                backpointer* bp)
+{
+    for(int i = 0; i < n; i++)
+    {
+        //If we see an empty slot, then put our item at the bottom
+        if(results[i] == NULL)
+        {
+            results[i] = bp;
+            return;
+        }
+
+        if(bp->score > results[i]->score)
+        {
+            backpointer* temp1 = bp;
+            backpointer* temp2 = results[i];
+            for (int j = i; j < n; j++)
+            {
+                results[i] = temp1;
+                temp1 = temp2;
+                if (j+1 < n) temp2 = results[j+1];
+            }
+
+            free(temp2);
+            return;
+        }
+    }
 }
