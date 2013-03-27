@@ -54,8 +54,13 @@ dtw_t* new_dtw(void* test_data,     int test_length,
 
 void dtw_set_incoming(dtw_t* dtw, double score, void* backpointer)
 {
+    //Set incoming
     dtw->incoming_score = score;
     dtw->incoming_backpointer = backpointer;
+
+    //Mark the bottom of the trellis as unpruned to ensure we check it
+    dtw->next_col[0].pruned = false;
+    dtw->next_col[1].pruned = false;
 }
 
 

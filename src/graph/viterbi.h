@@ -60,8 +60,15 @@ typedef struct backpointer {
  *                  Uses pruning threshold given, if prune is true. Returns best
  *                  n results found.
  */
-char** viterbi_search(graph grammar, feature_vectors* test,
+char** viterbi_search(graph* grammar, feature_vectors* test,
                       bool prune, double threshold, int n);
+
+
+/* fill_viterbi_graph - given a grammar, and arrays to store all the nodes and
+ *                      edges in, fills these arrays with data from the grammar
+ */
+void fill_viterbi_graph(graph* grammer, viterbi_node* nodes, int num_nodes,
+                                        viterbi_edge* edges, int num_edges);
 
 
 /* add_backpointer_to_results - given a backpointer list and the backpointer,

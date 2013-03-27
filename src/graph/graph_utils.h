@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <strings.h>
-#include "cluster.h"
+#include "../dtw/cluster.h"
 
 /* graph	Represents a grammar graph. Holds an array of each node 
  * 		contained in the graph. The interconnections are specified

@@ -1,24 +1,84 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <assert.h>
 #include "../libraries/queue.h"
 #include "../dtw/cluster.h"
+#include "../dtw/dtw_gaussian.h"
 #include "viterbi.h"
 
 
-char** viterbi_search(graph grammar, feature_vectors* test,
+// Maybe TODO: refactor this function? Its really long right now...
+char** viterbi_search(graph* grammar, feature_vectors* test,
                       bool prune, double threshold, int n)
 {
     /* First, we have to traverse the grammar we read in, and use it to
-     * construct the equivalent evaluation data so we can track state
+     * construct the equivalent evaluation data so we can track state.
      */
-    viterbi_node* nodes;
-    int num_nodes;
-    viterbi_edge* edges;
+    int num_nodes = grammar->num_nodes;
+    viterbi_node* nodes = malloc(num_nodes*sizeof(viterbi_node));
+
     int num_edges;
-    //TODO: go back add the grammar parsing
-    //Initialize dtw_set_incoming with zeros
+    viterbi_edge* edges = malloc(num_edges*sizeof(viterbi_edge));
+
+
+    //Traverse the grammar graph with a queue
+    //And create the analog viterbi nodes and edges
+    int node_i = 0;
+    int edge_i = 0;
+    queue* q = new_queue();
+    enqueue(q, &grammar->nodes[0]);
+
+    while(q->size > 0)
+    {
+        //Get next node to fill
+        graph_node* gn = dequeue(q);
+        viterbi_node* vn = &nodes[node_i];
+
+        //Get the edges and create new edges
+        vn->num_edges = gn->num_transitions;
+        vn->edges = malloc(vn->num_edges*sizeof(viterbi_edge));
+        for(int i = 0; i < vn->num_edges; i++)
+        {
+            transition* ge = &gn->head[i];
+            viterbi_edge* ve = &vn->edges[i];
+
+            ve->trellis = *get_gaussian_trellis(test, &ge->hmm, 1,
+                                                DTW_BEAM_PRUNE, threshold);
+            ve->next = &nodes[ge->next_node_index];
+
+            //Prep the next node to check if it hasn't been seen yet
+            if(ge->next_node_index > node_i)
+                enqueue(q, ge->next_node);
+
+            //Advance
+            edge_i++;
+        }
+
+        //Advance
+        node_i++;
+    }
+
+    //Just in case for testing
+    assert(node_i == num_nodes);
+    assert(edge_i == num_edges);
+
+
+    /* Finally, prep the nodes from the head of the grammar to have an incoming 
+     * score of zero. TODO: change to entrance costs?
+     */
+    backpointer* bp = malloc(sizeof(backpointer));
+    bp->word = "";
+    bp->len = 0;
+    bp->score = 0;
+    bp->prev = NULL;
+    for(int i = 0; i < nodes[0].num_edges; i++)
+    {
+        viterbi_edge edge = nodes[0].edges[0];
+        dtw_set_incoming(edge.trellis, 0, bp);
+    }
     
+
 
     /* Now, we traverse the graph, one time instant per step.
      */
@@ -34,6 +94,7 @@ char** viterbi_search(graph grammar, feature_vectors* test,
 
 
         //Score every edge
+        //TODO: add transition costs?
         double column_max = DTW_MIN_SCORE;
         for(int i = 0; i < num_edges; i++)
         {
@@ -68,23 +129,24 @@ char** viterbi_search(graph grammar, feature_vectors* test,
             backpointer* prev = node.best_backpointer;
 
             //Create backpointers
-            backpointer* backpointer = malloc(sizeof(backpointer));
-            backpointer->word = node.best_word;
-            backpointer->len = strlen(node.best_word) + prev->len;
-            backpointer->score = node.best_score;
-            backpointer->prev = node.best_backpointer;
+            backpointer* bp = malloc(sizeof(backpointer));
+            bp->word = node.best_word;
+            bp->len = strlen(node.best_word) + prev->len;
+            bp->score = node.best_score;
+            bp->prev = node.best_backpointer;
 
             //Add to our best table if we are at the end of time
             if(t == test->num_vectors-1)
-                add_backpointer_to_results(results, n, backpointer);
+                add_backpointer_to_results(results, n, bp);
 
             //Set incoming to each edge
             for(int j = 0; j < node.num_edges; j++)
             {
                 dtw_set_incoming(node.edges[j].trellis, node.best_score,
-                                 backpointer);
+                                 bp);
             }
         }
+
 
         //Prune trellis structures
         double window = abs(column_max)*threshold;
