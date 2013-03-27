@@ -7,7 +7,7 @@ graph * build_graph(char * filename){
 		printf("Error opening file: %s\n",filename);
 		exit(0);
 	}
-	int buffer_size = 100;
+	int buffer_size = 512;
 	char buffer[buffer_size];
 	int line_number = 0;
 	int states;
@@ -31,8 +31,9 @@ graph * build_graph(char * filename){
 		else{
 			int from = buffer[5]-'0';
 			int to = buffer[7]-'0';
-			int hm = buffer[10]-'0';
-			connect(grammar_graph,from,to,hm);
+			char * files = &(buffer[9]);
+			gaussian_cluster * hmm = build_hmm_from_arg(files);
+			connect(grammar_graph,from,to,hmm);
 			//printf("Connect: %d to %d using: %d\n",from,to,hm);
 		}
 
@@ -44,10 +45,30 @@ graph * build_graph(char * filename){
 }
 
 
-void connect(graph * gr, int from, int to, int hm){
+gaussian_cluster * build_hmm_from_arg(char * files){
+	//printf("INPUT: %s\n",files);
+	int num_files = 0;
+	for(int i=0; i<strlen(files); i++){
+		if(files[i]=='.'){
+			num_files++;
+		}
+	}
+	//printf("building HMM model using %d files\n",num_files);
+
+	//initialize array of files
+
+	//feature_vectors** features = features_from_all_files();
+
+	//free array
+
+	//return gaussian cluster	
+	return NULL;
+}
+
+void connect(graph * gr, int from, int to, gaussian_cluster * hmm){
 	//Generate the new transition with corresponding HMM
 	transition * new_trans = (transition*) malloc(sizeof(transition));
-	new_trans->hmm=NULL; //FIXME should point to the actual HMM
+	new_trans->hmm=hmm; 
 	new_trans->next_node = &(gr->nodes[to]);
 	new_trans->next_node_index = to;
 	new_trans->next_trans =NULL;
