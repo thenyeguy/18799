@@ -2,6 +2,8 @@
 #define GRAPH_UTILS_H
 #include <stdio.h>
 #include <stdlib.h>
+#include <strings.h>
+#include "cluster.h"
 
 /* graph	Represents a grammar graph. Holds an array of each node 
  * 		contained in the graph. The interconnections are specified
@@ -25,22 +27,13 @@ typedef struct graph_node{
  * 		an HMM into another node.
  */
 typedef struct transition{
-	struct hidden_markov * hmm;
+	gaussian_cluster * hmm;
 	struct graph_node * next_node;
 	struct transition * next_trans;
 	//Used for debugging/displaying structure
 	int next_node_index;
 }transition;
 
-/* hidden_markov	Place holder for the markov model developed previously.
- *			The markov model will be developed using segmental K-means
- * 			and split into N states with an array of means and covariances
- * 			as we traverse through the graph, the HMM for a word will be 
- *			used to obtain a score through that path in the graph.
- */ 
-typedef struct hidden_markov{
-
-}hidden_markov;
 
 /* build_graph	Constructs a grammar graph from the textfile passed in
  *		After initializing an array of nodes according to the 
@@ -63,7 +56,7 @@ graph * init_graph(int num_nodes);
  * 		hm's should be held in the graph. I believe there 
  *		should be an hmm struct somewhere from assignemnt 3?
  */
-void connect(graph * gr, int from, int to, int hm);
+void connect(graph * gr, int from, int to, gaussian_cluster * hmm);
 
 /* append	append takes the current node and adds a new transition
  *		to its linked list. This indicates a new possible path
@@ -78,6 +71,14 @@ void print_graph(graph * gr);
 /* print_graph_node	prints a graph node :/
  */
 void print_graph_node(graph_node * gn);
+
+
+/* build_hmm_from_arg	Helper function for parsing graph text file.
+ *			Takes strings from the text file and passes 
+ *			them off to be clustered and returned as
+ *			an HMM.
+ */
+gaussian_cluster * build_hmm_from_arg(char * files);
 
 #endif
 
