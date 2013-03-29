@@ -64,24 +64,14 @@ graph * build_graph(char * filename){
 gaussian_cluster * build_hmm_from_arg(char * files){
 	gaussian_cluster * hmm;
 	printf("Need to parse: %s\n",files);
-	int num_files = 0;
-	for(int i=0; i<strlen(files); i++){
-		if(files[i]=='.'){
-			num_files++;
-		}
-	}
-	printf("building HMM model using %d files\n",num_files);
+	string_array * file_array = split_string(files,',');
+	string_array_print(file_array);
 
-	//initialize array of files
-	num_files = 5;
-	char* file_array[5] = {"analysis/three1-40.out","analysis/three2-40.out",
-                     "analysis/three3-40.out","analysis/three4-40.out",
-                     "analysis/three4-40.out"}; //FIXME Example array
 	//Get feature vectors from files
-	feature_vectors** features = features_from_all_files(file_array,num_files);
+	feature_vectors** features = features_from_all_files(file_array->strings,file_array->num_strings);
 
 	// Send of feature vectors to be clustered
-	hmm = cluster_templates(features,num_files,"three");
+	hmm = cluster_templates(features,file_array->num_strings,"three");
 
 	//free dynamic string array
 

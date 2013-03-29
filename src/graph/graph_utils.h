@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <strings.h>
 #include "../dtw/cluster.h"
+#include "string_utils.h"
 
 /* graph	Represents a grammar graph. Holds an array of each node 
  * 		contained in the graph. The interconnections are specified
