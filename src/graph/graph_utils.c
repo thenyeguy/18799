@@ -1,5 +1,6 @@
 #include "graph_utils.h"
 
+
 graph * build_graph(char * filename){
 	graph * grammar_graph;
 	FILE * file = fopen(filename,"r");
@@ -13,24 +14,39 @@ graph * build_graph(char * filename){
 	int states;
 	int start;
 	int end;
+	char* temp;
+
 	while (fgets(buffer, buffer_size, file) != NULL){
-		//FIXME This needs to be done using STRTOK rather than indexing in case double digit
 		if(line_number==0){
-			states = buffer[10]-'0';
+			temp = strtok(buffer, " ");
+			temp = strtok(NULL, " ");
+			states = atoi(temp);
+
 			//printf("Number of states: %d\n", states);
 			grammar_graph = init_graph(states);
 		}
 		else if(line_number==1){
-			start = buffer[13]-'0';
+			temp = strtok(buffer, " ");
+			temp = strtok(NULL, " ");
+			start = atoi(temp);
 			//printf("Start node: %d\n",start);
 		}
 		else if(line_number==2){
-			end = buffer[17]-'0';
+			temp = strtok(buffer, " ");
+			temp = strtok(NULL, " ");
+			end = atoi(temp);
 			//printf("Terminal node: %d\n",end);
 		}
 		else{
-			int from = buffer[5]-'0';
-			int to = buffer[7]-'0';
+			temp = strtok(buffer, " ");
+			temp = strtok(NULL, " ");
+			int from = atoi(temp);
+
+			temp = strtok(NULL, " ");
+			int to = atoi(temp);
+			
+
+
 			char * files = &(buffer[9]);
 			gaussian_cluster * hmm = build_hmm_from_arg(files);
 			connect(grammar_graph,from,to,hmm);
