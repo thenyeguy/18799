@@ -77,7 +77,7 @@ void print_graph_node(graph_node * gn);
 /* build_hmm_from_arg	Helper function for parsing graph text file.
  *			Takes strings from the text file and passes 
  *			them off to be clustered and returned as
- *			an HMM.
+ *			an HMM.  Expects a string of the form "a.out","b.out","c.out"...
  */
 gaussian_cluster * build_hmm_from_arg(char * files);
 

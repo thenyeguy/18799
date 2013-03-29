@@ -45,8 +45,10 @@ graph * build_graph(char * filename){
 			temp = strtok(NULL, " ");
 			int to = atoi(temp);
 
-			char * files = &(buffer[9]);
-			gaussian_cluster * hmm = build_hmm_from_arg(files);
+			temp = strtok(NULL, " "); /// form "a.out","b.out","c.out"...
+			printf("temp = %s\n", temp);
+
+			gaussian_cluster * hmm = build_hmm_from_arg(temp);
 			connect(grammar_graph,from,to,hmm);
 			//printf("Connect: %d to %d using: %d\n",from,to,hm);
 		}
@@ -63,11 +65,19 @@ gaussian_cluster * build_hmm_from_arg(char * files){
 	gaussian_cluster * hmm;
 	printf("Need to parse: %s\n",files);
 	string_array * file_array = split_string(files,',');
+	char* temp;
+	for (int i = 0; i < file_array->num_strings; i++) {
+		/// remove the quotes, if there are quotes
+		if ('"' != (file_array->strings[i])[0]) 
+			continue;
+		temp = strtok(file_array->strings[i], "\"");
+		strcpy(file_array->strings[i], temp);
+	}
 	string_array_print(file_array);
-
+	
 	//Get feature vectors from files
 	feature_vectors** features = features_from_all_files(file_array->strings,file_array->num_strings);
-
+	
 	// Send of feature vectors to be clustered
 	hmm = cluster_templates(features,file_array->num_strings,"three");
 

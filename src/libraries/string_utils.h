@@ -11,7 +11,7 @@
 typedef struct string_array{
 	char ** strings;
 	int num_strings;
-}string_array;
+} string_array;
 
 void string_array_print(string_array * array);
 string_array * split_string(char * string, char del);
