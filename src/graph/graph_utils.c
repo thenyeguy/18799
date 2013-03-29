@@ -44,8 +44,6 @@ graph * build_graph(char * filename){
 
 			temp = strtok(NULL, " ");
 			int to = atoi(temp);
-			
-
 
 			char * files = &(buffer[9]);
 			gaussian_cluster * hmm = build_hmm_from_arg(files);
