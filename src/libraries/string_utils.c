@@ -2,6 +2,7 @@
 
 
 string_array * split_string(char * string,char del){
+	//FIXME adds an extra space to the first word??
 	string_array * array = (string_array *) malloc(sizeof(string_array));
 	int string_length = (int)strlen(string);
 //	printf("parsing: %s\n",string);
@@ -45,7 +46,7 @@ string_array * split_string(char * string,char del){
 	array->strings = words;
 	array->num_strings = num_words; 
 
-	string_array_print(array);
+	//string_array_print(array);
 	return array;
 }
 
