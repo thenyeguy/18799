@@ -2,7 +2,6 @@
 
 
 string_array * split_string(char * string,char del){
-	//FIXME adds an extra space to the first word??
 	string_array * array = (string_array *) malloc(sizeof(string_array));
 	int string_length = (int)strlen(string);
 //	printf("parsing: %s\n",string);
@@ -24,7 +23,6 @@ string_array * split_string(char * string,char del){
 	int word_index = 0;
 	int string_index = 0;
 	do{
-		word_length++;
 		if(string[string_index] == del || string_index> string_length){
 			//Allocate space based on the word length
 //			printf("Word %d has length: %d\n",word_index,word_length);
@@ -40,6 +38,7 @@ string_array * split_string(char * string,char del){
 			//Reset the word length to 0
 			word_length = -1;
 		}
+		word_length++;
 		string_index++;
 	}while(word_index<num_words);
 	
