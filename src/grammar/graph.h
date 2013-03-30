@@ -1,38 +1,42 @@
 #ifndef GRAPH_UTILS_H
 #define GRAPH_UTILS_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <strings.h>
 #include "../dtw/cluster.h"
-#include "string_utils.h"
+#include "../libraries/string_utils.h"
 
-/* graph	Represents a grammar graph. Holds an array of each node 
- * 		contained in the graph. The interconnections are specified
- * 		within each graph node.
+
+/* grammar  - Represents a grammar graph. Holds an array of each node 
+ *            contained in the graph. The interconnections are specified
+ *            within each graph node.
  */
-typedef struct graph{
-	struct graph_node * nodes;
-	int num_nodes;
-}graph;
+typedef struct graph {
+    struct graph_node* nodes;
+    int num_nodes;
+    int num_edges;
+} graph;
+
 
 /* graph_node	Represents an individual node in the grammar graph. Contains
  * 		a list of potential transitions from the current node through
  * 		an HMM to another node in the graph.
  */
-typedef struct graph_node{
-	struct transition * head;
-	int num_transitions;
-}graph_node;
+typedef struct graph_node {
+    struct transition * head;
+    int num_transitions;
+} graph_node;
 
 /* transition	A struct representing the transition from one node, through
  * 		an HMM into another node.
  */
 typedef struct transition{
-	gaussian_cluster * hmm;
-	struct graph_node * next_node;
-	struct transition * next_trans;
-	//Used for debugging/displaying structure
-	int next_node_index;
+    gaussian_cluster * hmm;
+    struct graph_node * next_node;
+    struct transition * next_trans;
+    //Used for debugging/displaying structure
+    int next_node_index;
 }transition;
 
 
@@ -66,11 +70,11 @@ void connect(graph * gr, int from, int to, gaussian_cluster * hmm);
 void append(graph_node * from_node, transition * new_trans);
 
 /* print_graph	prints out the graph by printing individual nodes
- */
+*/
 void print_graph(graph * gr);
 
 /* print_graph_node	prints a graph node :/
- */
+*/
 void print_graph_node(graph_node * gn);
 
 

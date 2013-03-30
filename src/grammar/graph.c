@@ -1,8 +1,12 @@
-#include "graph_utils.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include "graph.h"
 
 
-graph * build_graph(char * filename){
-	graph * grammar_graph;
+graph* build_graph(char* filename)
+{
+	graph* grammar_graph;
 	FILE * file = fopen(filename,"r");
 	if(NULL==file){
 		printf("Error opening file: %s\n",filename);
@@ -45,7 +49,7 @@ graph * build_graph(char * filename){
 			temp = strtok(NULL, " ");
 			int to = atoi(temp);
 
-			temp = strtok(NULL, " "); /// form "a.out","b.out","c.out"...
+			temp = strtok(NULL, " \n"); /// form "a.out","b.out","c.out"...
 			printf("temp = %s\n", temp);
 
 			gaussian_cluster * hmm = build_hmm_from_arg(temp);
@@ -76,7 +80,8 @@ gaussian_cluster * build_hmm_from_arg(char * files){
 	string_array_print(file_array);
 	
 	//Get feature vectors from files
-	feature_vectors** features = features_from_all_files(file_array->strings,file_array->num_strings);
+	feature_vectors** features =
+        features_from_all_files(file_array->strings,file_array->num_strings);
 	
 	// Send of feature vectors to be clustered
 	hmm = cluster_templates(features,file_array->num_strings,"three");

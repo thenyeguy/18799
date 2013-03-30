@@ -5,11 +5,12 @@
 #include "../libraries/queue.h"
 #include "../dtw/cluster.h"
 #include "../dtw/dtw_gaussian.h"
+#include "../dtw/dtw_unity.h"
 #include "viterbi.h"
 
 
 // Maybe TODO: refactor this function? Its really long right now...
-char** viterbi_search(graph* grammar, feature_vectors* test,
+char** viterbi_search(grammar* grammar, feature_vectors* test,
                       bool prune, double threshold, int n)
 {
     /* First, we have to traverse the grammar we read in, and use it to
@@ -32,24 +33,31 @@ char** viterbi_search(graph* grammar, feature_vectors* test,
     while(q->size > 0)
     {
         //Get next node to fill
-        graph_node* gn = dequeue(q);
+        grammar_node* gn = dequeue(q);
         viterbi_node* vn = &nodes[node_i];
 
         //Get the edges and create new edges
-        vn->num_edges = gn->num_transitions;
+        vn->num_edges = gn->num_edges;
         vn->edges = malloc(vn->num_edges*sizeof(viterbi_edge));
         for(int i = 0; i < vn->num_edges; i++)
         {
-            transition* ge = &gn->head[i];
+            grammar_transition* ge = &gn->edges[i];
             viterbi_edge* ve = &vn->edges[i];
 
-            ve->trellis = *get_gaussian_trellis(test, &ge->hmm, 1,
-                                                DTW_BEAM_PRUNE, threshold);
-            ve->next = &nodes[ge->next_node_index];
+            //If we have an HMM, we want to score against it
+            //Otherwise, we want to just pass straight through, so have a unity
+            //trellis that always returns its incoming score
+            if(ge->hmm == NULL)
+                ve->trellis = get_unity_trellis(test->num_vectors, DTW_BEAM_PRUNE,
+                                                threshold);
+            else
+                ve->trellis = *get_gaussian_trellis(test, &ge->hmm, 1,
+                                                    DTW_BEAM_PRUNE, threshold);
+            ve->next = &nodes[ge->next_node_id];
 
             //Prep the next node to check if it hasn't been seen yet
-            if(ge->next_node_index > node_i)
-                enqueue(q, ge->next_node);
+            if(ge->next_node_id > node_i)
+                enqueue(q, &grammar->nodes[ge->next_node_id]);
 
             //Advance
             edge_i++;

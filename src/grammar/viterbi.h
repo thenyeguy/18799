@@ -3,7 +3,7 @@
 
 #include "../dtw/feature.h"
 #include "../dtw/dtw_trellis.h"
-#include "graph_utils.h"
+#include "grammar.h"
 
 
 /* Declare these structs ahead of time, because the actual definitions are
@@ -32,6 +32,7 @@ struct viterbi_node {
 /* A viterbi_edge contains evaluation information connected each node in the
  * grammar graph.
  *     trellis represents the DTW trellis structure describing this edge.
+ *        This may be NULL. This signifies to immediately visit its child
  *     next represents where this edge lets out in the grammar graph.
  */
 struct viterbi_edge {
@@ -60,7 +61,7 @@ typedef struct backpointer {
  *                  Uses pruning threshold given, if prune is true. Returns best
  *                  n results found.
  */
-char** viterbi_search(graph* grammar, feature_vectors* test,
+char** viterbi_search(grammar* grammar, feature_vectors* test,
                       bool prune, double threshold, int n);
 
 

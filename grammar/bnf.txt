@@ -1,0 +1,10 @@
+NumStates: 4
+NumHMMs: 2
+
+HMM 0 one analysis/one1-40.out analysis/one2-40.out
+HMM 1 two analysis/two1-40.out analysis/two2-40.out
+
+Edge 0 1 hmm=0 prob=.7
+Edge 0 1 hmm=none prob=.3
+Edge 1 2 hmm=0 prob=1.0
+Edge 2 3 hmm=1 prob=1
