@@ -61,11 +61,13 @@ void dtw_set_incoming(dtw_t* dtw, double score, void* backpointer)
     //Mark the bottom of the trellis as unpruned to ensure we check it
     dtw->next_col[0].pruned = false;
     dtw->next_col[1].pruned = false;
+    dtw->fully_pruned = false;
 }
 
 
 bool dtw_fill_next_col(dtw_t* dtw)
 {
+    printf("entering %p...\n",dtw);
     //If we have searched the whole trellis, return
     if(dtw->last_column_i >= dtw->test_length)
         return true;

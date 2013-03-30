@@ -9,10 +9,10 @@ int main()
     grammar* g = build_grammar("grammar/simple.txt");
     print_grammar(g);
 
-    feature_vectors* test = features_from_file("analysis/two1-40.out"); 
-    char** results = viterbi_search(g, test, true, .1, 2);
+    feature_vectors* test = features_from_file("analysis/onetwo-40.out"); 
+    char** results = viterbi_search(g, test, true, .008, 4);
 
-    print_viterbi_results(results,2);    
+    print_viterbi_results(results,4);    
 
     return 0;
 }

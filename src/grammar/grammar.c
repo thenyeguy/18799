@@ -149,11 +149,13 @@ gaussian_cluster* grammar_build_hmm(char* files, char* word)
 
 void print_grammar(grammar* g)
 {
-    printf("Grammar with %d nodes and %d edges.\n", g->num_nodes, g->num_edges);
+    printf("\nGrammar with %d nodes and %d edges.\n", g->num_nodes, g->num_edges);
 
     //Print nodes
     for(int i = 0; i < g->num_nodes; i++)
         print_grammar_node(&g->nodes[i]);
+
+    printf("\n");
 }
 
 
