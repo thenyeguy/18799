@@ -1,5 +1,5 @@
-#ifndef DTWGAUSSIAN_H 
-#define DTWGAUSSIAN_H
+#ifndef DTWUNITY_H 
+#define DTWUNITY_H
 
 
 /* NOTE: This file extends the behavior of dtw_sync.h, to perform the

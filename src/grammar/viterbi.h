@@ -21,7 +21,7 @@ typedef struct viterbi_edge viterbi_edge;
  */
 struct viterbi_node {
     int num_edges;
-    viterbi_edge* edges;
+    viterbi_edge** edges;
 
     double best_score;
     void* best_backpointer;
@@ -68,8 +68,8 @@ char** viterbi_search(grammar* grammar, feature_vectors* test,
 /* fill_viterbi_graph - given a grammar, and arrays to store all the nodes and
  *                      edges in, fills these arrays with data from the grammar
  */
-void fill_viterbi_graph(graph* grammer, viterbi_node* nodes, int num_nodes,
-                                        viterbi_edge* edges, int num_edges);
+void fill_viterbi_graph(grammar* grammer, viterbi_node* nodes, int num_nodes,
+                                          viterbi_edge* edges, int num_edges);
 
 
 /* add_backpointer_to_results - given a backpointer list and the backpointer,
@@ -77,5 +77,10 @@ void fill_viterbi_graph(graph* grammer, viterbi_node* nodes, int num_nodes,
  */
 void add_backpointer_to_results(backpointer** results, int n,
                                 backpointer* backpointer);
+
+
+/* print_viterbi_results - prints out the results of our viterbi search
+ */
+void print_viterbi_results(char** results, int n);
 
 #endif

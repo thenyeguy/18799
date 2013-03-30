@@ -107,7 +107,7 @@ grammar* build_grammar(char* filename)
             if(strcmp(temp,"none") == 0)
                 hmm = NULL;
             else
-                hmm = hmms[atoi(&temp[4])];
+                hmm = hmms[atoi(temp)];
 
             //Get edge prob
             temp = strtok(NULL, " \n");
@@ -125,7 +125,6 @@ grammar* build_grammar(char* filename)
             g->num_edges++;
         }
     }
-
 
     return g;
 }
