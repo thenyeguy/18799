@@ -116,16 +116,15 @@ gaussian_cluster* cluster_templates(feature_vectors** templates,
             {
                 int my_cluster = cluster_array[i][j];
                 int new_cluster = my_cluster; //initialize to original cluster
-                double best = MAXINT;
+                double best = log(0.0);
                 feature* point = &(templates[i]->features[j]);
-                for(int k=0; k<NUM_CLUSTERS; k++)
+                for(int k=my_cluster; k<my_cluster+1; k++)
                 {
                     single_gaussian_params* dist = cluster_stats[k];
-                    feature* mean = &(dist->means);
 
-                    double distance = feature_distance(point,mean);
+                    double distance = single_gaussian_log_pdf(dist,point);
 
-                    if(distance<best)
+                    if(distance>best)
                     {
                         best = distance;
                         new_cluster = k;
@@ -141,7 +140,6 @@ gaussian_cluster* cluster_templates(feature_vectors** templates,
                     cluster_count[my_cluster]-=1;
                     cluster_count[new_cluster]+=1;	
                 }
-
             }
         }
 

@@ -67,7 +67,6 @@ void dtw_set_incoming(dtw_t* dtw, double score, void* backpointer)
 
 bool dtw_fill_next_col(dtw_t* dtw)
 {
-    printf("entering %p...\n",dtw);
     //If we have searched the whole trellis, return
     if(dtw->last_column_i >= dtw->test_length)
         return true;
@@ -217,12 +216,14 @@ double dtw_score_node(dtw_t* dtw, int row)
         back = downone_bk;
         dir = DTW_DIR_DOWNONE;
     }
+    /*
     else if(downtwo > score)
     {
         score = downtwo;
         back = downtwo_bk;
         dir = DTW_DIR_DOWNTWO;
     }
+    */
 
     //Store info back and finish
     dtw->next_col[row].score = score;

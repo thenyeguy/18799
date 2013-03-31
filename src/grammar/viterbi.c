@@ -128,8 +128,8 @@ char** viterbi_search(grammar* grammar, feature_vectors* test,
                 edge->next->best_backpointer = edge->trellis->backpointer;
                 edge->next->best_word = template->word_id;
 
-                printf("Setting %p to backpointer %p\n",
-                    edge->next,edge->trellis->backpointer);
+                //printf("Setting %p to backpointer %p\n",
+                    //edge->next,edge->trellis->backpointer);
             }
             
             //Keep pruning information
@@ -167,9 +167,11 @@ char** viterbi_search(grammar* grammar, feature_vectors* test,
             //Add to our best table if we are at the end of time and
             //a terminating state
             if(t == test->num_vectors-1 && node->num_edges == 0)
+            {
                 add_backpointer_to_results(results, n, bp);
+            }
 
-            printf("%d %p '%s' %f %p %p\n", i, &nodes[i], bp->word, bp->score, bp, bp->prev);
+            //printf("%d %p '%s' %f %p %p\n", i, &nodes[i], bp->word, bp->score, bp, bp->prev);
             //Set incoming to each edge
             for(int j = 0; j < node->num_edges; j++)
             {
@@ -180,7 +182,6 @@ char** viterbi_search(grammar* grammar, feature_vectors* test,
     }
 
 
-    printf("\nCompiling results\n");
     /* Finally, convert the best n backpointers to string
      */
     char** result_strings = malloc(n*sizeof(char*));
@@ -201,7 +202,6 @@ char** viterbi_search(grammar* grammar, feature_vectors* test,
         //Follow back, copy into word
         while(p != NULL)
         {
-            printf("recurse %d %f '%s' %p %p\n",i,p->score, p->word, p, p->prev);
             int segment_start = p->len - strlen(p->word);
             strncpy(&s[segment_start], p->word, strlen(p->word));
             s[segment_start + strlen(p->word)] = ' ';

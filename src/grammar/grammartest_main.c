@@ -10,8 +10,7 @@ int main()
     print_grammar(g);
 
     feature_vectors* test = features_from_file("analysis/onetwo-40.out"); 
-    char** results = viterbi_search(g, test, true, .008, 4);
-
+    char** results = viterbi_search(g, test, true, .1, 4);
     print_viterbi_results(results,4);    
 
     return 0;
