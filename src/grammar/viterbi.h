@@ -37,6 +37,7 @@ struct viterbi_node {
  */
 struct viterbi_edge {
     dtw_t* trellis; 
+    double entrance_cost;
     viterbi_node* next;
 };
 
@@ -46,6 +47,7 @@ struct viterbi_edge {
  * Contains the time it was created and its score.
  */
 typedef struct backpointer {
+    int timestamp;
     char* word;
     int len;
     double score;
@@ -58,29 +60,8 @@ typedef struct backpointer {
  *                  the maximal score for the given test input. Returns a string
  *                  describing the recognized speech.
  *
- *                  Uses pruning threshold given, if prune is true. Returns best
- *                  n results found.
+ *                  Uses pruning threshold given
  */
-char** viterbi_search(grammar* grammar, feature_vectors* test,
-                      bool prune, double threshold, int n);
-
-
-/* fill_viterbi_graph - given a grammar, and arrays to store all the nodes and
- *                      edges in, fills these arrays with data from the grammar
- */
-void fill_viterbi_graph(grammar* grammer, viterbi_node* nodes, int num_nodes,
-                                          viterbi_edge* edges, int num_edges);
-
-
-/* add_backpointer_to_results - given a backpointer list and the backpointer,
- *                              adds to the list, sorted by score
- */
-void add_backpointer_to_results(backpointer** results, int n,
-                                backpointer* backpointer);
-
-
-/* print_viterbi_results - prints out the results of our viterbi search
- */
-void print_viterbi_results(char** results, int n);
+char* viterbi_search(grammar* grammar, feature_vectors* test, double threshold);
 
 #endif

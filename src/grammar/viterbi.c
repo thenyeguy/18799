@@ -11,8 +11,7 @@
 
 // Maybe TODO: refactor this function? Its really long right now...
 // FYI: leaks lots of memory in backpointers currently
-char** viterbi_search(grammar* grammar, feature_vectors* test,
-                      bool prune, double threshold, int n)
+char* viterbi_search(grammar* grammar, feature_vectors* test, double threshold)
 {
     /* First, we have to traverse the grammar we read in, and use it to
      * construct the equivalent evaluation data so we can track state.
@@ -37,6 +36,9 @@ char** viterbi_search(grammar* grammar, feature_vectors* test,
         //Get the edges and create new edges
         vn->num_edges = gn->num_edges;
         vn->edges = malloc(vn->num_edges*sizeof(viterbi_edge));
+        vn->best_score = DTW_MIN_SCORE;
+        vn->best_backpointer = NULL;
+        vn->best_word = "";
         for(int i = 0; i < vn->num_edges; i++)
         {
             grammar_transition* ge = &gn->edges[i];
@@ -55,6 +57,7 @@ char** viterbi_search(grammar* grammar, feature_vectors* test,
             //Set trellis to have no incoming score
             dtw_set_incoming(ve->trellis,DTW_MIN_SCORE,NULL);
 
+            ve->entrance_cost = (ge->transition_prob);
             ve->next = &nodes[ge->next_node_id];
 
             //Advance
@@ -72,6 +75,7 @@ char** viterbi_search(grammar* grammar, feature_vectors* test,
      * score of zero. TODO: change to entrance costs?
      */
     backpointer* bp = malloc(sizeof(backpointer));
+    bp->timestamp = 0;
     bp->word = "";
     bp->len = 0;
     bp->score = 0;
@@ -83,9 +87,12 @@ char** viterbi_search(grammar* grammar, feature_vectors* test,
     }
 
     //Create results lists
-    backpointer** results = malloc(n*sizeof(backpointer*));
-    for(int i = 0; i < n; i++)
-        results[i] = NULL;
+    backpointer* best = malloc(sizeof(backpointer));
+    best->timestamp = 0;
+    best->word = "NO RESULTS";
+    best->len = strlen(best->word)+1;
+    best->score = DTW_MIN_SCORE;
+    best->prev = NULL;
     
     
     //printf("scoring!\n");
@@ -107,7 +114,6 @@ char** viterbi_search(grammar* grammar, feature_vectors* test,
 
         //printf("Score edges...\n");
         //Score every edge
-        //TODO: add transition costs?
         double column_max = DTW_MIN_SCORE;
         for(int i = 0; i < num_edges; i++)
         {
@@ -120,13 +126,17 @@ char** viterbi_search(grammar* grammar, feature_vectors* test,
             printf("score %d %f\n",i,score);
             if(score > DTW_MIN_SCORE && score > edge->next->best_score)
             {
+                score += edge->entrance_cost;
                 //Get the template used for its word
                 gaussian_cluster* template = edge->trellis->template_data;
 
                 //Update the best seen score into this node
                 edge->next->best_score = score;
                 edge->next->best_backpointer = edge->trellis->backpointer;
-                edge->next->best_word = template->word_id;
+                if(template == NULL)
+                    edge->next->best_word = "";
+                else
+                    edge->next->best_word = template->word_id;
 
                 //printf("Setting %p to backpointer %p\n",
                     //edge->next,edge->trellis->backpointer);
@@ -158,18 +168,16 @@ char** viterbi_search(grammar* grammar, feature_vectors* test,
 
             //Create backpointers
             backpointer* bp = malloc(sizeof(backpointer));
+            bp->timestamp = t;
             bp->word = node->best_word;
             bp->len = strlen(node->best_word)+1;
             if(prev != NULL) bp->len += prev->len;
             bp->score = node->best_score;
             bp->prev = node->best_backpointer;
 
-            //Add to our best table if we are at the end of time and
-            //a terminating state
-            if(t == test->num_vectors-1 && node->num_edges == 0)
-            {
-                add_backpointer_to_results(results, n, bp);
-            }
+            //Replace our best if we are at the end of time
+            if(t == test->num_vectors-1 && bp->score > best->score)
+                best = bp;
 
             //printf("%d %p '%s' %f %p %p\n", i, &nodes[i], bp->word, bp->score, bp, bp->prev);
             //Set incoming to each edge
@@ -182,79 +190,24 @@ char** viterbi_search(grammar* grammar, feature_vectors* test,
     }
 
 
-    /* Finally, convert the best n backpointers to string
+    /* Finally, convert the best backpointer to a string
      */
-    char** result_strings = malloc(n*sizeof(char*));
-    for(int i = 0; i < n; i++)
+    backpointer* p = best;
+    char* s = malloc(p->len*sizeof(char));
+    int len = p->len;
+
+    printf("\n\nRebuild\n");
+    //Follow back, copy into word
+    while(p != NULL)
     {
-        //If we ran out of results, return
-        backpointer* p = results[i];
-        if(p == NULL)
-        {
-            result_strings[i] = NULL;
-            continue;
-        }
-
-        //Else create a new string
-        char* s = malloc(p->len*sizeof(char));
-        int len = p->len;
-
-        //Follow back, copy into word
-        while(p != NULL)
-        {
-            int segment_start = p->len - strlen(p->word);
-            strncpy(&s[segment_start], p->word, strlen(p->word));
-            s[segment_start + strlen(p->word)] = ' ';
-            p = p->prev;
-        }
-
-        //Store it
-        s[len] = '\0';
-        result_strings[i] = s;
+        printf("Word %s ended at t=%d\n",p->word,p->timestamp);
+        int segment_start = p->len - strlen(p->word);
+        strncpy(&s[segment_start], p->word, strlen(p->word));
+        s[segment_start + strlen(p->word)] = ' ';
+        p = p->prev;
     }
 
-    //printf("returning\n");
-    return result_strings;
-}
-
-
-void add_backpointer_to_results(backpointer** results, int n,
-                                backpointer* bp)
-{
-    if(bp->score == DTW_MIN_SCORE)
-        return;
-
-    for(int i = 0; i < n; i++)
-    {
-        //If we see an empty slot, then put our item at the bottom
-        if(results[i] == NULL)
-        {
-            results[i] = bp;
-            return;
-        }
-
-        if(bp->score > results[i]->score)
-        {
-            backpointer* temp1 = bp;
-            backpointer* temp2 = results[i];
-            for (int j = i; j < n; j++)
-            {
-                results[j] = temp1;
-                temp1 = temp2;
-                if (j+1 < n) temp2 = results[j+1];
-            }
-            return;
-        }
-    }
-}
-
-
-void print_viterbi_results(char** results, int n)
-{
-    printf("\nResults of viterbi search...\n");
-    for(int i = 0; i < n; i++)
-    {
-        if(results[i] == NULL) break;
-        printf("    %d. %s\n", i+1, results[i]);
-    }
+    //Return it
+    s[len] = '\0';
+    return s;
 }

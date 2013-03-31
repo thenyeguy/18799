@@ -8,7 +8,7 @@ dtw_t* get_unity_trellis(int length, dtw_prune_t prune, double threshold)
 {
     dtw_t* dtw = malloc(sizeof(dtw_t));
 
-    dtw = new_dtw(NULL, length, NULL, 0,
+    dtw = new_dtw(NULL, length, NULL, 1,
                   prune, threshold, unity_scorer);
 
     return dtw;
