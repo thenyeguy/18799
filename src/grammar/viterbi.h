@@ -5,6 +5,16 @@
 #include "../dtw/dtw_trellis.h"
 #include "grammar.h"
 
+typedef struct viterbi_queue{
+
+
+}viterbi_queue;
+
+typedef struct viterbi_queue_node{
+
+
+}viterbi_queue_node;
+
 
 /* Declare these structs ahead of time, because the actual definitions are
  * mutually recursive
@@ -63,5 +73,6 @@ typedef struct backpointer {
  *                  Uses pruning threshold given
  */
 char* viterbi_search(grammar* grammar, feature_vectors* test, double threshold);
+char* viterbi_search2(grammar* grammar, feature_vectors* test, double threshold);
 
 #endif

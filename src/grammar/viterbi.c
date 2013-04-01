@@ -8,11 +8,38 @@
 #include "../dtw/dtw_unity.h"
 #include "viterbi.h"
 
+char* viterbi_search2(grammar* grammar, feature_vectors* test, double threshold){
+	//Initialize viterbi_queue
+
+	//Initialize back_pointer array
+
+	//Push initial back_pointer into its array
+
+	//Push initial viterbi_queue_node into the queue
+
+	//Loop while entries in queue:
+
+		//pop off first node
+	
+		//decide to prune it or not
+
+		//if word has ended:
+			
+			//add to backpointer table for this time instant
+
+			//push new nodes into queue for each possible transition
+
+		//else:
+			
+			//generate all possible next paths out of this node
+	
+
+	return NULL;
+}
 
 // Maybe TODO: refactor this function? Its really long right now...
 // FYI: leaks lots of memory in backpointers currently
-char* viterbi_search(grammar* grammar, feature_vectors* test, double threshold)
-{
+char* viterbi_search(grammar* grammar, feature_vectors* test, double threshold){
     /* First, we have to traverse the grammar we read in, and use it to
      * construct the equivalent evaluation data so we can track state.
      */
