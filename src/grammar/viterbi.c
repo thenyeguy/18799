@@ -10,17 +10,34 @@
 
 char* viterbi_search2(grammar* grammar, feature_vectors* test, double threshold){
 	//Initialize viterbi_queue
+	viterbi_queue * q = (viterbi_queue *) malloc(sizeof(viterbi_queue));
+	q->length =0;
+	q->head = NULL; 
 
 	//Initialize back_pointer array
-
+	int time_steps = test->num_vectors;
+	backpointer * backpointer_table = (backpointer*) calloc(time_steps,sizeof(backpointer));
+	
 	//Push initial back_pointer into its array
+	backpointer_table[0].score = 0;		//sort of taken care of by calloc...
+	backpointer_table[0].prev = NULL;
+
+	//Initialize first viterbi_queue_node & fill in details
+	viterbi_queue_node * first = (viterbi_queue_node*)malloc(sizeof(viterbi_queue_node));
+	first->next = NULL;
+	first->parent = &backpointer_table[0];
+	first->time_step = 0;
+	first->score = 0;
 
 	//Push initial viterbi_queue_node into the queue
+	push_back_v(q, first);
 
 	//Loop while entries in queue:
+	while(q->length>0){
 
 		//pop off first node
-	
+		viterbi_queue_node * popped = pop_front_v(q);
+			
 		//decide to prune it or not
 
 		//if word has ended:
@@ -32,10 +49,43 @@ char* viterbi_search2(grammar* grammar, feature_vectors* test, double threshold)
 		//else:
 			
 			//generate all possible next paths out of this node
-	
+
+		//release popped node
+		free(popped);
+	}
 
 	return NULL;
 }
+
+viterbi_queue_node* pop_front_v(viterbi_queue * q){
+	if(q->head==NULL){
+		return NULL;
+	}
+	else{
+		viterbi_queue_node * t = q->head;
+		q->head = t->next;
+		q->length--;
+		return t;
+	}
+
+}
+
+void push_back_v(viterbi_queue * q, viterbi_queue_node * n){
+	if(q->head ==NULL){
+		q->head = n;
+	}
+	else{
+		//FIXME use tail pointer
+		viterbi_queue_node * temp = q->head;
+		while(temp->next){
+			temp = temp->next;
+		}
+		temp->next = n;
+		n->next = NULL;
+	}	
+	q->length++;
+}
+
 
 // Maybe TODO: refactor this function? Its really long right now...
 // FYI: leaks lots of memory in backpointers currently

@@ -14,5 +14,7 @@ int main()
 
     printf("\n\nResult: %s\n", result);
 
+    char* result2 = viterbi_search2(g, test, .1);
+    printf("\n\nResult2: %s\n",result2);
     return 0;
 }
