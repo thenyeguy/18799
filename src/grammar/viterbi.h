@@ -16,6 +16,8 @@ typedef struct viterbi_queue_node{
 	struct backpointer * parent;
 	int time_step;
 	double score;
+	grammar_transition * transition;
+	dtw_t* trellis;
 }viterbi_queue_node;
 
 

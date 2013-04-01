@@ -19,39 +19,81 @@ char* viterbi_search2(grammar* grammar, feature_vectors* test, double threshold)
 	backpointer * backpointer_table = (backpointer*) calloc(time_steps,sizeof(backpointer));
 	
 	//Push initial back_pointer into its array
-	backpointer_table[0].score = 0;		//sort of taken care of by calloc...
+	backpointer_table[0].score = DTW_MIN_SCORE;	//sort of taken care of by calloc...
 	backpointer_table[0].prev = NULL;
 
-	//Initialize first viterbi_queue_node & fill in details
-	viterbi_queue_node * first = (viterbi_queue_node*)malloc(sizeof(viterbi_queue_node));
-	first->next = NULL;
-	first->parent = &backpointer_table[0];
-	first->time_step = 0;
-	first->score = 0;
+	//For each grammar start initialize first viterbi_queue_node & fill in details
+	grammar_node * initial_node = &(grammar->nodes[0]);
+	int initial_transitions = initial_node->num_edges;
 
-	//Push initial viterbi_queue_node into the queue
-	push_back_v(q, first);
+	//For the initial grammar node, push a queue_node for each potential transition
+	for(int i=0; i<initial_transitions; i++){
+
+		//Generate and initialize the first group of nodes
+		viterbi_queue_node * first = (viterbi_queue_node*)malloc(sizeof(viterbi_queue_node));
+		first->next = NULL;
+		first->parent = &backpointer_table[0];
+		first->time_step = 0;
+		first->score = DTW_MIN_SCORE; //FIXME should this be the MIN_SCORE or 0?
+		first->transition = &(initial_node->edges[i]);
+		//FIXME, totally guessed on this next line
+		first->trellis = *get_gaussian_trellis(test, &(first->transition->hmm), 1,DTW_BEAM_PRUNE, threshold);
+
+		//Push initial viterbi_queue_nodes into the queue
+		push_back_v(q, first);
+	}
 
 	//Loop while entries in queue:
 	while(q->length>0){
 
 		//pop off first node
 		viterbi_queue_node * popped = pop_front_v(q);
-			
+		double node_score = popped->score;		
+		printf("Score: %f\n", node_score);
+
 		//decide to prune it or not
 
 		//if word has ended:
+		if(node_score!= DTW_MIN_SCORE){	
 			
-			//add to backpointer table for this time instant
+			//Figure out when the word ended so we may add it to the back pointer table
+			int ended_time = popped->time_step;
+			printf("Word ended at: %d\n",ended_time);
+
+			//No word has finished at this time instant yet, so create this backpointer entry
+			if(backpointer_table[ended_time].score == DTW_MIN_SCORE){
+				
+				//Generate reentries back into each trellis as we initialized
+				//TODO Actually do that ^
+
+				backpointer_table[ended_time].score = popped-> score;
+                                backpointer_table[ended_time].prev  = popped-> parent;
+			}			
+			//We want to kick out the previous best score
+			else if(node_score > backpointer_table[ended_time].score){
+
+				//Transitions have already been generated for this time, so just update params
+				backpointer_table[ended_time].score = popped-> score;
+				backpointer_table[ended_time].prev  = popped-> parent;
+				printf("Kicked out a previous best score\n");
+
+			}
+			//Our attempt at being the best score has been beaten, this node is useless
+			else{
+				//Not sure if we need to do anything here
+			}
 
 			//push new nodes into queue for each possible transition
 
-		//else:
-			
-			//generate all possible next paths out of this node
+		}
 
-		//release popped node
-		free(popped);
+		//Continue to fill up the trellis
+		dtw_fill_next_col(popped->trellis);
+		popped->time_step ++;
+		popped->score = popped->trellis->score;	
+
+		//Push the popped node back into the queue with updated trellis and time steps
+		push_back_v(q,popped);
 	}
 
 	return NULL;
