@@ -26,7 +26,9 @@ char* viterbi_search2(grammar* grammar, feature_vectors* test, double threshold)
 	grammar_node * initial_node = &(grammar->nodes[0]);
 	int initial_transitions = initial_node->num_edges;
 
-	//For the initial grammar node, push a queue_node for each potential transition
+	//FIXME: For the initial grammar node, push a queue_node for each potential transition
+	//We make the assumption right now that no new HMM's will be introduced in later
+	//transitions. This should be changed to build a trellis for EACH HMM.
 	for(int i=0; i<initial_transitions; i++){
 
 		//Generate and initialize the first group of nodes
@@ -63,29 +65,31 @@ char* viterbi_search2(grammar* grammar, feature_vectors* test, double threshold)
 			//No word has finished at this time instant yet, so create this backpointer entry
 			if(backpointer_table[ended_time].score == DTW_MIN_SCORE){
 				
-				//Generate reentries back into each trellis as we initialized
-				//TODO Actually do that ^
-
+				//First time a word has finished for this time instant
 				backpointer_table[ended_time].score = popped-> score;
                                 backpointer_table[ended_time].prev  = popped-> parent;
+				//FIXME add a char * to backpointer to keep track of which HMM
+				//Then add the HMM's name to the backpointer table entry
 			}			
 			//We want to kick out the previous best score
 			else if(node_score > backpointer_table[ended_time].score){
 
-				//Transitions have already been generated for this time, so just update params
+				//Just update params as we have found a better path
 				backpointer_table[ended_time].score = popped-> score;
 				backpointer_table[ended_time].prev  = popped-> parent;
+				//FIXME add the HMM's name to the backpointer entry
 				printf("Kicked out a previous best score\n");
 
 			}
 			//Our attempt at being the best score has been beaten, this node is useless
 			else{
-				//Not sure if we need to do anything here
+				//Not sure if we need to do anything here, I don't think so
 			}
 
-			//push new nodes into queue for each possible transition
-
 		}
+
+		//If this node is allowed to follow the backpointer[time] in the grammar
+		//Then we need to enter from beneath trellis using that backpointer
 
 		//Continue to fill up the trellis
 		dtw_fill_next_col(popped->trellis);
