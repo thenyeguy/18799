@@ -14,15 +14,15 @@ char* viterbi_search3(grammar* grammar, feature_vectors* test, double threshold)
 	//Initialize a backpointer table array based on the number of timesteps
 	int time_steps = test->num_vectors;
         backpointer * backpointer_table = (backpointer*) malloc(time_steps*sizeof(backpointer));
-	//TODO initialize array
 
-	//Set the first backpointer to hold initial grammar node which holds next possible transitions
-	backpointer_table[0].gn = &(grammar->nodes[0]);
-	//TODO initialize the rest of the backpointer table
 	for(int i=0; i < time_steps; i++){
 		backpointer_table[i].prev = NULL;
 		backpointer_table[i].score = DTW_MIN_SCORE;
+		backpointer_table[i].timestamp = i;
 	}
+
+	//Set the first backpointer to hold initial grammar node which holds next possible transitions
+        backpointer_table[0].gn = &(grammar->nodes[0]);
 
 	//Initialize an array of trellises
 	int num_hmms = grammar->num_hmms;
@@ -58,6 +58,7 @@ char* viterbi_search3(grammar* grammar, feature_vectors* test, double threshold)
 			if( t>0	&& backpointer_table[t-1].score > DTW_MIN_SCORE){
 			        double bp_score = backpointer_table[t-1].score;
 				printf("BP_SCORE: %f\n",bp_score);
+
 				//Attempt to add a come from below using the backpointer and score
 				dtw_set_incoming(ts[i],bp_score,&(backpointer_table[t-1]));				
 			}
@@ -73,16 +74,16 @@ char* viterbi_search3(grammar* grammar, feature_vectors* test, double threshold)
 				printf("Word ended\n");
 				//If first word to finish, add myself
 				//Set score, back pointer, and new grammar node based on back pointer
-				if(score > backpointer_table[i].score){
-					backpointer_table[i].prev = ts[i]-> backpointer;
-                                        backpointer_table[i].score = score;
+				if(score > backpointer_table[t].score){
+					backpointer_table[t].prev = ts[i]-> backpointer;
+                                        backpointer_table[t].score = score;
 				}
 			}
 		}
 	}
 
 	//When the word ends, look at the backpointer table's last entry and trace it back
-
+	print_bpt(backpointer_table,time_steps);
 	return NULL;
 }
 
@@ -90,7 +91,14 @@ char* viterbi_search3(grammar* grammar, feature_vectors* test, double threshold)
 void print_bpt(backpointer * bpt, int bp_size){
 	printf("====bp====\n");
 	for(int i=0; i<bp_size; i++){
-		printf("t=%d:\t%f\n",i,bpt[i].score);
+		printf("t=%d:\t%f\tBackTrace: ",i,bpt[i].score);
+		backpointer * temp = bpt[i].prev;
+		while(temp){
+			printf("%d ",temp->timestamp);
+			temp = temp->prev;
+			
+		}
+		printf("\n");
 	}
 	printf("==========\n\n");
 }
