@@ -69,6 +69,7 @@ typedef struct backpointer {
     struct backpointer* prev;
     double score;
     struct grammar_node * gn;
+    int hmm_path;
 } backpointer;
 
 

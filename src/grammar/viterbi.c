@@ -19,6 +19,7 @@ char* viterbi_search3(grammar* grammar, feature_vectors* test, double threshold)
 		backpointer_table[i].prev = NULL;
 		backpointer_table[i].score = DTW_MIN_SCORE;
 		backpointer_table[i].timestamp = i;
+		backpointer_table[i].hmm_path = -1;
 	}
 
 	//Set the first backpointer to hold initial grammar node which holds next possible transitions
@@ -85,7 +86,7 @@ char* viterbi_search3(grammar* grammar, feature_vectors* test, double threshold)
 
 			if(score!=DTW_MIN_SCORE){
 				printf("Word ended\n");
-				//If first word to finish, add myself
+				//If my score is better than the current score, add myself
 				//Set score, back pointer, and new grammar node based on back pointer
 				if(score > backpointer_table[t].score){
 					backpointer_table[t].prev = ts[i]-> backpointer;
@@ -103,6 +104,7 @@ char* viterbi_search3(grammar* grammar, feature_vectors* test, double threshold)
 						}
 					}
 					if(next_node_id==-1){printf("Fuck\n");} //FIXME
+					backpointer_table[t].hmm_path = i;
 					backpointer_table[t].gn =  &(grammar->nodes[next_node_id]);
 				}
 			}
@@ -119,9 +121,12 @@ void print_bpt(backpointer * bpt, int bp_size){
 	printf("====bp====\n");
 	for(int i=0; i<bp_size; i++){
 		printf("t=%d:\t%f\tBackTrace: ",i,bpt[i].score);
-		backpointer * temp = bpt[i].prev;
+		backpointer * temp = &(bpt[i]);
+		
+		
+		//backpointer * temp = bpt[i].prev;
 		while(temp){
-			printf("%d ",temp->timestamp);
+			printf("%d through: %d, ",temp->timestamp,temp->hmm_path);
 			temp = temp->prev;
 			
 		}
