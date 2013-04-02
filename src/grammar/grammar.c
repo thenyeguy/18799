@@ -125,6 +125,7 @@ grammar* build_grammar(char* filename)
             g->num_edges++;
         }
     }
+    g->hmms = 	hmms;
 
     return g;
 }

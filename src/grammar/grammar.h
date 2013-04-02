@@ -15,6 +15,7 @@ typedef struct grammar_transition grammar_transition;
  */
 struct grammar {
     grammar_node* nodes;
+    gaussian_cluster** hmms;
     int num_nodes;
     int num_edges;
     int num_hmms;
