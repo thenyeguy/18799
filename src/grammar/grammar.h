@@ -39,6 +39,7 @@ struct grammar_node {
 struct grammar_transition {
     double transition_prob;
     gaussian_cluster* hmm;
+    int hmm_id;
     int next_node_id;
 };
 

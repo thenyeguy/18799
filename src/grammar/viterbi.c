@@ -59,8 +59,21 @@ char* viterbi_search3(grammar* grammar, feature_vectors* test, double threshold)
 			        double bp_score = backpointer_table[t-1].score;
 				printf("BP_SCORE: %f\n",bp_score);
 
+				//Need to get list of allowable incoming HMM entries by looking at grammar
+				int num_possible_reentries = backpointer_table[t-1].gn -> num_edges;
+				bool transition_allowed=false;
+
+				//We check to see if the backpointer allows a transition into this HMM
+				for(int j=0; j<num_possible_reentries; j++){
+					if(backpointer_table[t-1].gn -> edges ->hmm_id == i){
+						transition_allowed =true;
+					}
+				}
+
 				//Attempt to add a come from below using the backpointer and score
-				dtw_set_incoming(ts[i],bp_score,&(backpointer_table[t-1]));				
+				if(transition_allowed){
+					dtw_set_incoming(ts[i],bp_score,&(backpointer_table[t-1]));	
+				}			
 			}
 
 			//Then fill a new column in the trellis
@@ -77,6 +90,20 @@ char* viterbi_search3(grammar* grammar, feature_vectors* test, double threshold)
 				if(score > backpointer_table[t].score){
 					backpointer_table[t].prev = ts[i]-> backpointer;
                                         backpointer_table[t].score = score;
+					
+					//Identify which parent node we came from
+					backpointer * bp =(backpointer*) ts[i]->backpointer;
+					grammar_node * parent = bp->gn;
+					
+					//Identify the transition we came from
+					int next_node_id = -1;
+					for(int j=0; j<parent->num_edges; j++){
+						if(parent->edges[j].hmm_id== i){
+							next_node_id = parent->edges[j].next_node_id;
+						}
+					}
+					if(next_node_id==-1){printf("Fuck\n");} //FIXME
+					backpointer_table[t].gn =  &(grammar->nodes[next_node_id]);
 				}
 			}
 		}
