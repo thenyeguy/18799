@@ -10,7 +10,7 @@ int main()
     print_grammar(g);
 
     feature_vectors* test = features_from_file("analysis/onetwo-40.out"); 
-    char* result = viterbi_search(g, test, .1);
+    char* result = viterbi_search(g, test, 0.1);
 
     printf("\n\nResult: %s\n", result);
 

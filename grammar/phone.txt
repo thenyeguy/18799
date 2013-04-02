@@ -12,6 +12,7 @@ HMM 7 seven analysis/seven1-40.out analysis/seven2-40.out analysis/seven3-40.out
 HMM 8 eight analysis/eight1-40.out analysis/eight2-40.out analysis/eight3-40.out analysis/eight4-40.out analysis/eight5-40.out
 HMM 9 nine analysis/nine1-40.out analysis/nine2-40.out analysis/nine3-40.out analysis/nine4-40.out analysis/nine5-40.out
 
+Edge 0 1 hmm=1 prob=.1
 Edge 0 1 hmm=2 prob=.1
 Edge 0 1 hmm=3 prob=.1
 Edge 0 1 hmm=4 prob=.1

@@ -123,7 +123,8 @@ char* viterbi_search(grammar* grammar, feature_vectors* test, double threshold)
             //Get score from trellis and visit a node
             //If we have the best score seen into this node, then update it
             double score = edge->trellis->score;
-            printf("score %d %f\n",i,score);
+            dtw_print_col(edge->trellis);
+            //printf("score %d %f\n",i,score);
             if(score > DTW_MIN_SCORE && score > edge->next->best_score)
             {
                 score += edge->entrance_cost;
@@ -137,10 +138,18 @@ char* viterbi_search(grammar* grammar, feature_vectors* test, double threshold)
                     edge->next->best_word = "";
                 else
                     edge->next->best_word = template->word_id;
+                //printf("\tbest word: %s\n",edge->next->best_word);
 
                 //printf("Setting %p to backpointer %p\n",
                     //edge->next,edge->trellis->backpointer);
             }
+
+            /*
+            if(t == test->num_vectors-1 && edge->trellis->backpointer !=
+                NULL)
+                printf("%d, t=%d\n",i,
+                 ((backpointer*)edge->trellis->backpointer)->timestamp);
+                */
             
             //Keep pruning information
             double this_max = edge->trellis->column_max;
@@ -153,6 +162,7 @@ char* viterbi_search(grammar* grammar, feature_vectors* test, double threshold)
         //Prune trellis structures
         double window = abs(column_max)*threshold;
         double abs_threshold = column_max - window;
+        printf("%f\n", abs_threshold);
         for(int i = 0; i < num_edges; i++)
         {
             dtw_prune_next_column(edges[i].trellis, abs_threshold);
@@ -176,7 +186,8 @@ char* viterbi_search(grammar* grammar, feature_vectors* test, double threshold)
             bp->prev = node->best_backpointer;
 
             //Replace our best if we are at the end of time
-            if(t == test->num_vectors-1 && bp->score > best->score)
+            if(t == test->num_vectors-1 && node->num_edges == 0 &&
+                bp->score > best->score)
                 best = bp;
 
             //printf("%d %p '%s' %f %p %p\n", i, &nodes[i], bp->word, bp->score, bp, bp->prev);

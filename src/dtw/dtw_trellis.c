@@ -204,13 +204,14 @@ double dtw_score_node(dtw_t* dtw, int row)
     double score = DTW_MIN_SCORE;
     void* back = NULL;
     dtw_trellis_dir dir = DTW_DIR_NONE;
-    if(left > downone && left > downtwo && left > score)
+    //if(left > downone && left > downtwo && left > score)
+    if(left > downone && left > score)
     {
         score = left;
         back = left_bk;
         dir = DTW_DIR_LEFT;
     }
-    else if(downone > downtwo && downone > score)
+    else if(downone > score)
     {
         score = downone;
         back = downone_bk;
