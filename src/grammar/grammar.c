@@ -34,7 +34,7 @@ grammar* build_grammar(char* filename)
     temp = strtok(buffer, " \n");
     temp = strtok(NULL, " \n");
     num_hmms = atoi(temp);
-
+    g->num_hmms = num_hmms;
 
     //Create nodes and HMM space
     g->nodes = malloc(g->num_nodes * sizeof(grammar_node));

@@ -8,6 +8,50 @@
 #include "../dtw/dtw_unity.h"
 #include "viterbi.h"
 
+
+char* viterbi_search3(grammar* grammar, feature_vectors* test, double threshold){
+	//LETS TRY THIS AGAIN
+	
+	//Initialize a backpointer table array based on the number of timesteps
+
+	//Set the first backpointer to hold initial grammar node which holds next possible transitions
+
+	//Initialize an array of trellises where each trellis is built using the gauss func; test and hmm
+
+	//Each trellis should be initialized with a backpointer
+
+		//If the HMM is part of the initial grammar node's possible transitions
+
+			//Initialize the trellis with a backpointer to the first backpointer table entry
+
+		//Otherwise
+			
+			//Initialize the trellis with a backpointer set to NULL
+
+	//For 0 to test length
+
+		//For each trellis in the HMM/trellis array thing
+
+			//Step forward in time by: 
+			//If there is a backpointer at t-1:
+				
+				//Attempt to add a come from below using the backpointer and score
+				
+			//Then fill a new column in the trellis
+
+			//If the word finish ie. non -inf score. 
+			
+				//If first word to finish, add myself
+
+					//Set score, back pointer, and new grammar node based on back pointer
+
+				//If not first word, over write the stuff above^
+
+	//When the word ends, look at the backpointer table's last entry and trace it back
+
+	return NULL;
+}
+
 char* viterbi_search2(grammar* grammar, feature_vectors* test, double threshold){
 	//Initialize viterbi_queue
 	viterbi_queue * q = (viterbi_queue *) malloc(sizeof(viterbi_queue));
@@ -19,8 +63,10 @@ char* viterbi_search2(grammar* grammar, feature_vectors* test, double threshold)
 	backpointer * backpointer_table = (backpointer*) calloc(time_steps,sizeof(backpointer));
 	
 	//Push initial back_pointer into its array
-	backpointer_table[0].score = DTW_MIN_SCORE;	//sort of taken care of by calloc...
-	backpointer_table[0].prev = NULL;
+	for(int i =0; i<time_steps; i++){
+		backpointer_table[i].score = DTW_MIN_SCORE;	//sort of taken care of by calloc...
+		backpointer_table[i].prev = NULL;
+	}
 
 	//For each grammar start initialize first viterbi_queue_node & fill in details
 	grammar_node * initial_node = &(grammar->nodes[0]);
@@ -62,6 +108,7 @@ char* viterbi_search2(grammar* grammar, feature_vectors* test, double threshold)
 			int ended_time = popped->time_step;
 			printf("Word ended at: %d\n",ended_time);
 
+			printf("Current entry: %f\n",backpointer_table[ended_time].score);
 			//No word has finished at this time instant yet, so create this backpointer entry
 			if(backpointer_table[ended_time].score == DTW_MIN_SCORE){
 				
@@ -70,6 +117,7 @@ char* viterbi_search2(grammar* grammar, feature_vectors* test, double threshold)
                                 backpointer_table[ended_time].prev  = popped-> parent;
 				//FIXME add a char * to backpointer to keep track of which HMM
 				//Then add the HMM's name to the backpointer table entry
+				printf("First time seeing a word end\n");
 			}			
 			//We want to kick out the previous best score
 			else if(node_score > backpointer_table[ended_time].score){
@@ -84,6 +132,7 @@ char* viterbi_search2(grammar* grammar, feature_vectors* test, double threshold)
 			//Our attempt at being the best score has been beaten, this node is useless
 			else{
 				//Not sure if we need to do anything here, I don't think so
+				printf("What.\n");
 			}
 
 		}

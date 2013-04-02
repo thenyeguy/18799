@@ -17,6 +17,7 @@ struct grammar {
     grammar_node* nodes;
     int num_nodes;
     int num_edges;
+    int num_hmms;
 };
 
 
