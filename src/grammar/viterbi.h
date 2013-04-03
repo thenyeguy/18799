@@ -85,7 +85,7 @@ char* viterbi_search2(grammar* grammar, feature_vectors* test, double threshold)
 char* viterbi_search3(grammar* grammar, feature_vectors* test, double threshold);
 
 void print_bpt(backpointer * bpt, int bp_size);
-
+void print_best_bpt_path(backpointer *bpt, int time_instant,gaussian_cluster ** hmms);
 
 viterbi_queue_node* pop_front_v(viterbi_queue * q);
 void push_back_v(viterbi_queue * q, viterbi_queue_node * n);

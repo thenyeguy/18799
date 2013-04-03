@@ -50,7 +50,7 @@ char* viterbi_search3(grammar* grammar, feature_vectors* test, double threshold)
 
 	//For 0 to test length
 	for(int t = 0; t< time_steps; t++){
-		printf("t=%d\n",t);
+		//printf("t=%d\n",t);
 		//For each trellis in the HMM/trellis array thing
 		for(int i=0; i < num_hmms; i++){
 			
@@ -58,7 +58,7 @@ char* viterbi_search3(grammar* grammar, feature_vectors* test, double threshold)
 			//If there is a backpointer at t-1:
 			if( t>0	&& backpointer_table[t-1].score > DTW_MIN_SCORE){
 			        double bp_score = backpointer_table[t-1].score;
-				printf("BP_SCORE: %f\n",bp_score);
+				//printf("BP_SCORE: %f\n",bp_score);
 
 				//Need to get list of allowable incoming HMM entries by looking at grammar
 				int num_possible_reentries = backpointer_table[t-1].gn -> num_edges;
@@ -82,10 +82,10 @@ char* viterbi_search3(grammar* grammar, feature_vectors* test, double threshold)
 
 			//If the word finish ie. non -inf score. 
 			double score = ts[i]->score;
-			printf("Trellis current score: %f\n",score);
+			//printf("Trellis current score: %f\n",score);
 
 			if(score!=DTW_MIN_SCORE){
-				printf("Word ended\n");
+				//printf("Word ended\n");
 				//If my score is better than the current score, add myself
 				//Set score, back pointer, and new grammar node based on back pointer
 				if(score > backpointer_table[t].score){
@@ -112,10 +112,26 @@ char* viterbi_search3(grammar* grammar, feature_vectors* test, double threshold)
 	}
 
 	//When the word ends, look at the backpointer table's last entry and trace it back
-	print_bpt(backpointer_table,time_steps);
+	//print_bpt(backpointer_table,time_steps);
+	print_best_bpt_path(backpointer_table,time_steps-1,hmms);
 	return NULL;
 }
 
+
+void print_best_bpt_path(backpointer *bpt, int time_instant,gaussian_cluster ** hmms){
+	printf("===== t=%d =====\n",time_instant);
+	backpointer * temp = &(bpt[time_instant]);
+        while(temp){
+		int hmm_id = temp->hmm_path;
+        	printf("%s ",hmms[hmm_id]->word_id);
+                temp = temp->prev;
+		if(!temp->prev){
+			//We're at the initial backpointer
+			break;
+		}
+	}
+	printf("\n=================\n\n");
+}
 
 void print_bpt(backpointer * bpt, int bp_size){
 	printf("====bp====\n");
