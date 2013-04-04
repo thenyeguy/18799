@@ -6,13 +6,26 @@
 
 int main()
 {
-    grammar* g = build_grammar("grammar/simple.txt");
+    //grammar* g = build_grammar("grammar/simple.txt");
+    //grammar* g = build_grammar("grammar/loop.txt");
+    //grammar* g = build_grammar("grammar/double loop 1-9.txt");
+    grammar* g = build_grammar("grammar/quad loop 1-9.txt");
     print_grammar(g);
 
-    feature_vectors* test = features_from_file("analysis/onetwo-40.out"); 
+    //feature_vectors* test = features_from_file("analysis/onetwo-40.out");    
+    feature_vectors* test = features_from_file("analysis/5678-40.out"); 
+/*
     char* result = viterbi_search(g, test, .1);
 
     printf("\n\nResult: %s\n", result);
+*/
+/*
+    char* result2 = viterbi_search2(g, test, .1);
+    printf("\n\nResult2: %s\n",result2);
+*/
+    char* result3 = viterbi_search3(g, test, .1);
+    printf("\n\nResult3: %s\n",result3);
+
 
     return 0;
 }

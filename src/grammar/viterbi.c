@@ -9,10 +9,306 @@
 #include "viterbi.h"
 
 
+char* viterbi_search3(grammar* grammar, feature_vectors* test, double threshold){
+	
+	//Initialize a backpointer table array based on the number of timesteps
+	int time_steps = test->num_vectors;
+        backpointer * backpointer_table = (backpointer*) malloc(time_steps*sizeof(backpointer));
+
+	for(int i=0; i < time_steps; i++){
+		backpointer_table[i].prev = NULL;
+		backpointer_table[i].score = DTW_MIN_SCORE;
+		backpointer_table[i].timestamp = i;
+		backpointer_table[i].hmm_path = -1;
+	}
+
+	//Set the first backpointer to hold initial grammar node which holds next possible transitions
+        backpointer_table[0].gn = &(grammar->nodes[0]);
+
+	//Initialize an array of trellises
+	int num_hmms = grammar->num_hmms;
+
+	//new way to init dtw array
+	gaussian_cluster ** hmms = grammar->hmms;
+	dtw_t** ts = get_gaussian_trellis(test, hmms, num_hmms, DTW_BEAM_PRUNE,  threshold);
+	for(int i=0; i < num_hmms; i++){
+		dtw_set_incoming(ts[i],0,&(backpointer_table[0]));	//FIXME?
+	}
+
+	//Each trellis should be initialized with a backpointer
+
+		//If the HMM is part of the initial grammar node's possible transitions
+
+			//Initialize the trellis with a backpointer to the first backpointer table entry
+
+		//Otherwise
+			
+			//Initialize the trellis with a backpointer set to NULL
+
+	//For 0 to test length
+	for(int t = 0; t< time_steps; t++){
+		printf("t=%d\n",t);
+		//For each trellis in the HMM/trellis array thing
+		for(int i=0; i < num_hmms; i++){
+			
+			//Step forward in time by: 
+			//If there is a backpointer at t-1:
+			if( t>0	&& backpointer_table[t-1].score > DTW_MIN_SCORE){
+			        double bp_score = backpointer_table[t-1].score;
+				printf("BP_SCORE: %f\n",bp_score);
+
+				//Need to get list of allowable incoming HMM entries by looking at grammar
+				int num_possible_reentries = backpointer_table[t-1].gn -> num_edges;
+				bool transition_allowed=false;
+
+				//We check to see if the backpointer allows a transition into this HMM
+				for(int j=0; j<num_possible_reentries; j++){
+					if(backpointer_table[t-1].gn -> edges[j].hmm_id == i){
+						transition_allowed =true;
+					}
+				}
+
+				//Attempt to add a come from below using the backpointer and score
+				if(transition_allowed){
+					printf("Set incoming\n");
+					dtw_set_incoming(ts[i],bp_score,&(backpointer_table[t-1]));	
+				}			
+			}
+
+			//printf("Trellis %d \n",i);
+			dtw_print_col(ts[i]);
+			//Then fill a new column in the trellis
+			dtw_fill_next_col(ts[i]);
+
+			//If the word finish ie. non -inf score. 
+			double score = ts[i]->score;
+			//dtw_print_col(ts[i]);
+			//printf("current score: %f\n",score);
+
+			if(score!=DTW_MIN_SCORE){
+				//printf("Word %d ended: %f\n",i,score);
+				//If my score is better than the current score, add myself
+				//Set score, back pointer, and new grammar node based on back pointer
+				if(score > backpointer_table[t].score){
+					//printf("New Best: %d\n",i);
+					backpointer_table[t].prev = ts[i]-> backpointer;
+                                        backpointer_table[t].score = score;
+					
+					//Identify which parent node we came from
+					backpointer * bp =(backpointer*) ts[i]->backpointer;
+					grammar_node * parent = bp->gn;
+					
+					//Identify the transition we came from
+					int next_node_id = -1;
+					for(int j=0; j<parent->num_edges; j++){
+						if(parent->edges[j].hmm_id== i){
+							next_node_id = parent->edges[j].next_node_id;
+						}
+					}
+					if(next_node_id==-1){printf("Fuck\n");} //FIXME
+					backpointer_table[t].hmm_path = i;
+					backpointer_table[t].gn =  &(grammar->nodes[next_node_id]);
+				}
+			}
+		}
+	}
+
+	//When the word ends, look at the backpointer table's last entry and trace it back
+	print_bpt(backpointer_table,time_steps);
+	print_best_bpt_path(backpointer_table,time_steps-1,hmms);
+	
+	return NULL;
+}
+
+
+void print_best_bpt_path(backpointer *bpt, int time_instant,gaussian_cluster ** hmms){
+	printf("===== t=%d =====\n",time_instant);
+	backpointer * temp = &(bpt[time_instant]);
+        while(temp){
+		int hmm_id = temp->hmm_path;
+        	printf("%s ",hmms[hmm_id]->word_id);
+                temp = temp->prev;
+		if(!temp->prev){
+			//We're at the initial backpointer
+			break;
+		}
+	}
+	printf("\n=================\n\n");
+}
+
+void print_bpt(backpointer * bpt, int bp_size){
+	printf("====bp====\n");
+	for(int i=0; i<bp_size; i++){
+		printf("t=%d:\t%f\tBackTrace: ",i,bpt[i].score);
+		backpointer * temp = &(bpt[i]);
+		
+		
+		//backpointer * temp = bpt[i].prev;
+		while(temp){
+			if(!temp->prev){
+                	        //We're at the initial backpointer
+                	        break;
+                	}
+			printf("%d through: %d, ",temp->timestamp,temp->hmm_path);
+			temp = temp->prev;
+		}
+		printf("\n");
+	}
+	printf("==========\n\n");
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+char* viterbi_search2(grammar* grammar, feature_vectors* test, double threshold){
+	//Initialize viterbi_queue
+	viterbi_queue * q = (viterbi_queue *) malloc(sizeof(viterbi_queue));
+	q->length =0;
+	q->head = NULL; 
+
+	//Initialize back_pointer array
+	int time_steps = test->num_vectors;
+	backpointer * backpointer_table = (backpointer*) calloc(time_steps,sizeof(backpointer));
+	
+	//Push initial back_pointer into its array
+	for(int i =0; i<time_steps; i++){
+		backpointer_table[i].score = DTW_MIN_SCORE;	//sort of taken care of by calloc...
+		backpointer_table[i].prev = NULL;
+	}
+
+	//For each grammar start initialize first viterbi_queue_node & fill in details
+	grammar_node * initial_node = &(grammar->nodes[0]);
+	int initial_transitions = initial_node->num_edges;
+
+	//FIXME: For the initial grammar node, push a queue_node for each potential transition
+	//We make the assumption right now that no new HMM's will be introduced in later
+	//transitions. This should be changed to build a trellis for EACH HMM.
+	for(int i=0; i<initial_transitions; i++){
+
+		//Generate and initialize the first group of nodes
+		viterbi_queue_node * first = (viterbi_queue_node*)malloc(sizeof(viterbi_queue_node));
+		first->next = NULL;
+		first->parent = &backpointer_table[0];
+		first->time_step = 0;
+		first->score = DTW_MIN_SCORE; //FIXME should this be the MIN_SCORE or 0?
+		first->transition = &(initial_node->edges[i]);
+		//FIXME, totally guessed on this next line
+		first->trellis = *get_gaussian_trellis(test, &(first->transition->hmm), 1,DTW_BEAM_PRUNE, threshold);
+
+		//Push initial viterbi_queue_nodes into the queue
+		push_back_v(q, first);
+	}
+
+	//Loop while entries in queue:
+	while(q->length>0){
+
+		//pop off first node
+		viterbi_queue_node * popped = pop_front_v(q);
+		double node_score = popped->score;		
+		printf("Score: %f\n", node_score);
+
+		//decide to prune it or not
+
+		//if word has ended:
+		if(node_score!= DTW_MIN_SCORE){	
+			
+			//Figure out when the word ended so we may add it to the back pointer table
+			int ended_time = popped->time_step;
+			printf("Word ended at: %d\n",ended_time);
+
+			printf("Current entry: %f\n",backpointer_table[ended_time].score);
+			//No word has finished at this time instant yet, so create this backpointer entry
+			if(backpointer_table[ended_time].score == DTW_MIN_SCORE){
+				
+				//First time a word has finished for this time instant
+				backpointer_table[ended_time].score = popped-> score;
+                                backpointer_table[ended_time].prev  = popped-> parent;
+				//FIXME add a char * to backpointer to keep track of which HMM
+				//Then add the HMM's name to the backpointer table entry
+				printf("First time seeing a word end\n");
+			}			
+			//We want to kick out the previous best score
+			else if(node_score > backpointer_table[ended_time].score){
+
+				//Just update params as we have found a better path
+				backpointer_table[ended_time].score = popped-> score;
+				backpointer_table[ended_time].prev  = popped-> parent;
+				//FIXME add the HMM's name to the backpointer entry
+				printf("Kicked out a previous best score\n");
+
+			}
+			//Our attempt at being the best score has been beaten, this node is useless
+			else{
+				//Not sure if we need to do anything here, I don't think so
+				printf("What.\n");
+			}
+
+		}
+
+		//If this node is allowed to follow the backpointer[time] in the grammar
+		//Then we need to enter from beneath trellis using that backpointer
+
+		//Continue to fill up the trellis
+		dtw_fill_next_col(popped->trellis);
+		popped->time_step ++;
+		popped->score = popped->trellis->score;	
+
+		//Push the popped node back into the queue with updated trellis and time steps
+		push_back_v(q,popped);
+	}
+
+	return NULL;
+}
+
+viterbi_queue_node* pop_front_v(viterbi_queue * q){
+	if(q->head==NULL){
+		return NULL;
+	}
+	else{
+		viterbi_queue_node * t = q->head;
+		q->head = t->next;
+		q->length--;
+		return t;
+	}
+
+}
+
+void push_back_v(viterbi_queue * q, viterbi_queue_node * n){
+	if(q->head ==NULL){
+		q->head = n;
+	}
+	else{
+		//FIXME use tail pointer
+		viterbi_queue_node * temp = q->head;
+		while(temp->next){
+			temp = temp->next;
+		}
+		temp->next = n;
+		n->next = NULL;
+	}	
+	q->length++;
+}
+
+
 // Maybe TODO: refactor this function? Its really long right now...
 // FYI: leaks lots of memory in backpointers currently
-char* viterbi_search(grammar* grammar, feature_vectors* test, double threshold)
-{
+char* viterbi_search(grammar* grammar, feature_vectors* test, double threshold){
     /* First, we have to traverse the grammar we read in, and use it to
      * construct the equivalent evaluation data so we can track state.
      */

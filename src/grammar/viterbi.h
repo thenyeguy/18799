@@ -5,6 +5,21 @@
 #include "../dtw/dtw_trellis.h"
 #include "grammar.h"
 
+typedef struct viterbi_queue{
+	struct viterbi_queue_node * head;
+	int length;
+
+}viterbi_queue;
+
+typedef struct viterbi_queue_node{
+	struct viterbi_queue_node * next;
+	struct backpointer * parent;
+	int time_step;
+	double score;
+	grammar_transition * transition;
+	dtw_t* trellis;
+}viterbi_queue_node;
+
 
 /* Declare these structs ahead of time, because the actual definitions are
  * mutually recursive
@@ -50,8 +65,11 @@ typedef struct backpointer {
     int timestamp;
     char* word;
     int len;
-    double score;
+
     struct backpointer* prev;
+    double score;
+    struct grammar_node * gn;
+    int hmm_path;
 } backpointer;
 
 
@@ -63,5 +81,13 @@ typedef struct backpointer {
  *                  Uses pruning threshold given
  */
 char* viterbi_search(grammar* grammar, feature_vectors* test, double threshold);
+char* viterbi_search2(grammar* grammar, feature_vectors* test, double threshold);
+char* viterbi_search3(grammar* grammar, feature_vectors* test, double threshold);
+
+void print_bpt(backpointer * bpt, int bp_size);
+void print_best_bpt_path(backpointer *bpt, int time_instant,gaussian_cluster ** hmms);
+
+viterbi_queue_node* pop_front_v(viterbi_queue * q);
+void push_back_v(viterbi_queue * q, viterbi_queue_node * n);
 
 #endif
