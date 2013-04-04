@@ -179,7 +179,7 @@ double dtw_score_node(dtw_t* dtw, int row)
     if(row > 0)
     {
         downone = dtw->scorer(dtw->test_data, dtw->template_data,
-            row-1, col, DTW_DIR_DOWNONE) + dtw->last_col[row-1].score;
+            row, col, DTW_DIR_DOWNONE) + dtw->last_col[row-1].score;
         downone_bk = dtw->last_col[row-1].backpointer;
     }
     else
@@ -191,7 +191,7 @@ double dtw_score_node(dtw_t* dtw, int row)
     if(row > 1)
     {
         downtwo = dtw->scorer(dtw->test_data, dtw->template_data,
-            row-2, col, DTW_DIR_DOWNTWO) + dtw->last_col[row-2].score;
+            row, col, DTW_DIR_DOWNTWO) + dtw->last_col[row-2].score;
         downtwo_bk = dtw->last_col[row-2].backpointer;
     }
     else if(row == 1)
