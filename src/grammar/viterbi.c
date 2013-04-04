@@ -27,19 +27,7 @@ char* viterbi_search3(grammar* grammar, feature_vectors* test, double threshold)
 
 	//Initialize an array of trellises
 	int num_hmms = grammar->num_hmms;
-/*
-	dtw_t ** ts = (dtw_t**) malloc(sizeof(dtw_t*) * num_hmms );
 
-	//Each trellis is built using the gauss func; test and hmm
-	//FIXME, should this be done with one call?
-	gaussian_cluster ** hmms = grammar->hmms;
-	for(int i=0; i < num_hmms; i++){
-		ts[i] = *get_gaussian_trellis(test, &(hmms[i]), 1,DTW_BEAM_PRUNE, threshold);
-
-		//In reality, we only want to set to the first backpointer if it's an initial trans
-		dtw_set_incoming(ts[i],0,&(backpointer_table[0])); //FIXME
-	}
-*/
 	//new way to init dtw array
 	gaussian_cluster ** hmms = grammar->hmms;
 	dtw_t** ts = get_gaussian_trellis(test, hmms, num_hmms, DTW_BEAM_PRUNE,  threshold);
@@ -67,7 +55,7 @@ char* viterbi_search3(grammar* grammar, feature_vectors* test, double threshold)
 			//If there is a backpointer at t-1:
 			if( t>0	&& backpointer_table[t-1].score > DTW_MIN_SCORE){
 			        double bp_score = backpointer_table[t-1].score;
-				//printf("BP_SCORE: %f\n",bp_score);
+				printf("BP_SCORE: %f\n",bp_score);
 
 				//Need to get list of allowable incoming HMM entries by looking at grammar
 				int num_possible_reentries = backpointer_table[t-1].gn -> num_edges;
@@ -75,26 +63,27 @@ char* viterbi_search3(grammar* grammar, feature_vectors* test, double threshold)
 
 				//We check to see if the backpointer allows a transition into this HMM
 				for(int j=0; j<num_possible_reentries; j++){
-					if(backpointer_table[t-1].gn -> edges ->hmm_id == i){
+					if(backpointer_table[t-1].gn -> edges[j].hmm_id == i){
 						transition_allowed =true;
 					}
 				}
 
 				//Attempt to add a come from below using the backpointer and score
 				if(transition_allowed){
+					printf("Set incoming\n");
 					dtw_set_incoming(ts[i],bp_score,&(backpointer_table[t-1]));	
 				}			
 			}
 
-			printf("Trellis %d \n",i);
+			//printf("Trellis %d \n",i);
 			dtw_print_col(ts[i]);
 			//Then fill a new column in the trellis
 			dtw_fill_next_col(ts[i]);
 
 			//If the word finish ie. non -inf score. 
 			double score = ts[i]->score;
-			dtw_print_col(ts[i]);
-			printf("current score: %f\n",score);
+			//dtw_print_col(ts[i]);
+			//printf("current score: %f\n",score);
 
 			if(score!=DTW_MIN_SCORE){
 				//printf("Word %d ended: %f\n",i,score);
