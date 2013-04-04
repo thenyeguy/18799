@@ -30,6 +30,7 @@ char* viterbi_search3(grammar* grammar, feature_vectors* test, double threshold)
 	dtw_t ** ts = (dtw_t**) malloc(sizeof(dtw_t*) * num_hmms );
 
 	//Each trellis is built using the gauss func; test and hmm
+	//FIXME, should this be done with one call?
 	gaussian_cluster ** hmms = grammar->hmms;
 	for(int i=0; i < num_hmms; i++){
 		ts[i] = *get_gaussian_trellis(test, &(hmms[i]), 1,DTW_BEAM_PRUNE, threshold);
@@ -50,7 +51,7 @@ char* viterbi_search3(grammar* grammar, feature_vectors* test, double threshold)
 
 	//For 0 to test length
 	for(int t = 0; t< time_steps; t++){
-		//printf("t=%d\n",t);
+		printf("t=%d\n",t);
 		//For each trellis in the HMM/trellis array thing
 		for(int i=0; i < num_hmms; i++){
 			
@@ -77,18 +78,22 @@ char* viterbi_search3(grammar* grammar, feature_vectors* test, double threshold)
 				}			
 			}
 
+			printf("Trellis %d \n",i);
+			dtw_print_col(ts[i]);
 			//Then fill a new column in the trellis
 			dtw_fill_next_col(ts[i]);
 
 			//If the word finish ie. non -inf score. 
 			double score = ts[i]->score;
-			//printf("Trellis current score: %f\n",score);
+			dtw_print_col(ts[i]);
+			printf("current score: %f\n",score);
 
 			if(score!=DTW_MIN_SCORE){
-				//printf("Word ended\n");
+				//printf("Word %d ended: %f\n",i,score);
 				//If my score is better than the current score, add myself
 				//Set score, back pointer, and new grammar node based on back pointer
 				if(score > backpointer_table[t].score){
+					//printf("New Best: %d\n",i);
 					backpointer_table[t].prev = ts[i]-> backpointer;
                                         backpointer_table[t].score = score;
 					
@@ -112,7 +117,7 @@ char* viterbi_search3(grammar* grammar, feature_vectors* test, double threshold)
 	}
 
 	//When the word ends, look at the backpointer table's last entry and trace it back
-	//print_bpt(backpointer_table,time_steps);
+	print_bpt(backpointer_table,time_steps);
 	print_best_bpt_path(backpointer_table,time_steps-1,hmms);
 	return NULL;
 }
@@ -142,9 +147,12 @@ void print_bpt(backpointer * bpt, int bp_size){
 		
 		//backpointer * temp = bpt[i].prev;
 		while(temp){
+			if(!temp->prev){
+                	        //We're at the initial backpointer
+                	        break;
+                	}
 			printf("%d through: %d, ",temp->timestamp,temp->hmm_path);
 			temp = temp->prev;
-			
 		}
 		printf("\n");
 	}
