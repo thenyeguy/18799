@@ -114,6 +114,7 @@ char* viterbi_search3(grammar* grammar, feature_vectors* test, double threshold)
 	//When the word ends, look at the backpointer table's last entry and trace it back
 	//print_bpt(backpointer_table,time_steps);
 	print_best_bpt_path(backpointer_table,time_steps-1,hmms);
+	
 	return NULL;
 }
 
