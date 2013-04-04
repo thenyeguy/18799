@@ -203,6 +203,8 @@ double dtw_score_node(dtw_t* dtw, int row)
         downtwo = dtw->incoming_score;
         downtwo_bk = dtw->incoming_backpointer;
     }
+    
+//    printf("%f %f %f",left,downone,downtwo);
 
     //Determine the highest score and use that
     double score = DTW_MIN_SCORE;
@@ -221,19 +223,32 @@ double dtw_score_node(dtw_t* dtw, int row)
         back = downone_bk;
         dir = DTW_DIR_DOWNONE;
     }
-    /*
+    
     else if(downtwo > score)
     {
         score = downtwo;
         back = downtwo_bk;
         dir = DTW_DIR_DOWNTWO;
     }
-    */
+    
+//    printf("Selected: %f\n",score);
 
     //Store info back and finish
     dtw->next_col[row].score = score;
     dtw->next_col[row].dir = dir;
     dtw->next_col[row].backpointer = back;
+/*
+    double max= left;
+    if(max < downone){
+	max = downone;
+    }
+    if(max < downtwo){
+        max = downtwo;
+    }
+    if( max != score){
+	printf("There is something wrong with our max\n");
+    }
+*/
     return score;
 }
 
