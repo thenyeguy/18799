@@ -26,6 +26,9 @@ dtw_t** get_gaussian_trellis(feature_vectors* test,
 double gaussian_scorer(void* test_p, void* template_p, int row, int col,
                        dtw_trellis_dir dir)
 {
+	//THIS GUY IS THE PROBLEM!!!!!
+
+
     //Handle the case for time t=0
     if(dir == DTW_DIR_NONE)
     {

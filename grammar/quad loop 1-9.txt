@@ -1,7 +1,7 @@
 NumStates: 5
 NumHMMs: 9
 
-HMM 0 eight analysis/eight1-40.out analysis/eight2-40.out
+HMM 0 eight analysis/eight1-40.out analysis/eight2-40.out analysis/eight3-40.out analysis/eight4-40.out
 HMM 1 one analysis/one1-40.out analysis/one2-40.out analysis/one3-40.out
 analysis/one4-40.out analysis/one5-40.out
 HMM 2 two analysis/two1-40.out analysis/two2-40.out

@@ -55,7 +55,7 @@ char* viterbi_search3(grammar* grammar, feature_vectors* test, double threshold)
 			//If there is a backpointer at t-1:
 			if( t>0	&& backpointer_table[t-1].score > DTW_MIN_SCORE){
 			        double bp_score = backpointer_table[t-1].score;
-				printf("BP_SCORE: %f\n",bp_score);
+				//printf("BP_SCORE: %f\n",bp_score);
 
 				//Need to get list of allowable incoming HMM entries by looking at grammar
 				int num_possible_reentries = backpointer_table[t-1].gn -> num_edges;
@@ -70,20 +70,20 @@ char* viterbi_search3(grammar* grammar, feature_vectors* test, double threshold)
 
 				//Attempt to add a come from below using the backpointer and score
 				if(transition_allowed){
-					printf("Set incoming\n");
+					//printf("Set incoming\n");
 					dtw_set_incoming(ts[i],bp_score,&(backpointer_table[t-1]));	
 				}			
 			}
 
-			//printf("Trellis %d \n",i);
+			//printf("Trellis %d ",i);
 			dtw_print_col(ts[i]);
 			//Then fill a new column in the trellis
 			dtw_fill_next_col(ts[i]);
 
 			//If the word finish ie. non -inf score. 
 			double score = ts[i]->score;
-			//dtw_print_col(ts[i]);
-			//printf("current score: %f\n",score);
+			dtw_print_col(ts[i]);
+			printf("%d: %f\n",i,score);
 
 			if(score!=DTW_MIN_SCORE){
 				//printf("Word %d ended: %f\n",i,score);
@@ -111,6 +111,7 @@ char* viterbi_search3(grammar* grammar, feature_vectors* test, double threshold)
 				}
 			}
 		}
+		printf("\n");
 	}
 
 	//When the word ends, look at the backpointer table's last entry and trace it back
