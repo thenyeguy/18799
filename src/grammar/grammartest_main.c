@@ -6,10 +6,10 @@
 
 int main()
 {
-    grammar* g = build_grammar("grammar/simple.txt");
+    grammar* g = build_grammar("grammar/simplesilence.txt");
     print_grammar(g);
 
-    feature_vectors* test = features_from_file("analysis/onetwo-40.out"); 
+    feature_vectors* test = features_from_file("analysis/onetwo3-40.out"); 
     char* result = viterbi_search(g, test, 0.1);
 
     printf("\n\nResult: %s\n", result);
