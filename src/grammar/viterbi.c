@@ -27,6 +27,7 @@ char* viterbi_search3(grammar* grammar, feature_vectors* test, double threshold)
 
 	//Initialize an array of trellises
 	int num_hmms = grammar->num_hmms;
+/*
 	dtw_t ** ts = (dtw_t**) malloc(sizeof(dtw_t*) * num_hmms );
 
 	//Each trellis is built using the gauss func; test and hmm
@@ -37,6 +38,13 @@ char* viterbi_search3(grammar* grammar, feature_vectors* test, double threshold)
 
 		//In reality, we only want to set to the first backpointer if it's an initial trans
 		dtw_set_incoming(ts[i],0,&(backpointer_table[0])); //FIXME
+	}
+*/
+	//new way to init dtw array
+	gaussian_cluster ** hmms = grammar->hmms;
+	dtw_t** ts = get_gaussian_trellis(test, hmms, num_hmms, DTW_BEAM_PRUNE,  threshold);
+	for(int i=0; i < num_hmms; i++){
+		dtw_set_incoming(ts[i],0,&(backpointer_table[0]));	//FIXME?
 	}
 
 	//Each trellis should be initialized with a backpointer
