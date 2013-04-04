@@ -6,7 +6,8 @@
 
 int main()
 {
-    grammar* g = build_grammar("grammar/simple.txt");
+    //grammar* g = build_grammar("grammar/simple.txt");
+    grammar* g = build_grammar("grammar/loop.txt");
     print_grammar(g);
 
     feature_vectors* test = features_from_file("analysis/onetwo-40.out"); 
