@@ -26,9 +26,6 @@ dtw_t** get_gaussian_trellis(feature_vectors* test,
 double gaussian_scorer(void* test_p, void* template_p, int row, int col,
                        dtw_trellis_dir dir)
 {
-	//THIS GUY IS THE PROBLEM!!!!!
-
-
     //Handle the case for time t=0
     if(dir == DTW_DIR_NONE)
     {
@@ -48,13 +45,16 @@ double gaussian_scorer(void* test_p, void* template_p, int row, int col,
     double score =  single_gaussian_log_pdf(ps, test);
 
     //Get transition cost
-    if(dir == DTW_DIR_LEFT)
+    if(dir == DTW_DIR_LEFT){
         score += log(templates->stationary_probs[row]);
-    else if(dir == DTW_DIR_DOWNONE)
+    }
+    else if(dir == DTW_DIR_DOWNONE){
         score += log(templates->transition_probs[row]);
-    else
+    }
+    //FIXME What about a cost for DOWNTWO. I know we discourage it, but -inf seems to much
+    else{
         score += log(0.0);
-
+    }
     return score;
 }
 

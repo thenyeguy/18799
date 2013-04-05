@@ -35,27 +35,18 @@ char* viterbi_search3(grammar* grammar, feature_vectors* test, double threshold)
 		dtw_set_incoming(ts[i],0,&(backpointer_table[0]));	//FIXME?
 	}
 
-	//Each trellis should be initialized with a backpointer
-
-		//If the HMM is part of the initial grammar node's possible transitions
-
-			//Initialize the trellis with a backpointer to the first backpointer table entry
-
-		//Otherwise
-			
-			//Initialize the trellis with a backpointer set to NULL
-
 	//For 0 to test length
 	for(int t = 0; t< time_steps; t++){
 		printf("t=%d\n",t);
+
 		//For each trellis in the HMM/trellis array thing
 		for(int i=0; i < num_hmms; i++){
 			
 			//Step forward in time by: 
 			//If there is a backpointer at t-1:
 			if( t>0	&& backpointer_table[t-1].score > DTW_MIN_SCORE){
-			        double bp_score = backpointer_table[t-1].score;
-				//printf("BP_SCORE: %f\n",bp_score);
+			        
+				double bp_score = backpointer_table[t-1].score;
 
 				//Need to get list of allowable incoming HMM entries by looking at grammar
 				int num_possible_reentries = backpointer_table[t-1].gn -> num_edges;
@@ -70,13 +61,13 @@ char* viterbi_search3(grammar* grammar, feature_vectors* test, double threshold)
 
 				//Attempt to add a come from below using the backpointer and score
 				if(transition_allowed){
-					//printf("Set incoming\n");
 					dtw_set_incoming(ts[i],bp_score,&(backpointer_table[t-1]));	
 				}			
 			}
 
 			//printf("Trellis %d ",i);
 			dtw_print_col(ts[i]);
+
 			//Then fill a new column in the trellis
 			dtw_fill_next_col(ts[i]);
 
@@ -86,10 +77,11 @@ char* viterbi_search3(grammar* grammar, feature_vectors* test, double threshold)
 			printf("%d: %f\n",i,score);
 
 			if(score!=DTW_MIN_SCORE){
-				//printf("Word %d ended: %f\n",i,score);
+
 				//If my score is better than the current score, add myself
 				//Set score, back pointer, and new grammar node based on back pointer
 				if(score > backpointer_table[t].score){
+
 					//printf("New Best: %d\n",i);
 					backpointer_table[t].prev = ts[i]-> backpointer;
                                         backpointer_table[t].score = score;
