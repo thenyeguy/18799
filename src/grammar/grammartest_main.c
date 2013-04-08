@@ -7,7 +7,7 @@
 int main(int argc, char* argv[])
 {
 	if (argc!=2) {
-		printf("usage: grammartest [grammar file] [analysis file]\n")
+		printf("usage: grammartest [grammar file] [analysis file]\n");
 	}
     //grammar* g = build_grammar("grammar/simple.txt");
     grammar* g = build_grammar(argv[1]);
