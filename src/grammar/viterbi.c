@@ -12,7 +12,7 @@
 char* viterbi_search3(grammar* grammar, feature_vectors* test, double threshold){
 	
 	//Initialize a backpointer table array based on the number of timesteps
-	int time_steps = test->num_vectors;
+	int time_steps = test->num_vectors -1;	// -1 is because it's fucked
         backpointer * backpointer_table = (backpointer*) malloc(time_steps*sizeof(backpointer));
 
 	for(int i=0; i < time_steps; i++){
