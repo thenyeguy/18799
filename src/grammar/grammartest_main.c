@@ -6,8 +6,9 @@
 
 int main(int argc, char* argv[])
 {
-	if (argc!=2) {
+	if (argc!=3) {
 		printf("usage: grammartest [grammar file] [analysis file]\n");
+		return -1;
 	}
     //grammar* g = build_grammar("grammar/simple.txt");
     grammar* g = build_grammar(argv[1]);
