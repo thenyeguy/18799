@@ -4,17 +4,20 @@
 #include "grammar.h"
 #include "viterbi.h"
 
-int main()
+int main(int argc, char* argv[])
 {
+	if (argc!=2) {
+		printf("usage: grammartest [grammar file] [analysis file]\n")
+	}
     //grammar* g = build_grammar("grammar/simple.txt");
-    //grammar* g = build_grammar("grammar/loop.txt");
+    grammar* g = build_grammar(argv[1]);
     //grammar* g = build_grammar("grammar/double loop 1-9.txt");
     //grammar* g = build_grammar("grammar/triple loop 1-9.txt");
-    grammar* g = build_grammar("grammar/quad loop 1-9.txt");
+    //grammar* g = build_grammar("grammar/quad loop 1-9.txt");
     print_grammar(g);
 
     //feature_vectors* test = features_from_file("analysis/369-40.out");    
-    feature_vectors* test = features_from_file("analysis/5678-40.out"); 
+    feature_vectors* test = features_from_file(argv[2]); 
 /*
     char* result = viterbi_search(g, test, .1);
 
