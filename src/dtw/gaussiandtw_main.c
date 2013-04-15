@@ -33,17 +33,23 @@ int main(int argc, char **argv)
 
 
     // Read in each template set to cluster... Hardcoded, sorry
-    char* ones[5] = {"analysis/one1-40.out","analysis/one2-40.out",
-                     "analysis/one3-40.out","analysis/one4-40.out",
+    char* ones[9] = {"analysis/one1-40.out","analysis/one2-40.out",
+                        "analysis/one-ben2-40.out","analysis/one-ben3-40.out",
+					    "analysis/one-emily2-40.out","analysis/one-emily3-40.out",
+					  "analysis/one3-40.out","analysis/one4-40.out",
                      "analysis/one4-40.out"};
-    feature_vectors** one_features = features_from_all_files(ones,5);
-    gaussian_cluster* one_template = cluster_templates(one_features,5,"one");
+    feature_vectors** one_features = features_from_all_files(ones,9);
+    gaussian_cluster* one_template = cluster_templates(one_features,9,"one");
 
-    char* twos[5] = {"analysis/two1-40.out","analysis/two2-40.out",
-                     "analysis/two3-40.out","analysis/two4-40.out",
+    char* twos[9] = {"analysis/two1-40.out","analysis/two2-40.out",
+                     "analysis/two-emily1-40.out",
+					 "analysis/two-ben1-40.out",
+					 "analysis/two-emily2-40.out",
+					 "analysis/two-ben2-40.out",
+					 "analysis/two3-40.out","analysis/two4-40.out",
                      "analysis/two4-40.out"};
-    feature_vectors** two_features = features_from_all_files(twos,5);
-    gaussian_cluster* two_template = cluster_templates(two_features,5,"two");
+    feature_vectors** two_features = features_from_all_files(twos,9);
+    gaussian_cluster* two_template = cluster_templates(two_features,9,"two");
 
     char* threes[5] = {"analysis/three1-40.out","analysis/three2-40.out",
                      "analysis/three3-40.out","analysis/three4-40.out",

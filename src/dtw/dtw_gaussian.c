@@ -49,7 +49,7 @@ double gaussian_scorer(void* test_p, void* template_p, int row, int col,
         score += log(templates->stationary_probs[row]);
     }
     else if(dir == DTW_DIR_DOWNONE){
-        score += log(templates->transition_probs[row]);
+        score += log(templates->transition_probs[row]) + TRANSITION_PENALTY;
     }
     //FIXME What about a cost for DOWNTWO. I know we discourage it, but -inf seems to much
     else{
