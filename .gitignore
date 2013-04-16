@@ -4,8 +4,6 @@ obj
 
 # Binary data
 *.o
-*.out
-*.wav
 
 # Vim stuff
 *.swp
