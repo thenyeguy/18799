@@ -15,8 +15,10 @@ typedef struct grammar_transition grammar_transition;
  */
 struct grammar {
     grammar_node* nodes;
+    gaussian_cluster** hmms;
     int num_nodes;
     int num_edges;
+    int num_hmms;
 };
 
 
@@ -37,6 +39,7 @@ struct grammar_node {
 struct grammar_transition {
     double transition_prob;
     gaussian_cluster* hmm;
+    int hmm_id;
     int next_node_id;
 };
 

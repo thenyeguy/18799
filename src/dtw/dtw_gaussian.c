@@ -43,6 +43,18 @@ double gaussian_scorer(void* test_p, void* template_p, int row, int col,
     single_gaussian_params* ps = templates->params[row];
 
     double score =  single_gaussian_log_pdf(ps, test);
+
+    //Get transition cost
+    if(dir == DTW_DIR_LEFT){
+        score += log(templates->stationary_probs[row]);
+    }
+    else if(dir == DTW_DIR_DOWNONE){
+        score += log(templates->transition_probs[row]) + TRANSITION_PENALTY;
+    }
+    //FIXME What about a cost for DOWNTWO. I know we discourage it, but -inf seems to much
+    else{
+        score += log(0.0);
+    }
     return score;
 }
 

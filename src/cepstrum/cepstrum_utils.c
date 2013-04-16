@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
-#include "fft4g.h"
-#include "portaudio_utils.h"
+#include "../libraries/fft4g.h"
+#include "../record/portaudio_utils.h"
 #include "cepstrum_utils.h"
 
 
@@ -126,9 +126,9 @@ void log_mel_filter(double* freqs, int num_filters, double* log_spectra)
     //
     //We want to linearly sample in the mel space, so we convert into and out of
     //it to find the real frequencies;
-    double lowest = hz_to_mel(50);
-    double highest = hz_to_mel(7000);
-    double delta = (highest-lowest)/num_filters;
+    double lowest = hz_to_mel(MEL_LOW_FREQ);
+    double highest = hz_to_mel(MEL_HIGH_FREQ);
+    double delta = (highest-lowest)/(num_filters-1);
 
     //Loop one for each mel sample;
     for(int i = 0; i < num_filters; i++)

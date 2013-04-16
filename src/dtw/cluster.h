@@ -21,10 +21,19 @@
 
 /* Container to hold a set of gaussian_params that represents one template.
  *     Stores the number of templates inside, and the word used to generate
- *     this cluster
+ *     this cluster.
+ *
+ *     stationary_probs[i] contains the probability of remaining in state i
+ *     transition_probs[i] contains the probability of transitioning from
+ *     state i to state i+1
+ *     
  */
 typedef struct {
     single_gaussian_params** params;
+
+    double* stationary_probs;
+    double* transition_probs;
+
     int num_clusters;
     char word_id[256];
 } gaussian_cluster;

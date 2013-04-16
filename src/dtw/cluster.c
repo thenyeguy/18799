@@ -152,6 +152,22 @@ gaussian_cluster* cluster_templates(feature_vectors** templates,
         iterations++;
     } while(iterations<CONVERGE_ITERATIONS && reclassify>CONVERGE_THRESHOLD);
 
+
+    //Create container
+    gaussian_cluster* cluster = malloc(sizeof(gaussian_cluster));
+    cluster->params = cluster_stats;
+    cluster->num_clusters = NUM_CLUSTERS;
+    strcpy(cluster->word_id, word_id);
+
+    //Set the transition probabilities
+    cluster->stationary_probs = malloc(NUM_CLUSTERS*sizeof(double));
+    cluster->transition_probs = malloc(NUM_CLUSTERS*sizeof(double));
+    for(int i = 0; i < NUM_CLUSTERS; i++)
+    {
+        cluster->transition_probs[i] = ((double) num_templates)/ cluster_count[i];
+        cluster->stationary_probs[i] = 1 - cluster->transition_probs[i];
+    }
+
     //Free everything!
     for(int i=0; i<num_templates; i++){
         free(cluster_array[i]);
@@ -160,11 +176,6 @@ gaussian_cluster* cluster_templates(feature_vectors** templates,
     free(cluster_count);
     free(cluster_index);
 
-    //Create container
-    gaussian_cluster* cluster = malloc(sizeof(gaussian_cluster));
-    cluster->params = cluster_stats;
-    cluster->num_clusters = NUM_CLUSTERS;
-    strcpy(cluster->word_id, word_id);
     return cluster;
 }
 

@@ -34,7 +34,7 @@ grammar* build_grammar(char* filename)
     temp = strtok(buffer, " \n");
     temp = strtok(NULL, " \n");
     num_hmms = atoi(temp);
-
+    g->num_hmms = num_hmms;
 
     //Create nodes and HMM space
     g->nodes = malloc(g->num_nodes * sizeof(grammar_node));
@@ -104,11 +104,13 @@ grammar* build_grammar(char* filename)
             gaussian_cluster* hmm;
             temp = strtok(NULL, " \n");
             temp = &temp[4];
+	    int hmm_id = -1 ;
             if(strcmp(temp,"none") == 0)
                 hmm = NULL;
-            else
+            else{
+		hmm_id = atoi(temp);
                 hmm = hmms[atoi(temp)];
-
+	    }
             //Get edge prob
             temp = strtok(NULL, " \n");
             double prob = atof(&temp[5]);
@@ -117,6 +119,7 @@ grammar* build_grammar(char* filename)
             grammar_node* n = &g->nodes[from];
             grammar_transition* e = &n->edges[n->num_edges];
             e->hmm = hmm;
+	    e->hmm_id = hmm_id;
             e->next_node_id = to;
             e->transition_prob = prob;
 
@@ -125,6 +128,8 @@ grammar* build_grammar(char* filename)
             g->num_edges++;
         }
     }
+
+    g->hmms = 	hmms;
 
     return g;
 }

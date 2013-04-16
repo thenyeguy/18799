@@ -13,6 +13,8 @@
 #include "cluster.h"
 
 
+#define TRANSITION_PENALTY -50
+
 /* get_gaussian_trellis - given a test vector and a set of template gaussians,
  *                     creates an array of dtw_t to pass to get_best_n.
  *                     Prunes using specified method and threshold.

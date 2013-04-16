@@ -74,7 +74,18 @@ cepstrum_vectors* get_cepstrum_vectors(double* signal, int num_samples,
     int samples_per_window = SAMPLE_RATE*WINDOW_WIDTH/1000;
     int num_vectors = num_samples * 1000/(SAMPLE_RATE*WINDOW_SLIDE);
 
-    //Creat output struct and allocate nessecary matrix
+    //Delete old output files
+    char filename[256];
+    sprintf(filename, "./analysis/%s-window.out", file_prefix);
+    remove(filename);
+    sprintf(filename, "./analysis/%s-dtft.out", file_prefix);
+    remove(filename);
+    sprintf(filename, "./analysis/%s-log-mel.out", file_prefix);
+    remove(filename);
+    sprintf(filename, "./analysis/%s.out", file_prefix);
+    remove(filename);
+
+    //Create output struct and allocate nessecary matrix
     cepstrum_vectors* result = malloc(sizeof(struct cepstrum_vectors));
     result->num_vectors = num_vectors;
     result->num_points = num_cepstra;
@@ -88,7 +99,7 @@ cepstrum_vectors* get_cepstrum_vectors(double* signal, int num_samples,
     //requeted sizes. We will then just 0 pad our buffers.
     //This shouldn't impact result
     int fft_length = pow(2, ceil(log(samples_per_window)/log(2)));
-    int dct_length = pow(2, ceil(log(num_cepstra)/log(2)));
+    int dct_length = pow(2, ceil(log(num_mel_filters)/log(2)));
     initialize_feature_engine(fft_length, dct_length);
 
     double* window = calloc(fft_length,sizeof(double));

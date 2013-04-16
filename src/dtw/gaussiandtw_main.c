@@ -34,64 +34,67 @@ int main(int argc, char **argv)
 
     // Read in each template set to cluster... Hardcoded, sorry
     char* ones[5] = {"analysis/one1-40.out","analysis/one2-40.out",
-                     "analysis/one3-40.out","analysis/one4-40.out",
+					  "analysis/one3-40.out","analysis/one4-40.out",
                      "analysis/one4-40.out"};
     feature_vectors** one_features = features_from_all_files(ones,5);
     gaussian_cluster* one_template = cluster_templates(one_features,5,"one");
 
     char* twos[5] = {"analysis/two1-40.out","analysis/two2-40.out",
-                     "analysis/two3-40.out","analysis/two4-40.out",
+					 "analysis/two3-40.out","analysis/two4-40.out",
                      "analysis/two4-40.out"};
     feature_vectors** two_features = features_from_all_files(twos,5);
     gaussian_cluster* two_template = cluster_templates(two_features,5,"two");
 
     char* threes[5] = {"analysis/three1-40.out","analysis/three2-40.out",
                      "analysis/three3-40.out","analysis/three4-40.out",
-                     "analysis/three4-40.out"};
+					 "analysis/three4-40.out"};
     feature_vectors** three_features = features_from_all_files(threes,5);
     gaussian_cluster* three_template = cluster_templates(three_features,5,"three");
 
     char* fours[5] = {"analysis/four1-40.out","analysis/four2-40.out",
                      "analysis/four3-40.out","analysis/four4-40.out",
-                     "analysis/four4-40.out"};
+					 "analysis/four4-40.out"};
     feature_vectors** four_features = features_from_all_files(fours,5);
     gaussian_cluster* four_template = cluster_templates(four_features,5,"four");
 
     char* fives[5] = {"analysis/five1-40.out","analysis/five2-40.out",
                      "analysis/five3-40.out","analysis/five4-40.out",
-                     "analysis/five4-40.out"};
+					 "analysis/five4-40.out"};
     feature_vectors** five_features = features_from_all_files(fives,5);
     gaussian_cluster* five_template = cluster_templates(five_features,5,"five");
 
     char* sixs[5] = {"analysis/six1-40.out","analysis/six2-40.out",
                      "analysis/six3-40.out","analysis/six4-40.out",
-                     "analysis/six4-40.out"};
+					 "analysis/six4-40.out"};
     feature_vectors** six_features = features_from_all_files(sixs,5);
     gaussian_cluster* six_template = cluster_templates(six_features,5,"six");
 
     char* sevens[5] = {"analysis/seven1-40.out","analysis/seven2-40.out",
                      "analysis/seven3-40.out","analysis/seven4-40.out",
-                     "analysis/seven4-40.out"};
+					 "analysis/seven4-40.out"};
     feature_vectors** seven_features = features_from_all_files(sevens,5);
     gaussian_cluster* seven_template = cluster_templates(seven_features,5,"seven");
 
     char* eights[5] = {"analysis/eight1-40.out","analysis/eight2-40.out",
                      "analysis/eight3-40.out","analysis/eight4-40.out",
-                     "analysis/eight4-40.out"};
+					 "analysis/eight4-40.out"};
     feature_vectors** eight_features = features_from_all_files(eights,5);
     gaussian_cluster* eight_template = cluster_templates(eight_features,5,"eight");
 
     char* nines[5] = {"analysis/nine1-40.out","analysis/nine2-40.out",
                      "analysis/nine3-40.out","analysis/nine4-40.out",
-                     "analysis/nine4-40.out"};
+					 "analysis/nine4-40.out"
+					 };
     feature_vectors** nine_features = features_from_all_files(nines,5);
     gaussian_cluster* nine_template = cluster_templates(nine_features,5,"nine");
 
     char* zeros[5] = {"analysis/zero1-40.out","analysis/zero2-40.out",
                      "analysis/zero3-40.out","analysis/zero4-40.out",
-                     "analysis/zero4-40.out"};
+                     "analysis/zero2-40.out",
+					 };
     feature_vectors** zero_features = features_from_all_files(zeros,5);
     gaussian_cluster* zero_template = cluster_templates(zero_features,5,"zero");
+
 
     //Package these for using
     int num_templates = 10;
