@@ -100,8 +100,8 @@ char* viterbi_search(grammar* grammar, feature_vectors* test, double threshold)
      */
     for(int t = 0; t < test->num_vectors; t++)
     {
-        printf("\n============================");
-        printf("\nTime t=%d\n",t);
+        //printf("\n============================");
+        //printf("\nTime t=%d\n",t);
 
         //Reset node entry scores
         for(int i = 0; i < num_nodes; i++)
@@ -123,7 +123,7 @@ char* viterbi_search(grammar* grammar, feature_vectors* test, double threshold)
             //Get score from trellis and visit a node
             //If we have the best score seen into this node, then update it
             double score = edge->trellis->score;
-            dtw_print_col(edge->trellis);
+            //dtw_print_col(edge->trellis);
             //printf("score %d %f\n",i,score);
             if(score > DTW_MIN_SCORE && score > edge->next->best_score)
             {
@@ -162,7 +162,7 @@ char* viterbi_search(grammar* grammar, feature_vectors* test, double threshold)
         //Prune trellis structures
         double window = abs(column_max)*threshold;
         double abs_threshold = column_max - window;
-        printf("%f\n", abs_threshold);
+        //printf("%f\n", abs_threshold);
         for(int i = 0; i < num_edges; i++)
         {
             dtw_prune_next_column(edges[i].trellis, abs_threshold);
@@ -217,6 +217,7 @@ char* viterbi_search(grammar* grammar, feature_vectors* test, double threshold)
         s[segment_start + strlen(p->word)] = ' ';
         p = p->prev;
     }
+    printf("\n\nFINAL SCORE: %1.4f\n\n", best->score);
 
     //Return it
     s[len] = '\0';

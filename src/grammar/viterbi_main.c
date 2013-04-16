@@ -21,12 +21,12 @@ int main(int argc, char** argv)
     char* test_file = argv[2];
 
     //Read in the files
-    printf("Building grammar from %s...\n\n",grammar_file);
+    printf("Building grammar from %s...\n",grammar_file);
     grammar* g = build_grammar(grammar_file);
     feature_vectors* test = features_from_file(test_file); 
 
     //Run the test and display result
-    printf("Testing against %s...\n\n",test_file);
+    printf("Testing against %s...\n",test_file);
     char* result = viterbi_search(g, test, 0.1);
     printf("\nResult: %s\n", result);
 

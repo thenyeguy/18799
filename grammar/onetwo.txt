@@ -8,11 +8,9 @@ HMM 2 two analysis/two1-40.out analysis/two2-40.out analysis/two3-40.out
 Edge 0 1 hmm=0 prob=1.0
 
 Edge 1 2 hmm=1 prob=.5
-Edge 1 2 hmm=2 prob=.5
 
 Edge 2 3 hmm=0 prob=1.0
 
-Edge 3 4 hmm=1 prob=.5
 Edge 3 4 hmm=2 prob=.5
 
 Edge 4 5 hmm=0 prob=1.0
