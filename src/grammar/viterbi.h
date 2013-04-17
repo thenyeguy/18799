@@ -5,21 +5,6 @@
 #include "../dtw/dtw_trellis.h"
 #include "grammar.h"
 
-typedef struct viterbi_queue{
-	struct viterbi_queue_node * head;
-	int length;
-
-}viterbi_queue;
-
-typedef struct viterbi_queue_node{
-	struct viterbi_queue_node * next;
-	struct backpointer * parent;
-	int time_step;
-	double score;
-	grammar_transition * transition;
-	dtw_t* trellis;
-}viterbi_queue_node;
-
 
 /* Declare these structs ahead of time, because the actual definitions are
  * mutually recursive
@@ -36,6 +21,7 @@ typedef struct viterbi_edge viterbi_edge;
  */
 struct viterbi_node {
     int num_edges;
+    bool terminal;
     viterbi_edge** edges;
 
     double best_score;
@@ -47,8 +33,8 @@ struct viterbi_node {
 /* A viterbi_edge contains evaluation information connected each node in the
  * grammar graph.
  *     trellis represents the DTW trellis structure describing this edge.
- *        This may be NULL. This signifies to immediately visit its child
- *     next represents where this edge lets out in the grammar graph.
+ *         This may be NULL. This signifies to immediately visit its child
+ *         next represents where this edge lets out in the grammar graph.
  */
 struct viterbi_edge {
     dtw_t* trellis; 
@@ -73,21 +59,25 @@ typedef struct backpointer {
 } backpointer;
 
 
-/* viterbi_search - given a grammar to describe our HMM models and their
- *                  interconnections, find the path through this grammar with
- *                  the maximal score for the given test input. Returns a string
- *                  describing the recognized speech.
+/* viterbi_search - given a grammar to describe our HMM models, finds the best
+ *                  spoken string that matches this test.
  *
- *                  Uses pruning threshold given
+ *                  Uses viterbi_backtrace to get backpointers and recontrsuct
+ *                  word. See below for argument documenation.
+ *
  */
 char* viterbi_search(grammar* grammar, feature_vectors* test, double threshold);
-char* viterbi_search2(grammar* grammar, feature_vectors* test, double threshold);
-char* viterbi_search3(grammar* grammar, feature_vectors* test, double threshold);
 
-void print_bpt(backpointer * bpt, int bp_size);
-void print_best_bpt_path(backpointer *bpt, int time_instant,gaussian_cluster ** hmms);
 
-viterbi_queue_node* pop_front_v(viterbi_queue * q);
-void push_back_v(viterbi_queue * q, viterbi_queue_node * n);
+/* viterbi_backtrace - given a grammar to describe our HMM models and their
+ *                     interconnections, find the path through this grammar with
+ *                     the maximal score for the given test input.
+ *
+  *                    Uses pruning threshold given.
+  *
+ *                     Returns the backpointer with the best score at end of time.
+ */
+backpointer* viterbi_backtrace(grammar* grammar, feature_vectors* test,
+                               double threshold);
 
 #endif

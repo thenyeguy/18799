@@ -40,6 +40,8 @@ void dtct(double* input, double* output);
  *                  of each mel filter, then runs the DTFT through the mel 
  *                  filters, logs it and stores the output in log_spectra.
  */
+#define MEL_LOW_FREQ 30
+#define MEL_HIGH_FREQ 8000
 void log_mel_filter(double* freqs, int num_filters, double* log_spectra);
 
 /* mel_cepstrum - takes in a log mel spectrum and the number of filters used to

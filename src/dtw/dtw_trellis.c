@@ -39,7 +39,7 @@ dtw_t* new_dtw(void* test_data,     int test_length,
     {
         //Score the first column as all impossible
         //We can enter the trellis from the bottom left corner (incoming)
-        dtw->last_col[i].score = log(0.0);
+        dtw->last_col[i].score = DTW_MIN_SCORE;
         dtw->last_col[i].pruned = false;
         dtw->last_col[i].dir = DTW_DIR_NONE;
         dtw->last_col[i].backpointer = NULL;
@@ -178,20 +178,24 @@ double dtw_score_node(dtw_t* dtw, int row)
     //Left and down 1
     if(row > 0)
     {
-        downone = dtw->scorer(dtw->test_data, dtw->template_data,
-            row-1, col, DTW_DIR_DOWNONE) + dtw->last_col[row-1].score;
+        double node = dtw->scorer(dtw->test_data, dtw->template_data,
+            row, col, DTW_DIR_DOWNONE);
+        downone = node + dtw->last_col[row-1].score;
         downone_bk = dtw->last_col[row-1].backpointer;
     }
     else
     {
-        downone = dtw->incoming_score;
+        double node = dtw->scorer(dtw->test_data, dtw->template_data,
+            row, col, DTW_DIR_DOWNONE);
+        downone = node + dtw->incoming_score;
         downone_bk = dtw->incoming_backpointer;
     }
     //Left and down 2
     if(row > 1)
     {
-        downtwo = dtw->scorer(dtw->test_data, dtw->template_data,
-            row-2, col, DTW_DIR_DOWNTWO) + dtw->last_col[row-2].score;
+        double node = dtw->scorer(dtw->test_data, dtw->template_data,
+            row, col, DTW_DIR_DOWNONE);
+        downtwo = node + dtw->last_col[row-2].score;
         downtwo_bk = dtw->last_col[row-2].backpointer;
     }
     
@@ -201,13 +205,14 @@ double dtw_score_node(dtw_t* dtw, int row)
     double score = DTW_MIN_SCORE;
     void* back = NULL;
     dtw_trellis_dir dir = DTW_DIR_NONE;
-    if(left > downone && left > downtwo && left > score)
+    //if(left > downone && left > downtwo && left > score)
+    if(left > downone && left > score)
     {
         score = left;
         back = left_bk;
         dir = DTW_DIR_LEFT;
     }
-    else if(downone > downtwo && downone > score)
+    else if(downone > score)
     {
         score = downone;
         back = downone_bk;

@@ -1,6 +1,7 @@
 #ifndef GRAPH_UTILS_H
 #define GRAPH_UTILS_H
 
+#include <stdbool.h>
 #include "../dtw/cluster.h"
 
 //Forward declare
@@ -30,6 +31,7 @@ struct grammar_node {
     int node_id;
     int num_edges;
     grammar_transition* edges;
+    bool terminal;
 };
 
 
