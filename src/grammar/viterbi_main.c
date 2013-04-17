@@ -27,7 +27,7 @@ int main(int argc, char** argv)
 
     //Run the test and display result
     printf("Testing against %s...\n",test_file);
-    char* result = viterbi_search(g, test, 0.1);
+    char* result = viterbi_search(g, test, 0.5);
     printf("\nResult: %s\n", result);
 
     return 0;

@@ -15,7 +15,7 @@ dtw_t** get_gaussian_trellis(feature_vectors* test,
     for(int i = 0; i < num_templates; i++)
     {
         dtws[i] = new_dtw(test, test->num_vectors,
-                          templates[i], NUM_CLUSTERS,
+                          templates[i], templates[0]->num_clusters,
                           prune, threshold, gaussian_scorer);
     }
 

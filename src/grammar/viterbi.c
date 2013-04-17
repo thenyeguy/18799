@@ -101,7 +101,6 @@ char* viterbi_search(grammar* grammar, feature_vectors* test, double threshold)
     for(int t = 0; t < test->num_vectors; t++)
     {
         //printf("\n============================");
-        //printf("\nTime t=%d\n",t);
 
         //Reset node entry scores
         for(int i = 0; i < num_nodes; i++)
@@ -122,18 +121,26 @@ char* viterbi_search(grammar* grammar, feature_vectors* test, double threshold)
 
             //Get score from trellis and visit a node
             //If we have the best score seen into this node, then update it
-            double score = edge->trellis->score;
+            double up_score = edge->trellis->score;
+            void* up_bp = edge->trellis->backpointer;
+            /*
+            if(edge->trellis->second_score > up_score)
+            {
+                up_score = edge->trellis->second_score;
+                up_bp = edge->trellis->second_backpointer;
+            }
+            */
             //dtw_print_col(edge->trellis);
             //printf("score %d %f\n",i,score);
-            if(score > DTW_MIN_SCORE && score > edge->next->best_score)
+            if(up_score > DTW_MIN_SCORE && up_score > edge->next->best_score)
             {
-                score += edge->entrance_cost;
+                up_score += edge->entrance_cost;
                 //Get the template used for its word
                 gaussian_cluster* template = edge->trellis->template_data;
 
                 //Update the best seen score into this node
-                edge->next->best_score = score;
-                edge->next->best_backpointer = edge->trellis->backpointer;
+                edge->next->best_score = up_score;
+                edge->next->best_backpointer = up_bp;
                 if(template == NULL)
                     edge->next->best_word = "";
                 else
@@ -211,7 +218,11 @@ char* viterbi_search(grammar* grammar, feature_vectors* test, double threshold)
     //Follow back, copy into word
     while(p != NULL)
     {
-        printf("Word %s ended at t=%d\n",p->word,p->timestamp);
+        if(p->prev != NULL)
+        {
+            printf("Word %s ended at \tt=%d \twith score:%1.4f\n",
+                   p->word,p->timestamp,p->score);
+        }
         int segment_start = p->len - strlen(p->word);
         strncpy(&s[segment_start], p->word, strlen(p->word));
         s[segment_start + strlen(p->word)] = ' ';

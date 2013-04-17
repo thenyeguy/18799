@@ -3,7 +3,6 @@ NumHMMs: 10
 
 HMM 0 zero analysis/zero1-40.out analysis/zero2-40.out
 HMM 1 one analysis/one1-40.out analysis/one2-40.out analysis/one3-40.out
-analysis/one4-40.out analysis/one5-40.out
 HMM 2 two analysis/two1-40.out analysis/two2-40.out
 HMM 3 three analysis/three1-40.out analysis/three2-40.out
 HMM 4 four analysis/four1-40.out analysis/four2-40.out
@@ -12,6 +11,7 @@ HMM 6 six analysis/six1-40.out analysis/six2-40.out
 HMM 7 seven analysis/seven1-40.out analysis/seven2-40.out
 HMM 8 eight analysis/eight1-40.out analysis/eight2-40.out
 HMM 9 nine analysis/nine1-40.out analysis/nine2-40.out
+HMM 10 ... analysis/silence1-40.out analysis/silence2-40.out analysis/silence3-40.out
 
 Edge 0 1 hmm=0 prob=.1
 Edge 0 1 hmm=1 prob=.1
@@ -23,3 +23,4 @@ Edge 0 1 hmm=6 prob=.1
 Edge 0 1 hmm=7 prob=.1
 Edge 0 1 hmm=8 prob=.1
 Edge 0 1 hmm=9 prob=.1
+Edge 0 1 hmm=10 prob=.1

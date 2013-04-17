@@ -39,7 +39,7 @@ dtw_t* new_dtw(void* test_data,     int test_length,
     {
         //Score the first column as all impossible
         //We can enter the trellis from the bottom left corner (incoming)
-        dtw->last_col[i].score = log(0.0);
+        dtw->last_col[i].score = DTW_MIN_SCORE;
         dtw->last_col[i].pruned = false;
         dtw->last_col[i].dir = DTW_DIR_NONE;
         dtw->last_col[i].backpointer = NULL;
