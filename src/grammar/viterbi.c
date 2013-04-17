@@ -9,6 +9,23 @@
 #include "viterbi.h"
 
 
+//viterbi search 4
+	/*
+	Concept is to initialize one HMM for each HMM explicitly denoted in the grammar.
+	Each HMM is assigned an HMM_id and each grammar node is assigned a NODE_id
+	A backpointer table is held for each NODE_id either as an array or stack
+	(stack might actually be easier to deal with non-emitting states that require two transitions
+	in a single time step)
+	At each time step we check the backpointer table from that node at t-1 and insert from below
+	we then iterate every HMM held in the HMM array
+	Every time we see an HMM finish, we add its entry to the NODE's backpointer table
+	This wil ensure that only the best score at a given time step at a given node is kept
+	*/
+	
+
+
+
+
 char* viterbi_search3(grammar* grammar, feature_vectors* test, double threshold){
 	
 	//Initialize a backpointer table array based on the number of timesteps
