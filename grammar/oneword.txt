@@ -1,6 +1,6 @@
-NumStates: 2
+NumStates: 4
 NumHMMs: 11
-Terminal: 1
+Terminal: 3
 
 HMM 0 zero analysis/zero1-40.out analysis/zero2-40.out analysis/zero3-40.out analysis/zero4-40.out analysis/zero5-40.out
 HMM 1 one analysis/one1-40.out analysis/one2-40.out analysis/one3-40.out analysis/one4-40.out analysis/one5-40.out
@@ -15,17 +15,21 @@ HMM 9 nine analysis/nine1-40.out analysis/nine2-40.out analysis/nine3-40.out ana
 HMM 10 ... analysis/silence1-40.out analysis/silence2-40.out analysis/silence3-40.out analysis/silence4-40.out analysis/silence5-40.out
 
 
-Edge 0 1 hmm=0 prob=.1
-Edge 0 1 hmm=1 prob=.1
-Edge 0 1 hmm=2 prob=.1
-Edge 0 1 hmm=3 prob=.1
-Edge 0 1 hmm=4 prob=.1
-Edge 0 1 hmm=5 prob=.1
-Edge 0 1 hmm=6 prob=.1
-Edge 0 1 hmm=7 prob=.1
-Edge 0 1 hmm=8 prob=.1
-Edge 0 1 hmm=9 prob=.1
-Edge 0 1 hmm=10 prob=.1
+Edge 0 1 hmm=10 prob=.9
+Edge 0 1 hmm=none prob=.1
 
+Edge 1 2 hmm=0 prob=.1
+Edge 1 2 hmm=1 prob=.1
+Edge 1 2 hmm=2 prob=.1
+Edge 1 2 hmm=3 prob=.1
+Edge 1 2 hmm=4 prob=.1
+Edge 1 2 hmm=5 prob=.1
+Edge 1 2 hmm=6 prob=.1
+Edge 1 2 hmm=7 prob=.1
+Edge 1 2 hmm=8 prob=.1
+Edge 1 2 hmm=9 prob=.1
 
-Edge 1 0 hmm=none prob=.1
+Edge 2 0 hmm=none prob=.1
+Edge 2 1 hmm=none prob=.1
+
+Edge 2 3 hmm=10 prob=.9
