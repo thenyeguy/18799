@@ -59,13 +59,25 @@ typedef struct backpointer {
 } backpointer;
 
 
-/* viterbi_search - given a grammar to describe our HMM models and their
- *                  interconnections, find the path through this grammar with
- *                  the maximal score for the given test input. Returns a string
- *                  describing the recognized speech.
+/* viterbi_search - given a grammar to describe our HMM models, finds the best
+ *                  spoken string that matches this test.
  *
- *                  Uses pruning threshold given
+ *                  Uses viterbi_backtrace to get backpointers and recontrsuct
+ *                  word. See below for argument documenation.
+ *
  */
 char* viterbi_search(grammar* grammar, feature_vectors* test, double threshold);
+
+
+/* viterbi_backtrace - given a grammar to describe our HMM models and their
+ *                     interconnections, find the path through this grammar with
+ *                     the maximal score for the given test input.
+ *
+  *                    Uses pruning threshold given.
+  *
+ *                     Returns the backpointer with the best score at end of time.
+ */
+backpointer* viterbi_backtrace(grammar* grammar, feature_vectors* test,
+                               double threshold);
 
 #endif

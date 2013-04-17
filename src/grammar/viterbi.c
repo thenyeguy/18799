@@ -9,9 +9,41 @@
 #include "viterbi.h"
 
 
+char* viterbi_search(grammar* grammar, feature_vectors* test, double threshold)
+{
+    //Use backtrace to get the best backpointer
+    backpointer* best = viterbi_backtrace(grammar, test, threshold);
+
+    //Reconstruct string from backtrace
+    backpointer* p = best;
+    int len = p->len;
+    char* s = malloc(len*sizeof(char));
+    strcpy(s," ");
+
+    printf("\n\nRebuild\n");
+    //Follow back, copy into word
+    while(p != NULL)
+    {
+        if(p->prev != NULL)
+            printf("Word %s ended at \tt=%d \twith score:%1.4f\n",
+                   p->word,p->timestamp,p->score);
+        int segment_start = p->len - strlen(p->word);
+        strncpy(&s[segment_start], p->word, strlen(p->word));
+        s[segment_start + strlen(p->word)] = ' ';
+        p = p->prev;
+    }
+    printf("\nFINAL SCORE: %1.4f\n\n", best->score);
+
+    //Return it
+    s[len] = '\0';
+    return s;
+}
+
+
 // Maybe TODO: refactor this function? Its really long right now...
 // FYI: leaks lots of memory in backpointers currently
-char* viterbi_search(grammar* grammar, feature_vectors* test, double threshold)
+backpointer* viterbi_backtrace(grammar* grammar, feature_vectors* test,
+                               double threshold)
 {
     /* First, we have to traverse the grammar we read in, and use it to
      * construct the equivalent evaluation data so we can track state.
@@ -211,29 +243,5 @@ char* viterbi_search(grammar* grammar, feature_vectors* test, double threshold)
         }
     }
 
-
-    /* Finally, convert the best backpointer to a string
-     */
-    backpointer* p = best;
-    int len = p->len;
-    char* s = malloc(len*sizeof(char));
-    strcpy(s," ");
-
-    printf("\n\nRebuild\n");
-    //Follow back, copy into word
-    while(p != NULL)
-    {
-        if(p->prev != NULL)
-            printf("Word %s ended at \tt=%d \twith score:%1.4f\n",
-                   p->word,p->timestamp,p->score);
-        int segment_start = p->len - strlen(p->word);
-        strncpy(&s[segment_start], p->word, strlen(p->word));
-        s[segment_start + strlen(p->word)] = ' ';
-        p = p->prev;
-    }
-    printf("\nFINAL SCORE: %1.4f\n\n", best->score);
-
-    //Return it
-    s[len] = '\0';
-    return s;
+    return best;
 }
