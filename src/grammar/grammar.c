@@ -42,6 +42,7 @@ grammar* build_grammar(char* filename)
     {
         g->nodes[i].node_id = i;
         g->nodes[i].num_edges = 0;
+        g->nodes[i].terminal = false;
     }
     gaussian_cluster** hmms = malloc(num_hmms*sizeof(gaussian_cluster*));
     (void) hmms;
@@ -79,10 +80,24 @@ grammar* build_grammar(char* filename)
         temp = strtok(buffer, " \n");
         if(temp == NULL)
             continue;
+        else if(strcmp(temp,"Terminal:") == 0)
+        {
+            temp = strtok(NULL, " \n");
+            int i = atoi(temp);
+
+            g->nodes[i].terminal = true;
+        }
         else if(strcmp(temp,"HMM") == 0)
         {
             temp = strtok(NULL, " \n");
             int i = atoi(temp);
+            
+            if(i >= num_hmms)
+            {
+                printf("Parse error: attempting to create HMM %d",i);
+                printf(" when there are only %d HMMs.\n",num_hmms);
+                exit(1);
+            }
 
             //Build HMM
             char* word = strtok(NULL, " \n");
@@ -99,18 +114,25 @@ grammar* build_grammar(char* filename)
             int from = atoi(temp);
             temp = strtok(NULL, " \n");
             int to = atoi(temp);
-            
+
+            if(from >= g->num_nodes || to >= g->num_nodes)
+            {
+                printf("Parse error: attempting to link %d->%d",from,to);
+                printf(" when there are only %d nodes.\n",g->num_nodes);
+                exit(1);
+            }
+
             //Get HMM
             gaussian_cluster* hmm;
             temp = strtok(NULL, " \n");
             temp = &temp[4];
-	    int hmm_id = -1 ;
+            int hmm_id = -1 ;
             if(strcmp(temp,"none") == 0)
                 hmm = NULL;
             else{
-		hmm_id = atoi(temp);
+                hmm_id = atoi(temp);
                 hmm = hmms[atoi(temp)];
-	    }
+            }
             //Get edge prob
             temp = strtok(NULL, " \n");
             double prob = atof(&temp[5]);
@@ -119,7 +141,7 @@ grammar* build_grammar(char* filename)
             grammar_node* n = &g->nodes[from];
             grammar_transition* e = &n->edges[n->num_edges];
             e->hmm = hmm;
-	    e->hmm_id = hmm_id;
+            e->hmm_id = hmm_id;
             e->next_node_id = to;
             e->transition_prob = prob;
 
@@ -127,6 +149,13 @@ grammar* build_grammar(char* filename)
             n->num_edges++;
             g->num_edges++;
         }
+    }
+
+    // Also set nodes with no edges as terminating
+    for(int i = 0; i < g->num_nodes; i++)
+    {
+        if(g->nodes[i].num_edges == 0)
+            g->nodes[i].terminal = true;
     }
 
     g->hmms = 	hmms;
@@ -169,7 +198,7 @@ void print_grammar_node(grammar_node* n)
     printf("Node %d:\n", n->node_id);
     
     //Print edges
-    if(n->num_edges == 0)
+    if(n->terminal)
         printf("    This is a terminating node.\n");
     for(int i = 0; i < n->num_edges; i++)
         print_grammar_edge(&n->edges[i]);

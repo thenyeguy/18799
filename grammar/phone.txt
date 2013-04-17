@@ -1,5 +1,5 @@
-NumStates: 8
-NumHMMs: 10
+NumStates: 16
+NumHMMs: 11
 
 HMM 0 zero analysis/zero1-40.out analysis/zero2-40.out analysis/zero3-40.out analysis/zero4-40.out analysis/zero5-40.out
 HMM 1 one analysis/one1-40.out analysis/one2-40.out analysis/one3-40.out analysis/one4-40.out analysis/one5-40.out
@@ -11,18 +11,10 @@ HMM 6 six analysis/six1-40.out analysis/six2-40.out analysis/six3-40.out analysi
 HMM 7 seven analysis/seven1-40.out analysis/seven2-40.out analysis/seven3-40.out analysis/seven4-40.out analysis/seven5-40.out
 HMM 8 eight analysis/eight1-40.out analysis/eight2-40.out analysis/eight3-40.out analysis/eight4-40.out analysis/eight5-40.out
 HMM 9 nine analysis/nine1-40.out analysis/nine2-40.out analysis/nine3-40.out analysis/nine4-40.out analysis/nine5-40.out
+HMM 10 ... analysis/silence1-40.out analysis/silence2-40.out analysis/silence3-40.out analysis/silence4-40.out analysis/silence5-40.out
 
-Edge 0 1 hmm=1 prob=.1
-Edge 0 1 hmm=2 prob=.1
-Edge 0 1 hmm=3 prob=.1
-Edge 0 1 hmm=4 prob=.1
-Edge 0 1 hmm=5 prob=.1
-Edge 0 1 hmm=6 prob=.1
-Edge 0 1 hmm=7 prob=.1
-Edge 0 1 hmm=8 prob=.1
-Edge 0 1 hmm=9 prob=.1
+Edge 0 1 hmm=10 prob=.1
 
-Edge 1 2 hmm=0 prob=.1
 Edge 1 2 hmm=1 prob=.1
 Edge 1 2 hmm=2 prob=.1
 Edge 1 2 hmm=3 prob=.1
@@ -33,16 +25,7 @@ Edge 1 2 hmm=7 prob=.1
 Edge 1 2 hmm=8 prob=.1
 Edge 1 2 hmm=9 prob=.1
 
-Edge 2 3 hmm=0 prob=.1
-Edge 2 3 hmm=1 prob=.1
-Edge 2 3 hmm=2 prob=.1
-Edge 2 3 hmm=3 prob=.1
-Edge 2 3 hmm=4 prob=.1
-Edge 2 3 hmm=5 prob=.1
-Edge 2 3 hmm=6 prob=.1
-Edge 2 3 hmm=7 prob=.1
-Edge 2 3 hmm=8 prob=.1
-Edge 2 3 hmm=9 prob=.1
+Edge 2 3 hmm=10 prob=.1
 
 Edge 3 4 hmm=0 prob=.1
 Edge 3 4 hmm=1 prob=.1
@@ -55,16 +38,7 @@ Edge 3 4 hmm=7 prob=.1
 Edge 3 4 hmm=8 prob=.1
 Edge 3 4 hmm=9 prob=.1
 
-Edge 4 5 hmm=0 prob=.1
-Edge 4 5 hmm=1 prob=.1
-Edge 4 5 hmm=2 prob=.1
-Edge 4 5 hmm=3 prob=.1
-Edge 4 5 hmm=4 prob=.1
-Edge 4 5 hmm=5 prob=.1
-Edge 4 5 hmm=6 prob=.1
-Edge 4 5 hmm=7 prob=.1
-Edge 4 5 hmm=8 prob=.1
-Edge 4 5 hmm=9 prob=.1
+Edge 4 5 hmm=10 prob=.1
 
 Edge 5 6 hmm=0 prob=.1
 Edge 5 6 hmm=1 prob=.1
@@ -77,13 +51,56 @@ Edge 5 6 hmm=7 prob=.1
 Edge 5 6 hmm=8 prob=.1
 Edge 5 6 hmm=9 prob=.1
 
-Edge 6 7 hmm=0 prob=.1
-Edge 6 7 hmm=1 prob=.1
-Edge 6 7 hmm=2 prob=.1
-Edge 6 7 hmm=3 prob=.1
-Edge 6 7 hmm=4 prob=.1
-Edge 6 7 hmm=5 prob=.1
-Edge 6 7 hmm=6 prob=.1
-Edge 6 7 hmm=7 prob=.1
-Edge 6 7 hmm=8 prob=.1
-Edge 6 7 hmm=9 prob=.1
+Edge 6 7 hmm=10 prob=.1
+
+Edge 7 8 hmm=0 prob=.1
+Edge 7 8 hmm=1 prob=.1
+Edge 7 8 hmm=2 prob=.1
+Edge 7 8 hmm=3 prob=.1
+Edge 7 8 hmm=4 prob=.1
+Edge 7 8 hmm=5 prob=.1
+Edge 7 8 hmm=6 prob=.1
+Edge 7 8 hmm=7 prob=.1
+Edge 7 8 hmm=8 prob=.1
+Edge 7 8 hmm=9 prob=.1
+
+Edge 8 9 hmm=10 prob=.1
+
+Edge 9 10 hmm=0 prob=.1
+Edge 9 10 hmm=1 prob=.1
+Edge 9 10 hmm=2 prob=.1
+Edge 9 10 hmm=3 prob=.1
+Edge 9 10 hmm=4 prob=.1
+Edge 9 10 hmm=5 prob=.1
+Edge 9 10 hmm=6 prob=.1
+Edge 9 10 hmm=7 prob=.1
+Edge 9 10 hmm=8 prob=.1
+Edge 9 10 hmm=9 prob=.1
+
+Edge 10 11 hmm=10 prob=.1
+
+Edge 11 12 hmm=0 prob=.1
+Edge 11 12 hmm=1 prob=.1
+Edge 11 12 hmm=2 prob=.1
+Edge 11 12 hmm=3 prob=.1
+Edge 11 12 hmm=4 prob=.1
+Edge 11 12 hmm=5 prob=.1
+Edge 11 12 hmm=6 prob=.1
+Edge 11 12 hmm=7 prob=.1
+Edge 11 12 hmm=8 prob=.1
+Edge 11 12 hmm=9 prob=.1
+
+Edge 12 13 hmm=10 prob=.1
+
+Edge 13 14 hmm=0 prob=.1
+Edge 13 14 hmm=1 prob=.1
+Edge 13 14 hmm=2 prob=.1
+Edge 13 14 hmm=3 prob=.1
+Edge 13 14 hmm=4 prob=.1
+Edge 13 14 hmm=5 prob=.1
+Edge 13 14 hmm=6 prob=.1
+Edge 13 14 hmm=7 prob=.1
+Edge 13 14 hmm=8 prob=.1
+Edge 13 14 hmm=9 prob=.1
+
+Edge 14 15 hmm=10 prob=.1
