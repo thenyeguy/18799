@@ -3,13 +3,16 @@
 #include <string.h>
 #include "training_utils.h"
 #include "../grammar/grammar.h"
+#include "../grammar/viterbi.h"
 
 
 gaussian_cluster** train_from_recordings(feature_vectors** recordings,
         int num_recordings, gaussian_cluster*** models, int* num_models,
         char** words_in_corpus, int num_words)
 {
-    //Count number of each word in our corpus
+    /* Count number of each word in our corpus
+     */
+    printf("Counting...\n");
     int* templates_per_word = calloc(num_words,sizeof(int));
 
     for(int i = 0; i < num_recordings; i++)
@@ -27,8 +30,10 @@ gaussian_cluster** train_from_recordings(feature_vectors** recordings,
     }
 
 
-    //Create our array of templates for clustering
-    //Use templates_added to keep track of our counts in each set so far
+    /* Create our array of templates for clustering
+     * Use templates_added to keep track of our counts in each set so far
+     */
+    printf("Creating arrays...\n");
     int* templates_added = calloc(num_words,sizeof(int));
     feature_vectors*** all_templates =
         calloc(num_words,sizeof(feature_vectors**));
@@ -38,13 +43,17 @@ gaussian_cluster** train_from_recordings(feature_vectors** recordings,
             calloc(templates_per_word[i], sizeof(feature_vectors*));
     }
 
-    //For each recording, get segment our features from the models
-    //And add them to our template collection
+    /* For each recording, get segment our features from the models
+     * And add them to our template collection
+     */
+    printf("Segmenting...\n");
     for(int i = 0; i < num_recordings; i++)
     {
+        printf("    Recordings %d\n",i);
         feature_vectors** temps =
             extract_words_from_recording(recordings[i], models[i],
                                          num_models[i]);
+        printf("    Extracted words.\n");
 
         //For each vector segmented out, add it to one template collection
         for(int j = 0; j < num_models[i]; j++)
@@ -59,7 +68,9 @@ gaussian_cluster** train_from_recordings(feature_vectors** recordings,
     }
 
 
-    //Cluster our results
+    /* Cluster our results
+     */
+    printf("Clustering...\n");
     gaussian_cluster** final_clusters =
         calloc(num_words,sizeof(gaussian_cluster));
     for(int i = 0; i < num_words; i++)
@@ -70,7 +81,9 @@ gaussian_cluster** train_from_recordings(feature_vectors** recordings,
     }
 
 
-    //Clean up
+    /* Clean up
+     */
+    printf("Cleaning up...\n");
     free(templates_per_word);
     free(templates_added);
 
@@ -88,22 +101,28 @@ gaussian_cluster** train_from_recordings(feature_vectors** recordings,
 feature_vectors** extract_words_from_recording(feature_vectors* recording,
         gaussian_cluster** models, int num_models)
 {
-    //Construct a linear grammar from our models - one leads directly to another
+    /* Construct a linear grammar from our models - one leads directly to another
+     */
+    printf("        Creating grammar.\n");
     grammar* grammar = malloc(sizeof(grammar));
     grammar->nodes = calloc(num_models+1, sizeof(grammar_node));
     grammar->hmms = models;
     grammar->num_nodes = num_models + 1;
     grammar->num_edges = num_models;
+    grammar->num_hmms = num_models;
 
     //Fill each node and edge with one model
+    printf("        Filling grammar.\n");
     for(int i = 0; i < num_models; i++)
     {
-        grammar_node node = grammar->nodes[i];
+        grammar_node* node = &grammar->nodes[i];
         grammar_transition* edge = calloc(1,sizeof(grammar_transition));
+        printf("%p\n",edge);
 
-        node.node_id = i;
-        node.num_edges = 1;
-        node.edges = edge;
+        node->node_id = i;
+        node->num_edges = 1;
+        node->edges = edge;
+        node->terminal = false;
 
         edge->transition_prob = 1.0;
         edge->hmm = models[i];
@@ -112,21 +131,32 @@ feature_vectors** extract_words_from_recording(feature_vectors* recording,
     }
 
     //Fill the receiving node
-    grammar_node node = grammar->nodes[num_models];
-    node.node_id = num_models;
-    node.num_edges = 0;
-    node.edges = NULL;
+    grammar_node* node = &grammar->nodes[num_models];
+    node->node_id = num_models;
+    node->num_edges = 0;
+    node->edges = NULL;
+    node->terminal = true;
 
 
-    /*
-     * TODO: this should use our existing viterbi code somehow. I have
-     * constructed the grammar to use but now we need viterbi to somehow return
-     * the segmentation times
+    /* Get the backtrace to find the segmentation times of our models.
      */
-    int* segmentation_times;
+    printf("        Getting segment times.\n");
+    int* segmentation_times = calloc(num_models+1, sizeof(int));
+    backpointer* tail = viterbi_backtrace(grammar, recording, VITERBI_THRESHOLD);
 
-    
-    //From our segment times, break out our recording into its parts
+    //Fill array from backtrace
+    printf("        Running backtrace.\n");
+    backpointer* p = tail;
+    for(int i = num_models-1; i >= 0; i--)
+    {
+        segmentation_times[1] = p->timestamp;
+        p = p->prev;
+    }
+
+
+    /* From our segment times, break out our recording into its parts
+     */
+    printf("        Splitting recording.\n");
     feature_vectors** result = calloc(num_models, sizeof(feature_vectors*));
     for(int i = 0; i < num_models; i++)
     {
@@ -137,7 +167,8 @@ feature_vectors** extract_words_from_recording(feature_vectors* recording,
     }
 
 
-    //Clean up
+    /*Clean up
+     */
     for(int i = 0; i < num_models; i++)
     {
         free(grammar->nodes[i].edges);

@@ -7,13 +7,18 @@
 
 
 /* train_from_recordings -
- *      Takes in an array of feature_vectors* representing recordings =, and the
+ *      Takes in an array of feature_vectors* representing recordings, and the
  *      size of said array.
- *      Also takes in an array of gaussiancluster** representing the set of
- *      models for each recording, in time order, and the number of models in
- *      each recording.
+
+ *      Also takes in an array of gaussiancluster*** representing an array of
+ *      model arrays for each recording, in time order, and the number of
+ *      models in each recording.
  *
- *      Returns an array of clusters for each word in our corpus
+ *      Returns an array of clusters for each word in our corpus, in the order
+ *      they are named in words_in_corpus.
+ *
+ *      The word names in this array MUST
+ *      be identical to the names contained in the initial gaussian clusters.
  */
 gaussian_cluster** train_from_recordings(feature_vectors** recordings,
         int num_recordings, gaussian_cluster*** models, int* num_models,

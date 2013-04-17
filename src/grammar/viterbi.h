@@ -6,6 +6,11 @@
 #include "grammar.h"
 
 
+/* Default threshold that seems to work well
+ */
+#define VITERBI_THRESHOLD 0.2
+
+
 /* Declare these structs ahead of time, because the actual definitions are
  * mutually recursive
  */

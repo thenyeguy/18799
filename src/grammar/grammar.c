@@ -195,8 +195,6 @@ void print_grammar(grammar* g)
 
 void print_grammar_node(grammar_node* n)
 {
-    printf("Node %d:\n", n->node_id);
-    
     //Print edges
     if(n->terminal)
         printf("    This is a terminating node.\n");
