@@ -186,36 +186,32 @@ gaussian_cluster* read_cluster_from_file(char* filename) {
 
 bool write_cluster_to_file(char* filename, gaussian_cluster* cluster) {
 	char fname[128];
-	sprintf(fname, "hmm/%s.hmm", filename);
+	sprintf(fname, "hmms/%s.hmm", filename);
 
 	FILE* outfile = fopen(fname, "w");
-
+	printf("Filename: %s\n",fname);
+	if(outfile==NULL){
+		return false;
+	}
 	int num_clusters = cluster->num_clusters;
 
-	//====Format===
 	//word_id
-	//num_clusters
-	//stationary_probs separated by spaces
-	//transition_probs separated by spaces
-	//0: single_gaussian_params->word_id
-	//0: single_gaussian_params->means separated by spaces
-	//0: single_gaussian_params->covs separated by spaces
-	//1: ...
-	//1: ...
-
-	//word_id
+	fprintf(outfile, "WORD_ID\n");
 	fprintf(outfile, "%s\n", cluster->word_id);
 	
 	//num_clusters
+	fprintf(outfile, "NUM_CLUSTERS\n");
 	fprintf(outfile, "%d\n", num_clusters);
 
 	//stationary_probs
+	fprintf(outfile, "STATIONARY_PROBS\n");
 	for (int i = 0; i<num_clusters; i++) {
 		fprintf(outfile, "%f ", cluster->stationary_probs[i]);
 	}
 	fprintf(outfile, "\n");
 
 	//transition_probs
+	fprintf(outfile, "TRANSITION_PROBS\n");
 	for (int i = 0; i<num_clusters; i++) {
 		fprintf(outfile, "%f ", cluster->transition_probs[i]);
 	}
@@ -225,9 +221,10 @@ bool write_cluster_to_file(char* filename, gaussian_cluster* cluster) {
 	for(int i=0; i<num_clusters; i++){
 
 		//word_id
-		fprintf(outfile,"%d:%s\n",i,cluster->params[i]->word_id);
+		//fprintf(outfile,"%d:%s\n",i,cluster->params[i]->word_id);	//NOT USED? FIXME
 		
 		//means separated by spaces
+		fprintf(outfile, "MEANS\n");
 
 		//values
 		fprintf(outfile,"%d:",i);
@@ -252,6 +249,7 @@ bool write_cluster_to_file(char* filename, gaussian_cluster* cluster) {
 		
 		
 		//cov separated by spaces
+		fprintf(outfile, "COVS\n");
 
 		//values
                 fprintf(outfile,"%d:",i);
@@ -277,7 +275,7 @@ bool write_cluster_to_file(char* filename, gaussian_cluster* cluster) {
 	
 	}
 
-	return false;
+	return true;
 }
 
 
