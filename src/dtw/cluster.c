@@ -181,6 +181,55 @@ gaussian_cluster* cluster_templates(feature_vectors** templates,
 
 
 gaussian_cluster* read_cluster_from_file(char* filename) {
+
+	//Open the file for reading
+	char fname[128];
+        sprintf(fname, "hmms/%s.hmm", filename);
+	FILE* infile = fopen(fname,"r");
+	if(!infile){
+		printf("Failed to open file: %s in read_cluster_from_file.\n",filename);
+		exit(0);
+	}
+
+	//Initialize the gaussian cluster that will be returned
+	gaussian_cluster * cluster = (gaussian_cluster *)malloc(sizeof(gaussian_cluster));
+	cluster=cluster;
+
+	//Initialize buffer for reading
+	int buffer_size = 256;
+	char buffer[buffer_size];
+
+	//word_id	//FIXME not working. 
+	fgets(buffer,buffer_size,infile);
+	printf("Buffer: %s\n",buffer);
+	strcpy(cluster->word_id,buffer);
+	printf("Word: %s\n",cluster->word_id);
+
+	//number of clusters
+	//cluster->num_clusters = -69;
+
+	//stationary_probs
+
+	//transition_probs
+
+	//single_gaussian_params
+	//for(int i=0; i<cluster->num_clusters; i++){
+		
+		//means
+			//values
+
+			//deltas
+
+			//doubles
+			
+		//covs
+                        //values
+
+                        //deltas
+
+                        //doubles	
+	//}
+
 	return NULL;
 }
 
@@ -189,8 +238,7 @@ bool write_cluster_to_file(char* filename, gaussian_cluster* cluster) {
 	sprintf(fname, "hmms/%s.hmm", filename);
 
 	FILE* outfile = fopen(fname, "w");
-	printf("Filename: %s\n",fname);
-	if(outfile==NULL){
+	if(!outfile){
 		return false;
 	}
 	int num_clusters = cluster->num_clusters;
