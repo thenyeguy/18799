@@ -100,12 +100,10 @@ int main()
     printf("\n\n");
 
 
-/*
     //Testing the read/write gauss
     write_cluster_to_file("two", two_new);
     gaussian_cluster *read = read_cluster_from_file("two");
     read=read;
-*/
 
     return 0;
 }

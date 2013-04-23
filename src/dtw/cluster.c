@@ -198,12 +198,10 @@ gaussian_cluster* read_cluster_from_file(char* filename) {
 	//Initialize buffer for reading
 	int buffer_size = 256;
 	char buffer[buffer_size];
-
-	//word_id	//FIXME not working. 
+	
+	//word_id
 	fgets(buffer,buffer_size,infile);
-	printf("Buffer: %s\n",buffer);
 	strcpy(cluster->word_id,buffer);
-	printf("Word: %s\n",cluster->word_id);
 
 	//number of clusters
 	//cluster->num_clusters = -69;
@@ -229,7 +227,7 @@ gaussian_cluster* read_cluster_from_file(char* filename) {
 
                         //doubles	
 	//}
-
+	fclose(infile);
 	return NULL;
 }
 
@@ -322,7 +320,7 @@ bool write_cluster_to_file(char* filename, gaussian_cluster* cluster) {
 
 	
 	}
-
+	fclose(outfile);
 	return true;
 }
 
