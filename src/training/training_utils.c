@@ -56,8 +56,12 @@ gaussian_cluster** train_from_recordings(feature_vectors** recordings,
             //Determine which word this template is
             for(int k = 0; k < num_words; k++)
             {
-                all_templates[k][templates_added[k]] = temps[j];
-                templates_added[k]++;
+                if(strcmp(temps[j]->word_id, words_in_corpus[k]) == 0)
+                {
+                    all_templates[k][templates_added[k]] = temps[j];
+                    templates_added[k]++;
+                    break;
+                }
             }
         }
     }
@@ -134,9 +138,9 @@ feature_vectors** extract_words_from_recording(feature_vectors* recording,
 
     //Fill array from backtrace
     backpointer* p = tail;
-    for(int i = num_models-1; i >= 0; i--)
+    for(int i = num_models; i >= 0; i--)
     {
-        segmentation_times[1] = p->timestamp;
+        segmentation_times[i] = p->timestamp;
         p = p->prev;
     }
 
