@@ -212,7 +212,20 @@ gaussian_cluster* read_cluster_from_file(char* filename) {
 	printf("num_clusters: %d\n",cluster->num_clusters);
 
 	//stationary_probs
-
+	fgets(buffer,buffer_size,infile); //Once to move to the next line
+        fgets(buffer,buffer_size,infile);
+	double * stationary_probs = (double*) malloc(sizeof(double)*cluster->num_clusters);
+	char * str_ptr;
+	int i=0; 
+	str_ptr = strtok(buffer," ");
+	while(str_ptr!=NULL){
+		double temp = atof(str_ptr);
+		stationary_probs[i] = temp;
+		i++;
+		str_ptr = strtok(NULL," ");
+	}
+	cluster->stationary_probs = stationary_probs;
+	
 	//transition_probs
 
 	//single_gaussian_params
