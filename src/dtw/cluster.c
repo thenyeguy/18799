@@ -180,6 +180,33 @@ gaussian_cluster* cluster_templates(feature_vectors** templates,
 }
 
 
+gaussian_cluster* read_cluster_from_file(char* filename) {
+	return NULL;
+}
+
+bool write_cluster_to_file(char* filename, gaussian_cluster* cluster) {
+	char fname[128];
+	sprintf(fname, "hmm/%s.hmm", filename);
+
+	FILE* outfile = fopen(fname, "w");
+
+	int num_clusters = cluster->num_clusters;
+
+	fprintf(outfile, "%s\n", cluster->word_id);
+	fprintf(outfile, "%d\n", num_clusters);
+	for (int i = 0; i<num_clusters; i++) {
+		fprintf(outfile, "%d ", cluster->stationary_probs[i]);
+	}
+	fprintf(outfile, "\n");
+	for (int i = 0; i<num_clusters; i++) {
+		fprintf(outfile, "%d ", cluster->transition_probs[i]);
+	}
+	fprintf(outfile, "\n");
+
+	return false;
+}
+
+
 void print_cluster_count(int* cluster_count)
 {
     for(int i=0; i<NUM_CLUSTERS; i++)

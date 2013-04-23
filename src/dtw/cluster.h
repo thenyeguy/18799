@@ -4,7 +4,7 @@
 
 #include "feature.h"
 #include "gaussian.h"
-
+#include <stdbool.h>
 
 /* NUM_CLUSTERS - number of time periods we break the template into to classify
  * CONVERGE_THRESHOLD - the number of nodes that can be moved and still consider
@@ -48,6 +48,16 @@ typedef struct {
 gaussian_cluster* cluster_templates(feature_vectors** templates,
                                     int num_templates, char* word_id);
 
+
+/* read_cluster_from_file - Given a file containing a gaussian cluster,
+ *							returns a gaussian_cluster with that cluster
+ */
+gaussian_cluster* read_cluster_from_file(char* filename);
+
+
+/* write_cluster_to_file - write a gaussian_cluster to the filename given
+*/
+bool write_cluster_to_file(char* filename, gaussian_cluster* cluster);
 
 /* print_cluster_count - Prints out the number of points in each cluster
 */
