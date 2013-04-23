@@ -24,7 +24,7 @@ typedef struct {
 typedef struct {
     int num_vectors;
     feature* features;
-	char word_id[256];
+	char word_id[52];
 } feature_vectors;
 
 

@@ -6,7 +6,7 @@
 
 int main()
 {
-    grammar* g = build_grammar("grammar/simplesilence.txt");
+    grammar* g = build_grammar("grammar/simple.txt");
 
     gaussian_cluster* sil = g->hmms[10];
     gaussian_cluster* one = g->hmms[1];
@@ -22,6 +22,7 @@ int main()
         printf("\n");
     }
     printf("\n\n");
+    */
     for(int j = 0; j < CEPSTRUM_DIMENSION; j++)
     {
         for(int i = 0; i < one->num_clusters; i++)
@@ -29,6 +30,7 @@ int main()
         printf("\n");
     }
     printf("\n\n");
+    /*
     for(int j = 0; j < CEPSTRUM_DIMENSION; j++)
     {
         for(int i = 0; i < two->num_clusters; i++)
@@ -37,6 +39,7 @@ int main()
     }
     */
 
+    /*
     //Append models
     gaussian_cluster* cat = malloc(sizeof(gaussian_cluster));
     cat->params = calloc(25,sizeof(single_gaussian_params*));
@@ -74,6 +77,7 @@ int main()
     dtw_t* trellis = *get_gaussian_trellis(test, &cat, 1, false, .1);
     while(!dtw_fill_next_col(trellis));
     dtw_print_struct(trellis);
+    */
 
     return 0;
 }
