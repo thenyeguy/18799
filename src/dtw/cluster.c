@@ -200,11 +200,16 @@ gaussian_cluster* read_cluster_from_file(char* filename) {
 	char buffer[buffer_size];
 	
 	//word_id
+	fgets(buffer,buffer_size,infile); //Once to move to the next line
 	fgets(buffer,buffer_size,infile);
 	strcpy(cluster->word_id,buffer);
+	printf("word_id: %s\n",cluster->word_id);
 
 	//number of clusters
-	//cluster->num_clusters = -69;
+	fgets(buffer,buffer_size,infile); //Once to move to the next line
+        fgets(buffer,buffer_size,infile);
+	cluster->num_clusters = atoi(buffer);	
+	printf("num_clusters: %d\n",cluster->num_clusters);
 
 	//stationary_probs
 
