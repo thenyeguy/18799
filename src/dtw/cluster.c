@@ -192,16 +192,90 @@ bool write_cluster_to_file(char* filename, gaussian_cluster* cluster) {
 
 	int num_clusters = cluster->num_clusters;
 
+	//====Format===
+	//word_id
+	//num_clusters
+	//stationary_probs separated by spaces
+	//transition_probs separated by spaces
+	//0: single_gaussian_params->word_id
+	//0: single_gaussian_params->means separated by spaces
+	//0: single_gaussian_params->covs separated by spaces
+	//1: ...
+	//1: ...
+
+	//word_id
 	fprintf(outfile, "%s\n", cluster->word_id);
+	
+	//num_clusters
 	fprintf(outfile, "%d\n", num_clusters);
+
+	//stationary_probs
 	for (int i = 0; i<num_clusters; i++) {
-		fprintf(outfile, "%d ", cluster->stationary_probs[i]);
+		fprintf(outfile, "%f ", cluster->stationary_probs[i]);
 	}
 	fprintf(outfile, "\n");
+
+	//transition_probs
 	for (int i = 0; i<num_clusters; i++) {
-		fprintf(outfile, "%d ", cluster->transition_probs[i]);
+		fprintf(outfile, "%f ", cluster->transition_probs[i]);
 	}
 	fprintf(outfile, "\n");
+
+	//single_gaussian_params
+	for(int i=0; i<num_clusters; i++){
+
+		//word_id
+		fprintf(outfile,"%d:%s\n",i,cluster->params[i]->word_id);
+		
+		//means separated by spaces
+
+		//values
+		fprintf(outfile,"%d:",i);
+		for(int j=0; j<CEPSTRUM_DIMENSION; j++){
+			fprintf(outfile,"%f ",cluster->params[i]->means.values[j]);
+		}
+		fprintf(outfile,"\n");
+
+		//deltas
+                fprintf(outfile,"%d:",i);
+                for(int j=0; j<CEPSTRUM_DIMENSION; j++){
+                        fprintf(outfile,"%f ",cluster->params[i]->means.deltas[j]);
+                }   
+                fprintf(outfile,"\n");
+
+		//doubles
+                fprintf(outfile,"%d:",i);
+                for(int j=0; j<CEPSTRUM_DIMENSION; j++){
+                        fprintf(outfile,"%f ",cluster->params[i]->means.doubles[j]);
+                }   
+                fprintf(outfile,"\n");
+		
+		
+		//cov separated by spaces
+
+		//values
+                fprintf(outfile,"%d:",i);
+                for(int j=0; j<CEPSTRUM_DIMENSION; j++){
+                        fprintf(outfile,"%f ",cluster->params[i]->covariances.values[j]);
+                }   
+                fprintf(outfile,"\n");
+
+                //deltas
+                fprintf(outfile,"%d:",i);
+                for(int j=0; j<CEPSTRUM_DIMENSION; j++){
+                        fprintf(outfile,"%f ",cluster->params[i]->covariances.deltas[j]);
+                }   
+                fprintf(outfile,"\n");
+
+                //doubles
+                fprintf(outfile,"%d:",i);
+                for(int j=0; j<CEPSTRUM_DIMENSION; j++){
+                        fprintf(outfile,"%f ",cluster->params[i]->covariances.doubles[j]);
+                }   
+                fprintf(outfile,"\n");	
+
+	
+	}
 
 	return false;
 }
