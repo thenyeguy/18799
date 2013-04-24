@@ -179,7 +179,6 @@ gaussian_cluster* cluster_templates(feature_vectors** templates,
     return cluster;
 }
 
-
 gaussian_cluster* read_cluster_from_file(char* filename) {
 
 	//Open the file for reading
@@ -203,13 +202,12 @@ gaussian_cluster* read_cluster_from_file(char* filename) {
 	fgets(buffer,buffer_size,infile); //Once to move to the next line
 	fgets(buffer,buffer_size,infile);
 	strcpy(cluster->word_id,buffer);
-	printf("word_id: %s\n",cluster->word_id);
+	cluster->word_id[strlen(buffer)-1]='\0';
 
 	//number of clusters
 	fgets(buffer,buffer_size,infile); //Once to move to the next line
         fgets(buffer,buffer_size,infile);
 	cluster->num_clusters = atoi(buffer);	
-	printf("num_clusters: %d\n",cluster->num_clusters);
 
 	//stationary_probs
 	fgets(buffer,buffer_size,infile); //Once to move to the next line
@@ -323,7 +321,7 @@ gaussian_cluster* read_cluster_from_file(char* filename) {
 
 	}
 	fclose(infile);
-	return NULL;
+	return cluster;
 }
 
 bool write_cluster_to_file(char* filename, gaussian_cluster* cluster) {
