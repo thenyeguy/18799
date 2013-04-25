@@ -27,8 +27,21 @@ int main(int argc, char* argv[])
 
 
     //Sets up time stamped file name. There's gotta be a better way to do this...
-    char * output_file_name = get_time_stamped_filename("./recordings/recorded-",".out");
-    char * output_wave_file_name = get_time_stamped_filename("./recordings/recorded-",".wav");
+    //Allows user to name it themselves
+    char output_file_name[256];
+    char output_wave_file_name[256];
+    if(argc > 1)
+    {
+        char* name = argv[1];
+        sprintf(output_file_name, "recordings/%s.out", name);
+        sprintf(output_wave_file_name, "recordings/%s.wav", name);
+    }
+    else
+    {
+        time_t timestamp = time(NULL);
+        sprintf(output_file_name, "recordings/recorded-%lu.out", timestamp);
+        sprintf(output_wave_file_name, "recordings/recorded-%lu.wav", timestamp);
+    }
     
     printf(".out: %s\n",output_file_name);
     printf(".wav: %s\n",output_wave_file_name);

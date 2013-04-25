@@ -11,7 +11,7 @@
 #define NAIVEFLOOR        0.00001
 #define NAIVETHRESHOLD    0.008
 #define NUMFRAMESTOIGNORE 5
-#define NUMFRAMESTOWAIT   2
+#define NUMFRAMESTOWAIT   3
 
 /* window - takes in a buffer of audio samples its length, and returns true if it
  *          the speaker has stopped speaking */
