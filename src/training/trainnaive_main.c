@@ -35,10 +35,12 @@ int main(int argc, char** argv)
 
     //Save output
     char filename[256];
-    sprintf(filename, "hmms/%s.hmm", name);
+    sprintf(filename, "hmms/%s-init.hmm", name);
     printf("Saving results to: %s\n",filename);
 
-    write_cluster_to_file(name, cluster);
+    char appended[256];
+    sprintf(appended, "%s-init", name);
+    write_cluster_to_file(appended, cluster);
 
     printf("Done!\n\n");
 

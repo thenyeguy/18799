@@ -16,17 +16,17 @@ int main()
 {
     // Read in initial models
     printf("\nInitializing models...\n");
-    gaussian_cluster* sil_init = read_cluster_from_file("sil");
-    gaussian_cluster* zero_init = read_cluster_from_file("zero");
-    gaussian_cluster* one_init = read_cluster_from_file("one");
-    gaussian_cluster* two_init = read_cluster_from_file("two");
-    gaussian_cluster* three_init = read_cluster_from_file("three");
-    gaussian_cluster* four_init = read_cluster_from_file("four");
-    gaussian_cluster* five_init = read_cluster_from_file("five");
-    gaussian_cluster* six_init = read_cluster_from_file("six");
-    gaussian_cluster* seven_init = read_cluster_from_file("seven");
-    gaussian_cluster* eight_init = read_cluster_from_file("eight");
-    gaussian_cluster* nine_init = read_cluster_from_file("nine");
+    gaussian_cluster* sil_init = read_cluster_from_file("sil-init");
+    gaussian_cluster* zero_init = read_cluster_from_file("zero-init");
+    gaussian_cluster* one_init = read_cluster_from_file("one-init");
+    gaussian_cluster* two_init = read_cluster_from_file("two-init");
+    gaussian_cluster* three_init = read_cluster_from_file("three-init");
+    gaussian_cluster* four_init = read_cluster_from_file("four-init");
+    gaussian_cluster* five_init = read_cluster_from_file("five-init");
+    gaussian_cluster* six_init = read_cluster_from_file("six-init");
+    gaussian_cluster* seven_init = read_cluster_from_file("seven-init");
+    gaussian_cluster* eight_init = read_cluster_from_file("eight-init");
+    gaussian_cluster* nine_init = read_cluster_from_file("nine-init");
 
 
 
