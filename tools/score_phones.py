@@ -33,8 +33,9 @@ for number in numbers:
     resultString = subprocess.check_output(["bin/viterbi",grammar,recording])
 
     # Process the result into a list of numbers
+    # Chop off the first result - it just says "Result:"
     lastLine = resultString.split("\n")[-2]
-    words = filter(lambda w: w != "sil", lastLine.split(" ")[2:])
+    words = filter(lambda w: w != "sil", lastLine.split(" ")[1:])
     resultNumbers = map(wordToNumber, words);
     
 

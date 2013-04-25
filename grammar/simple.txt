@@ -1,5 +1,6 @@
-NumStates: 6
+NumStates: 3
 NumHMMs: 11
+Terminal: 2
 
 HMM 0 zero
 HMM 1 one
@@ -13,7 +14,20 @@ HMM 8 eight
 HMM 9 nine 
 HMM 10 sil
 
-Edge 0 1 hmm=10 prob=1.0
+Edge 0 0 hmm=10 prob=.01
+
+Edge 0 1 hmm=0 prob=.5
+Edge 0 1 hmm=1 prob=.5
+Edge 0 1 hmm=2 prob=.5
+Edge 0 1 hmm=3 prob=.5
+Edge 0 1 hmm=4 prob=.5
+Edge 0 1 hmm=5 prob=.5
+Edge 0 1 hmm=6 prob=.5
+Edge 0 1 hmm=7 prob=.5
+Edge 0 1 hmm=8 prob=.5
+Edge 0 1 hmm=9 prob=.5
+
+Edge 1 1 hmm=10 prob=.01
 
 Edge 1 2 hmm=0 prob=.5
 Edge 1 2 hmm=1 prob=.5
@@ -26,17 +40,4 @@ Edge 1 2 hmm=7 prob=.5
 Edge 1 2 hmm=8 prob=.5
 Edge 1 2 hmm=9 prob=.5
 
-Edge 2 3 hmm=10 prob=1.0
-
-Edge 3 4 hmm=0 prob=.5
-Edge 3 4 hmm=1 prob=.5
-Edge 3 4 hmm=2 prob=.5
-Edge 3 4 hmm=3 prob=.5
-Edge 3 4 hmm=4 prob=.5
-Edge 3 4 hmm=5 prob=.5
-Edge 3 4 hmm=6 prob=.5
-Edge 3 4 hmm=7 prob=.5
-Edge 3 4 hmm=8 prob=.5
-Edge 3 4 hmm=9 prob=.5
-
-Edge 4 5 hmm=10 prob=1.0
+Edge 2 2 hmm=10 prob=.01

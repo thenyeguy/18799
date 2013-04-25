@@ -16,8 +16,7 @@ char* viterbi_search(grammar* grammar, feature_vectors* test, double threshold)
     //Reconstruct string from backtrace
     backpointer* p = best;
     int len = p->len;
-    char* s = malloc(len*sizeof(char));
-    strcpy(s," ");
+    char* s = calloc(len,sizeof(char));
 
     printf("\n\nRebuild\n");
     //Follow back, copy into word
@@ -26,7 +25,7 @@ char* viterbi_search(grammar* grammar, feature_vectors* test, double threshold)
         if(p->prev != NULL)
             printf("Word %s ended at \tt=%d \twith score:%1.4f\n",
                    p->word,p->timestamp,p->score);
-        int segment_start = p->len - strlen(p->word);
+        int segment_start = p->len - strlen(p->word)-1;
         strncpy(&s[segment_start], p->word, strlen(p->word));
         s[segment_start + strlen(p->word)] = ' ';
         p = p->prev;
@@ -34,7 +33,7 @@ char* viterbi_search(grammar* grammar, feature_vectors* test, double threshold)
     printf("\nFINAL SCORE: %1.4f\n\n", best->score);
 
     //Return it
-    s[len] = '\0';
+    s[len-1] = '\0';
     return s;
 }
 
