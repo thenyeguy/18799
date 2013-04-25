@@ -23,7 +23,6 @@ int main(int argc, char** argv)
     //Read in the files
     printf("Building grammar from %s...\n",grammar_file);
     grammar* g = build_grammar(grammar_file);
-    print_grammar(g);
     feature_vectors* test = features_from_file(test_file); 
 
     //Run the test and display result
