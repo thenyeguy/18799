@@ -186,7 +186,7 @@ gaussian_cluster* read_cluster_from_file(char* filename) {
     sprintf(fname, "hmms/%s.hmm", filename);
     FILE* infile = fopen(fname,"r");
     if(!infile){
-        printf("Failed to open file: %s in read_cluster_from_file.\n",filename);
+        printf("Failed to open file: %s in read_cluster_from_file.\n",fname);
         exit(0);
     }
 
@@ -253,8 +253,7 @@ gaussian_cluster* read_cluster_from_file(char* filename) {
         //values
         int j=0;
         fgets(buffer,buffer_size,infile);
-        char * tok = strtok(buffer,":");
-        tok = strtok(NULL," ");
+        char * tok = strtok(buffer," ");
         while(tok!=NULL){
             double temp = atof(tok);
             cluster->params[i]->means.values[j] = temp;
@@ -265,8 +264,7 @@ gaussian_cluster* read_cluster_from_file(char* filename) {
         //deltas
         j=0;
         fgets(buffer,buffer_size,infile);
-        tok = strtok(buffer,":");
-        tok = strtok(NULL," ");
+        tok = strtok(buffer," ");
         while(tok!=NULL){
             double temp = atof(tok);
             cluster->params[i]->means.deltas[j] = temp;
@@ -277,8 +275,7 @@ gaussian_cluster* read_cluster_from_file(char* filename) {
         //doubles
         j=0;
         fgets(buffer,buffer_size,infile);
-        tok = strtok(buffer,":");
-        tok = strtok(NULL," ");
+        tok = strtok(buffer," ");
         while(tok!=NULL){
             double temp = atof(tok);
             cluster->params[i]->means.doubles[j] = temp;
@@ -292,8 +289,7 @@ gaussian_cluster* read_cluster_from_file(char* filename) {
         //values
         j=0;
         fgets(buffer,buffer_size,infile);
-        tok = strtok(buffer,":");
-        tok = strtok(NULL," ");
+        tok = strtok(buffer," ");
         while(tok!=NULL){
             double temp = atof(tok);
             cluster->params[i]->covariances.values[j] = temp;
@@ -304,8 +300,7 @@ gaussian_cluster* read_cluster_from_file(char* filename) {
         //deltas
         j=0;
         fgets(buffer,buffer_size,infile);
-        tok = strtok(buffer,":");
-        tok = strtok(NULL," ");
+        tok = strtok(buffer," ");
         while(tok!=NULL){
             double temp = atof(tok);
             cluster->params[i]->covariances.deltas[j] = temp;
@@ -316,8 +311,7 @@ gaussian_cluster* read_cluster_from_file(char* filename) {
         //doubles
         j=0;
         fgets(buffer,buffer_size,infile);
-        tok = strtok(buffer,":");
-        tok = strtok(NULL," ");
+        tok = strtok(buffer," ");
         while(tok!=NULL){
             double temp = atof(tok);
             cluster->params[i]->covariances.doubles[j] = temp;
@@ -366,27 +360,23 @@ bool write_cluster_to_file(char* filename, gaussian_cluster* cluster) {
     for(int i=0; i<num_clusters; i++){
 
         //word_id
-        //fprintf(outfile,"%d:%s\n",i,cluster->params[i]->word_id);	//NOT USED? FIXME
 
         //means separated by spaces
         fprintf(outfile, "MEANS\n");
 
         //values
-        //fprintf(outfile,"%d:",i);
         for(int j=0; j<CEPSTRUM_DIMENSION; j++){
             fprintf(outfile,"%f ",cluster->params[i]->means.values[j]);
         }
         fprintf(outfile,"\n");
 
         //deltas
-        //fprintf(outfile,"%d:",i);
         for(int j=0; j<CEPSTRUM_DIMENSION; j++){
             fprintf(outfile,"%f ",cluster->params[i]->means.deltas[j]);
         }   
         fprintf(outfile,"\n");
 
         //doubles
-        //fprintf(outfile,"%d:",i);
         for(int j=0; j<CEPSTRUM_DIMENSION; j++){
             fprintf(outfile,"%f ",cluster->params[i]->means.doubles[j]);
         }   
@@ -397,21 +387,18 @@ bool write_cluster_to_file(char* filename, gaussian_cluster* cluster) {
         fprintf(outfile, "COVS\n");
 
         //values
-        //fprintf(outfile,"%d:",i);
         for(int j=0; j<CEPSTRUM_DIMENSION; j++){
             fprintf(outfile,"%f ",cluster->params[i]->covariances.values[j]);
         }   
         fprintf(outfile,"\n");
 
         //deltas
-        //fprintf(outfile,"%d:",i);
         for(int j=0; j<CEPSTRUM_DIMENSION; j++){
             fprintf(outfile,"%f ",cluster->params[i]->covariances.deltas[j]);
         }   
         fprintf(outfile,"\n");
 
         //doubles
-        //fprintf(outfile,"%d:",i);
         for(int j=0; j<CEPSTRUM_DIMENSION; j++){
             fprintf(outfile,"%f ",cluster->params[i]->covariances.doubles[j]);
         }   

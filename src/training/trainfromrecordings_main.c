@@ -52,82 +52,82 @@ int main()
     feature_vectors* template2 =
         features_from_file("analysis/1234567890-40.out");
     gaussian_cluster** model2 = calloc(12, sizeof(gaussian_cluster*));
-    model1[0] = sil_init;
-    model1[1] = one_init;
-    model1[2] = two_init;
-    model1[3] = three_init;
-    model1[4] = four_init;
-    model1[5] = five_init;
-    model1[6] = six_init;
-    model1[7] = seven_init;
-    model1[8] = eight_init;
-    model1[9] = nine_init;
-    model1[10] = zero_init;
-    model1[11] = sil_init;
+    model2[0] = sil_init;
+    model2[1] = one_init;
+    model2[2] = two_init;
+    model2[3] = three_init;
+    model2[4] = four_init;
+    model2[5] = five_init;
+    model2[6] = six_init;
+    model2[7] = seven_init;
+    model2[8] = eight_init;
+    model2[9] = nine_init;
+    model2[10] = zero_init;
+    model2[11] = sil_init;
 
     feature_vectors* template3 =
         features_from_file("analysis/9876543210-40.out");
     gaussian_cluster** model3 = calloc(12, sizeof(gaussian_cluster*));
-    model1[0] = sil_init;
-    model1[1] = nine_init;
-    model1[2] = eight_init;
-    model1[3] = seven_init;
-    model1[4] = six_init;
-    model1[5] = five_init;
-    model1[6] = four_init;
-    model1[7] = three_init;
-    model1[8] = two_init;
-    model1[9] = one_init;
-    model1[10] = zero_init;
-    model1[11] = sil_init;
+    model3[0] = sil_init;
+    model3[1] = nine_init;
+    model3[2] = eight_init;
+    model3[3] = seven_init;
+    model3[4] = six_init;
+    model3[5] = five_init;
+    model3[6] = four_init;
+    model3[7] = three_init;
+    model3[8] = two_init;
+    model3[9] = one_init;
+    model3[10] = zero_init;
+    model3[11] = sil_init;
 
     feature_vectors* template4 =
         features_from_file("analysis/0987654321-40.out");
     gaussian_cluster** model4 = calloc(12, sizeof(gaussian_cluster*));
-    model1[0] = sil_init;
-    model1[1] = zero_init;
-    model1[2] = nine_init;
-    model1[3] = eight_init;
-    model1[4] = seven_init;
-    model1[5] = six_init;
-    model1[6] = five_init;
-    model1[7] = four_init;
-    model1[8] = three_init;
-    model1[9] = two_init;
-    model1[10] = one_init;
-    model1[11] = sil_init;
+    model4[0] = sil_init;
+    model4[1] = zero_init;
+    model4[2] = nine_init;
+    model4[3] = eight_init;
+    model4[4] = seven_init;
+    model4[5] = six_init;
+    model4[6] = five_init;
+    model4[7] = four_init;
+    model4[8] = three_init;
+    model4[9] = two_init;
+    model4[10] = one_init;
+    model4[11] = sil_init;
 
     feature_vectors* template5 =
         features_from_file("analysis/1357902468-40.out");
     gaussian_cluster** model5 = calloc(12, sizeof(gaussian_cluster*));
-    model1[0] = sil_init;
-    model1[1] = one_init;
-    model1[2] = three_init;
-    model1[3] = five_init;
-    model1[4] = seven_init;
-    model1[5] = nine_init;
-    model1[6] = zero_init;
-    model1[7] = two_init;
-    model1[8] = four_init;
-    model1[9] = six_init;
-    model1[10] = eight_init;
-    model1[11] = sil_init;
+    model5[0] = sil_init;
+    model5[1] = one_init;
+    model5[2] = three_init;
+    model5[3] = five_init;
+    model5[4] = seven_init;
+    model5[5] = nine_init;
+    model5[6] = zero_init;
+    model5[7] = two_init;
+    model5[8] = four_init;
+    model5[9] = six_init;
+    model5[10] = eight_init;
+    model5[11] = sil_init;
 
     feature_vectors* template6 =
         features_from_file("analysis/8642097531-40.out");
     gaussian_cluster** model6 = calloc(12, sizeof(gaussian_cluster*));
-    model1[0] = sil_init;
-    model1[1] = eight_init;
-    model1[2] = six_init;
-    model1[3] = four_init;
-    model1[4] = two_init;
-    model1[5] = zero_init;
-    model1[6] = nine_init;
-    model1[7] = seven_init;
-    model1[8] = five_init;
-    model1[9] = three_init;
-    model1[10] = one_init;
-    model1[11] = sil_init;
+    model6[0] = sil_init;
+    model6[1] = eight_init;
+    model6[2] = six_init;
+    model6[3] = four_init;
+    model6[4] = two_init;
+    model6[5] = zero_init;
+    model6[6] = nine_init;
+    model6[7] = seven_init;
+    model6[8] = five_init;
+    model6[9] = three_init;
+    model6[10] = one_init;
+    model6[11] = sil_init;
 
 
 
@@ -179,7 +179,7 @@ int main()
 
     for(int i = 0; i < num_words; i++)
     {
-        printf("    hmms/%s-new.hmm", words[i]);
+        printf("    hmms/%s-new.hmm\n", words[i]);
 
         char filename[128];
         sprintf(filename, "%s-new", words[i]);

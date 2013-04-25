@@ -47,5 +47,6 @@ ${OBJDIR}:
 ${BINDIR}:
 	@mkdir -p ${BINDIR}
 clean:
+	@echo Cleaning...
 	@rm -rf ${OBJDIR} 
 	@rm -rf ${BINDIR}

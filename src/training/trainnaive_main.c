@@ -11,6 +11,7 @@ int main(int argc, char** argv)
         printf("       Takes a list of template files and performs");
         printf(" a gaussian clustering on them.\n\n");
         printf("       Saves its output to hmms/name.hmm\n\n");
+        exit(1);
     }
 
 
