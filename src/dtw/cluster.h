@@ -1,10 +1,10 @@
 #ifndef CLUSTER_H
 #define CLUSTER_H
 
-
+#include <stdbool.h>
 #include "feature.h"
 #include "gaussian.h"
-#include <stdbool.h>
+
 
 /* NUM_CLUSTERS - number of time periods we break the template into to classify
  * CONVERGE_THRESHOLD - the number of nodes that can be moved and still consider
@@ -12,11 +12,12 @@
  * CONVERGE_ITERATIONS - a hard cap on the number of iterations we iterate
  *                       before deciding it won't converge
  */
-#define MININT (1<<31)
-#define MAXINT (~MININT)
 #define NUM_CLUSTERS 5
 #define CONVERGE_THRESHOLD 3
 #define CONVERGE_ITERATIONS 1000
+
+#define MININT (1<<31)
+#define MAXINT (~MININT)
 
 
 /* Container to hold a set of gaussian_params that represents one template.

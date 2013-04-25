@@ -5,7 +5,6 @@
 #include "../libraries/queue.h"
 #include "../dtw/cluster.h"
 #include "../dtw/dtw_gaussian.h"
-#include "../dtw/dtw_unity.h"
 #include "viterbi.h"
 
 

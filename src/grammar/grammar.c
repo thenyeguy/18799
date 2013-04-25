@@ -99,13 +99,11 @@ grammar* build_grammar(char* filename)
                 exit(1);
             }
 
-            //Build HMM
-            char* word = strtok(NULL, " \n");
-            char* files = strtok(NULL, "\n");
-            gaussian_cluster* hmm = grammar_build_hmm(files,word);
-            hmms[i] = hmm;
 
-            //printf("Built HMM for %s, id %d.\n",word,i);
+            //Read HMM file
+            char* file = strtok(NULL, " \n");
+            gaussian_cluster* hmm = read_cluster_from_file(file);
+            hmms[i] = hmm;
         }
         else if(strcmp(temp,"Edge") == 0)
         {
