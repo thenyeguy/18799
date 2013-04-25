@@ -6,7 +6,7 @@
 
 
 gaussian_cluster* cluster_templates(feature_vectors** templates,
-                                    int num_templates, char* word_id)
+        int num_templates, char* word_id)
 {
     int iterations =0;
     //Initialize K means cluster by assigning each vector to a cluster
@@ -86,7 +86,7 @@ gaussian_cluster* cluster_templates(feature_vectors** templates,
 
                 //Feature goes here
                 feature* new_feature = &(vectors_array[my_cluster].
-                    features[cluster_index[my_cluster]]);
+                        features[cluster_index[my_cluster]]);
 
                 //Grab feature from here
                 feature* old_feature = &(templates[i]->features[j]);
@@ -181,240 +181,246 @@ gaussian_cluster* cluster_templates(feature_vectors** templates,
 
 gaussian_cluster* read_cluster_from_file(char* filename) {
 
-	//Open the file for reading
-	char fname[128];
-        sprintf(fname, "hmms/%s.hmm", filename);
-	FILE* infile = fopen(fname,"r");
-	if(!infile){
-		printf("Failed to open file: %s in read_cluster_from_file.\n",filename);
-		exit(0);
-	}
+    //Open the file for reading
+    char fname[128];
+    sprintf(fname, "hmms/%s.hmm", filename);
+    FILE* infile = fopen(fname,"r");
+    if(!infile){
+        printf("Failed to open file: %s in read_cluster_from_file.\n",filename);
+        exit(0);
+    }
 
-	//Initialize the gaussian cluster that will be returned
-	gaussian_cluster * cluster = (gaussian_cluster *)malloc(sizeof(gaussian_cluster));
-	cluster=cluster;
+    //Initialize the gaussian cluster that will be returned
+    gaussian_cluster * cluster = (gaussian_cluster *)malloc(sizeof(gaussian_cluster));
+    cluster=cluster;
 
-	//Initialize buffer for reading
-	int buffer_size = 256;
-	char buffer[buffer_size];
-	
-	//word_id
-	fgets(buffer,buffer_size,infile); //Once to move to the next line
-	fgets(buffer,buffer_size,infile);
-	strcpy(cluster->word_id,buffer);
-	cluster->word_id[strlen(buffer)-1]='\0';
+    //Initialize buffer for reading
+    int buffer_size = 256;
+    char buffer[buffer_size];
 
-	//number of clusters
-	fgets(buffer,buffer_size,infile); //Once to move to the next line
+    //word_id
+    fgets(buffer,buffer_size,infile); //Once to move to the next line
+    fgets(buffer,buffer_size,infile);
+    strcpy(cluster->word_id,buffer);
+    cluster->word_id[strlen(buffer)-1]='\0';
+
+    //number of clusters
+    fgets(buffer,buffer_size,infile); //Once to move to the next line
+    fgets(buffer,buffer_size,infile);
+    cluster->num_clusters = atoi(buffer);	
+
+    //stationary_probs
+    fgets(buffer,buffer_size,infile); //Once to move to the next line
+    fgets(buffer,buffer_size,infile);
+    double * stationary_probs = (double*) malloc(sizeof(double)*cluster->num_clusters);
+    char * st_ptr;
+    int i=0; 
+    st_ptr = strtok(buffer," ");
+    while(st_ptr!=NULL){
+        double temp = atof(st_ptr);
+        stationary_probs[i] = temp;
+        i++;
+        st_ptr = strtok(NULL," ");
+    }
+    cluster->stationary_probs = stationary_probs;
+
+    //transition_probs
+    fgets(buffer,buffer_size,infile); //Once to move to the next line
+    fgets(buffer,buffer_size,infile);
+    double * transition_probs = (double*) malloc(sizeof(double)*cluster->num_clusters);
+    char * tr_ptr;
+    int j=0; 
+    tr_ptr = strtok(buffer," ");
+    while(tr_ptr!=NULL){
+        double temp = atof(tr_ptr);
+        transition_probs[j] = temp;
+        j++;
+        tr_ptr = strtok(NULL," ");
+    }   
+    cluster->transition_probs = transition_probs;
+
+    //single_gaussian_params
+    cluster->params = (single_gaussian_params**) malloc(sizeof(single_gaussian_params*) * cluster->num_clusters);
+    for(int i=0; i<cluster->num_clusters; i++){
+        cluster->params[i] = (single_gaussian_params*) malloc(sizeof(single_gaussian_params));
+    }
+
+    for(int i=0; i<cluster->num_clusters; i++){
+
+        //means
+        fgets(buffer,buffer_size,infile); //Once to move to the next line
+
+        //values
+        int j=0;
         fgets(buffer,buffer_size,infile);
-	cluster->num_clusters = atoi(buffer);	
+        char * tok = strtok(buffer,":");
+        tok = strtok(NULL," ");
+        while(tok!=NULL){
+            double temp = atof(tok);
+            cluster->params[i]->means.values[j] = temp;
+            j++;
+            tok = strtok(NULL," ");
+        }
 
-	//stationary_probs
-	fgets(buffer,buffer_size,infile); //Once to move to the next line
+        //deltas
+        j=0;
         fgets(buffer,buffer_size,infile);
-	double * stationary_probs = (double*) malloc(sizeof(double)*cluster->num_clusters);
-	char * st_ptr;
-	int i=0; 
-	st_ptr = strtok(buffer," ");
-	while(st_ptr!=NULL){
-		double temp = atof(st_ptr);
-		stationary_probs[i] = temp;
-		i++;
-		st_ptr = strtok(NULL," ");
-	}
-	cluster->stationary_probs = stationary_probs;
-	
-	//transition_probs
-	fgets(buffer,buffer_size,infile); //Once to move to the next line
+        tok = strtok(buffer,":");
+        tok = strtok(NULL," ");
+        while(tok!=NULL){
+            double temp = atof(tok);
+            cluster->params[i]->means.deltas[j] = temp;
+            j++;
+            tok = strtok(NULL," ");
+        } 
+
+        //doubles
+        j=0;
         fgets(buffer,buffer_size,infile);
-        double * transition_probs = (double*) malloc(sizeof(double)*cluster->num_clusters);
-        char * tr_ptr;
-        int j=0; 
-        tr_ptr = strtok(buffer," ");
-        while(tr_ptr!=NULL){
-                double temp = atof(tr_ptr);
-                transition_probs[j] = temp;
-                j++;
-                tr_ptr = strtok(NULL," ");
-        }   
-        cluster->transition_probs = transition_probs;
+        tok = strtok(buffer,":");
+        tok = strtok(NULL," ");
+        while(tok!=NULL){
+            double temp = atof(tok);
+            cluster->params[i]->means.doubles[j] = temp;
+            j++;
+            tok = strtok(NULL," ");
+        }
 
-	//single_gaussian_params
-	cluster->params = (single_gaussian_params**) malloc(sizeof(single_gaussian_params*) * cluster->num_clusters);
-	for(int i=0; i<cluster->num_clusters; i++){
-		cluster->params[i] = (single_gaussian_params*) malloc(sizeof(single_gaussian_params));
-	}
+        //covs
+        fgets(buffer,buffer_size,infile); //Once to move to the next line
 
-	for(int i=0; i<cluster->num_clusters; i++){
-	
-		//means
-			fgets(buffer,buffer_size,infile); //Once to move to the next line
+        //values
+        j=0;
+        fgets(buffer,buffer_size,infile);
+        tok = strtok(buffer,":");
+        tok = strtok(NULL," ");
+        while(tok!=NULL){
+            double temp = atof(tok);
+            cluster->params[i]->covariances.values[j] = temp;
+            j++;
+            tok = strtok(NULL," ");
+        }
 
-			//values
-			int j=0;
-			fgets(buffer,buffer_size,infile);
-			char * tok = strtok(buffer," ");
-			while(tok!=NULL){
-				double temp = atof(tok);
-				cluster->params[i]->means.values[j] = temp;
-				j++;
-				tok = strtok(NULL," ");
-			}
+        //deltas
+        j=0;
+        fgets(buffer,buffer_size,infile);
+        tok = strtok(buffer,":");
+        tok = strtok(NULL," ");
+        while(tok!=NULL){
+            double temp = atof(tok);
+            cluster->params[i]->covariances.deltas[j] = temp;
+            j++;
+            tok = strtok(NULL," ");
+        }
 
-			//deltas
-			j=0;
-                        fgets(buffer,buffer_size,infile);
-                        tok = strtok(buffer," ");
-                        while(tok!=NULL){
-                                double temp = atof(tok);
-                                cluster->params[i]->means.deltas[j] = temp;
-                                j++;
-                                tok = strtok(NULL," ");
-                        } 
+        //doubles
+        j=0;
+        fgets(buffer,buffer_size,infile);
+        tok = strtok(buffer,":");
+        tok = strtok(NULL," ");
+        while(tok!=NULL){
+            double temp = atof(tok);
+            cluster->params[i]->covariances.doubles[j] = temp;
+            j++;
+            tok = strtok(NULL," ");
+        }
 
-			//doubles
-			j=0;
-                        fgets(buffer,buffer_size,infile);
-                        tok = strtok(buffer," ");
-                        while(tok!=NULL){
-                                double temp = atof(tok);
-                                cluster->params[i]->means.doubles[j] = temp;
-                                j++;
-                                tok = strtok(NULL," ");
-                        }
-
-		//covs
-			fgets(buffer,buffer_size,infile); //Once to move to the next line
-
-                        //values
-                        j=0;
-                        fgets(buffer,buffer_size,infile);
-                        tok = strtok(buffer," ");
-                        while(tok!=NULL){
-                                double temp = atof(tok);
-                                cluster->params[i]->covariances.values[j] = temp;
-                                j++;
-                                tok = strtok(NULL," ");
-                        }
-
-                        //deltas
-                        j=0;
-                        fgets(buffer,buffer_size,infile);
-                        tok = strtok(buffer," ");
-                        while(tok!=NULL){
-                                double temp = atof(tok);
-                                cluster->params[i]->covariances.deltas[j] = temp;
-                                j++;
-                                tok = strtok(NULL," ");
-                        }
-
-                        //doubles
-                        j=0;
-                        fgets(buffer,buffer_size,infile);
-                        tok = strtok(buffer," ");
-                        while(tok!=NULL){
-                                double temp = atof(tok);
-                                cluster->params[i]->covariances.doubles[j] = temp;
-                                j++;
-                                tok = strtok(NULL," ");
-			}
-
-	}
-	fclose(infile);
-	return cluster;
+    }
+    fclose(infile);
+    return cluster;
 }
 
 bool write_cluster_to_file(char* filename, gaussian_cluster* cluster) {
-	char fname[128];
-	sprintf(fname, "hmms/%s.hmm", filename);
+    char fname[128];
+    sprintf(fname, "hmms/%s.hmm", filename);
 
-	FILE* outfile = fopen(fname, "w");
-	if(!outfile){
-		return false;
-	}
-	int num_clusters = cluster->num_clusters;
+    FILE* outfile = fopen(fname, "w");
+    if(!outfile){
+        return false;
+    }
+    int num_clusters = cluster->num_clusters;
 
-	//word_id
-	fprintf(outfile, "WORD_ID\n");
-	fprintf(outfile, "%s\n", cluster->word_id);
-	
-	//num_clusters
-	fprintf(outfile, "NUM_CLUSTERS\n");
-	fprintf(outfile, "%d\n", num_clusters);
+    //word_id
+    fprintf(outfile, "WORD_ID\n");
+    fprintf(outfile, "%s\n", cluster->word_id);
 
-	//stationary_probs
-	fprintf(outfile, "STATIONARY_PROBS\n");
-	for (int i = 0; i<num_clusters; i++) {
-		fprintf(outfile, "%f ", cluster->stationary_probs[i]);
-	}
-	fprintf(outfile, "\n");
+    //num_clusters
+    fprintf(outfile, "NUM_CLUSTERS\n");
+    fprintf(outfile, "%d\n", num_clusters);
 
-	//transition_probs
-	fprintf(outfile, "TRANSITION_PROBS\n");
-	for (int i = 0; i<num_clusters; i++) {
-		fprintf(outfile, "%f ", cluster->transition_probs[i]);
-	}
-	fprintf(outfile, "\n");
+    //stationary_probs
+    fprintf(outfile, "STATIONARY_PROBS\n");
+    for (int i = 0; i<num_clusters; i++) {
+        fprintf(outfile, "%f ", cluster->stationary_probs[i]);
+    }
+    fprintf(outfile, "\n");
 
-	//single_gaussian_params
-	for(int i=0; i<num_clusters; i++){
+    //transition_probs
+    fprintf(outfile, "TRANSITION_PROBS\n");
+    for (int i = 0; i<num_clusters; i++) {
+        fprintf(outfile, "%f ", cluster->transition_probs[i]);
+    }
+    fprintf(outfile, "\n");
 
-		//word_id
-		//fprintf(outfile,"%d:%s\n",i,cluster->params[i]->word_id);	//NOT USED? FIXME
-		
-		//means separated by spaces
-		fprintf(outfile, "MEANS\n");
+    //single_gaussian_params
+    for(int i=0; i<num_clusters; i++){
 
-		//values
-		//fprintf(outfile,"%d:",i);
-		for(int j=0; j<CEPSTRUM_DIMENSION; j++){
-			fprintf(outfile,"%f ",cluster->params[i]->means.values[j]);
-		}
-		fprintf(outfile,"\n");
+        //word_id
+        //fprintf(outfile,"%d:%s\n",i,cluster->params[i]->word_id);	//NOT USED? FIXME
 
-		//deltas
-                //fprintf(outfile,"%d:",i);
-                for(int j=0; j<CEPSTRUM_DIMENSION; j++){
-                        fprintf(outfile,"%f ",cluster->params[i]->means.deltas[j]);
-                }   
-                fprintf(outfile,"\n");
+        //means separated by spaces
+        fprintf(outfile, "MEANS\n");
 
-		//doubles
-                //fprintf(outfile,"%d:",i);
-                for(int j=0; j<CEPSTRUM_DIMENSION; j++){
-                        fprintf(outfile,"%f ",cluster->params[i]->means.doubles[j]);
-                }   
-                fprintf(outfile,"\n");
-		
-		
-		//cov separated by spaces
-		fprintf(outfile, "COVS\n");
+        //values
+        //fprintf(outfile,"%d:",i);
+        for(int j=0; j<CEPSTRUM_DIMENSION; j++){
+            fprintf(outfile,"%f ",cluster->params[i]->means.values[j]);
+        }
+        fprintf(outfile,"\n");
 
-		//values
-                //fprintf(outfile,"%d:",i);
-                for(int j=0; j<CEPSTRUM_DIMENSION; j++){
-                        fprintf(outfile,"%f ",cluster->params[i]->covariances.values[j]);
-                }   
-                fprintf(outfile,"\n");
+        //deltas
+        //fprintf(outfile,"%d:",i);
+        for(int j=0; j<CEPSTRUM_DIMENSION; j++){
+            fprintf(outfile,"%f ",cluster->params[i]->means.deltas[j]);
+        }   
+        fprintf(outfile,"\n");
 
-                //deltas
-                //fprintf(outfile,"%d:",i);
-                for(int j=0; j<CEPSTRUM_DIMENSION; j++){
-                        fprintf(outfile,"%f ",cluster->params[i]->covariances.deltas[j]);
-                }   
-                fprintf(outfile,"\n");
+        //doubles
+        //fprintf(outfile,"%d:",i);
+        for(int j=0; j<CEPSTRUM_DIMENSION; j++){
+            fprintf(outfile,"%f ",cluster->params[i]->means.doubles[j]);
+        }   
+        fprintf(outfile,"\n");
 
-                //doubles
-                //fprintf(outfile,"%d:",i);
-                for(int j=0; j<CEPSTRUM_DIMENSION; j++){
-                        fprintf(outfile,"%f ",cluster->params[i]->covariances.doubles[j]);
-                }   
-                fprintf(outfile,"\n");	
 
-	
-	}
-	fclose(outfile);
-	return true;
+        //cov separated by spaces
+        fprintf(outfile, "COVS\n");
+
+        //values
+        //fprintf(outfile,"%d:",i);
+        for(int j=0; j<CEPSTRUM_DIMENSION; j++){
+            fprintf(outfile,"%f ",cluster->params[i]->covariances.values[j]);
+        }   
+        fprintf(outfile,"\n");
+
+        //deltas
+        //fprintf(outfile,"%d:",i);
+        for(int j=0; j<CEPSTRUM_DIMENSION; j++){
+            fprintf(outfile,"%f ",cluster->params[i]->covariances.deltas[j]);
+        }   
+        fprintf(outfile,"\n");
+
+        //doubles
+        //fprintf(outfile,"%d:",i);
+        for(int j=0; j<CEPSTRUM_DIMENSION; j++){
+            fprintf(outfile,"%f ",cluster->params[i]->covariances.doubles[j]);
+        }   
+        fprintf(outfile,"\n");	
+
+
+    }
+    fclose(outfile);
+    return true;
 }
 
 
