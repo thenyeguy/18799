@@ -120,7 +120,8 @@ void dtct(double* input, double* output)
 }
 
 
-void log_mel_filter(double* freqs, int num_filters, double* log_spectra)
+void log_mel_filter(double* freqs, int num_filters, double* log_spectra,
+                    int sample_rate)
 {
     //Define basic mel parameters
     //
@@ -142,7 +143,7 @@ void log_mel_filter(double* freqs, int num_filters, double* log_spectra)
 
         //Convert the frequency values to indeces into the fft array
         //Rounds down and uses the closest freq
-        double hz_to_i = ((double) dft_buffer_length)/((double) SAMPLE_RATE);
+        double hz_to_i = ((double) dft_buffer_length)/((double) sample_rate);
         int lower_i = (int) (lower * hz_to_i);
         int center_i = (int) (center * hz_to_i);
         int upper_i = (int) (upper * hz_to_i);

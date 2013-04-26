@@ -1,3 +1,6 @@
+#ifndef CEPSTRUM_VECTORS_H
+#define CEPSTRUM_VECTORS_H
+
 // Define constants for the windowing in ms
 
 // WINDOW_WIDTH is how wide the window is, and WINDOW_SLIDE is how fary each
@@ -40,4 +43,6 @@ void log_cepstrum(char* file_prefix, double* cepstrum, int n);
  */
 cepstrum_vectors* get_cepstrum_vectors(double* signal, int num_samples,
                                        int num_mel_filters, int num_cepstra,
-                                       char* file_prefix);
+                                       char* file_prefix, int sample_rate);
+
+#endif

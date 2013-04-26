@@ -69,10 +69,10 @@ void log_cepstrum(char* file_prefix, double* cepstrum, int n)
 
 cepstrum_vectors* get_cepstrum_vectors(double* signal, int num_samples,
                                        int num_mel_filters, int num_cepstra,
-                                       char* file_prefix)
+                                       char* file_prefix, int sample_rate)
 {
-    int samples_per_window = SAMPLE_RATE*WINDOW_WIDTH/1000;
-    int num_vectors = num_samples * 1000/(SAMPLE_RATE*WINDOW_SLIDE);
+    int samples_per_window = sample_rate*WINDOW_WIDTH/1000;
+    int num_vectors = num_samples * 1000/(sample_rate*WINDOW_SLIDE);
 
     //Delete old output files
     char filename[256];
@@ -112,7 +112,7 @@ cepstrum_vectors* get_cepstrum_vectors(double* signal, int num_samples,
     for(int i = 0; i < num_vectors; i++)
     {
         //Generate the window, then premph and weight it
-        int offset = i*SAMPLE_RATE*WINDOW_SLIDE/1000;
+        int offset = i*sample_rate*WINDOW_SLIDE/1000;
         double* start = signal+offset;
         for(int j = 0; j < samples_per_window; j++)
         {
@@ -129,7 +129,8 @@ cepstrum_vectors* get_cepstrum_vectors(double* signal, int num_samples,
 
         // Get the log spectra for the window
         dtft(window, window_dft);
-        log_mel_filter(window_dft, num_mel_filters, window_log_spectra);
+        log_mel_filter(window_dft, num_mel_filters, window_log_spectra,
+                       sample_rate);
 
         if(CEPSTRUM_VERBOSE && file_prefix != NULL)
             log_dtft(file_prefix, window_dft, fft_length);

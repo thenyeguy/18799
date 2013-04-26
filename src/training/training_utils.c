@@ -134,7 +134,13 @@ feature_vectors** extract_words_from_recording(feature_vectors* recording,
     /* Get the backtrace to find the segmentation times of our models.
      */
     int* segmentation_times = calloc(num_models+1, sizeof(int));
-    backpointer* tail = viterbi_backtrace(grammar, recording, VITERBI_THRESHOLD);
+    backpointer* tail = viterbi_backtrace(grammar, recording, 10000.0);
+
+    if(strcmp(tail->word, "NO RESULTS") == 0)
+    {
+        printf("Endpointing failed. Aborting.\n");
+        exit(1);
+    }
 
     //Fill array from backtrace
     backpointer* p = tail;

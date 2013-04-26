@@ -21,3 +21,5 @@ bin/trainnaive eight analysis/eight1-40.out analysis/eight2-40.out analysis/eigh
 bin/trainnaive nine analysis/nine1-40.out analysis/nine2-40.out analysis/nine3-40.out analysis/nine4-40.out analysis/nine5-40.out
 
 bin/trainnaive sil analysis/silence1-40.out analysis/silence2-40.out analysis/silence3-40.out analysis/silence4-40.out analysis/silence5-40.out
+
+bin/trainnaive oh analysis/oh1-40.out analysis/oh2-40.out analysis/oh3-40.out analysis/oh4-40.out analysis/oh5-40.out

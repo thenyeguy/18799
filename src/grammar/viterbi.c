@@ -156,7 +156,6 @@ backpointer* viterbi_backtrace(grammar* grammar, feature_vectors* test,
                 //dtw_print_col(edge->trellis);
 
                 //If we have the best score seen into this node, then update it
-                //printf("score %d %f\n",i,score);
                 if(up_score > DTW_MIN_SCORE && up_score > edge->next->best_score)
                 {
                     up_score += edge->entrance_cost;

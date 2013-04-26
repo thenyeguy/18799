@@ -8,7 +8,7 @@
 
 /* Default threshold that seems to work well
  */
-#define VITERBI_THRESHOLD 0.2
+#define VITERBI_THRESHOLD 1.0
 
 
 /* Declare these structs ahead of time, because the actual definitions are

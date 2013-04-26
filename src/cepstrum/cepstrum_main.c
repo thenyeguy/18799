@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
-#include "portaudio_utils.h"
+#include "../record/portaudio_utils.h"
 #include "cepstrum_utils.h"
 #include "cepstrum_vectors.h"
 
@@ -59,7 +59,7 @@ int main(int argc, char **argv)
     for(int i = 0; i < size; i++)
         sample[i] = ((double) buffer[i]);// / 32768.0;
 
-    get_cepstrum_vectors(sample, size, filter_num, 13, name);
+    get_cepstrum_vectors(sample, size, filter_num, 13, name, SAMPLE_RATE);
 
     //Clean up
     printf("Completed anaylsis. Output files in analysis directory.\n");

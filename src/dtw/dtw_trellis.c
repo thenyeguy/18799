@@ -74,6 +74,7 @@ bool dtw_fill_next_col(dtw_t* dtw)
     if(dtw->fully_pruned)
         return true;
 
+
     //Score entire column
     double column_max = DTW_MIN_SCORE;
     for(int i = 0; i < dtw->template_length; i++)
@@ -88,6 +89,7 @@ bool dtw_fill_next_col(dtw_t* dtw)
         if(score > column_max)
             column_max = score;
     }
+
 
     //Once we have scored the next column, it is the last column scored,
     //so swap it and reuse the memory allocated for the last column to store
@@ -164,17 +166,21 @@ bool dtw_prune_next_column(dtw_t* dtw, double threshold)
 
 double dtw_score_node(dtw_t* dtw, int row)
 {
-    int col = dtw->last_column_i+1;
+    int col = dtw->last_column_i;
+
     double left = DTW_MIN_SCORE;
-    void* left_bk = NULL;
     double downone = DTW_MIN_SCORE;
-    void* downone_bk = NULL;
     double downtwo = DTW_MIN_SCORE;
+
+    void* left_bk = NULL;
+    void* downone_bk = NULL;
     void* downtwo_bk = NULL;
+
     //Directly left
     left = dtw->scorer(dtw->test_data, dtw->template_data,
         row, col, DTW_DIR_LEFT) + dtw->last_col[row].score;
     left_bk = dtw->last_col[row].backpointer;
+
     //Left and down 1
     if(row > 0)
     {
@@ -190,6 +196,7 @@ double dtw_score_node(dtw_t* dtw, int row)
         downone = node + dtw->incoming_score;
         downone_bk = dtw->incoming_backpointer;
     }
+
     //Left and down 2
     if(row > 1)
     {
@@ -199,14 +206,12 @@ double dtw_score_node(dtw_t* dtw, int row)
         downtwo_bk = dtw->last_col[row-2].backpointer;
     }
     
-//    printf("%f %f %f",left,downone,downtwo);
 
     //Determine the highest score and use that
     double score = DTW_MIN_SCORE;
     void* back = NULL;
     dtw_trellis_dir dir = DTW_DIR_NONE;
-    //if(left > downone && left > downtwo && left > score)
-    if(left > downone && left > score)
+    if(left > downone && left > downtwo && left > score)
     {
         score = left;
         back = left_bk;
@@ -218,32 +223,18 @@ double dtw_score_node(dtw_t* dtw, int row)
         back = downone_bk;
         dir = DTW_DIR_DOWNONE;
     }
-    
-    else if(downtwo > score)	//FIXME should this be an else
+    else
     {
         score = downtwo;
         back = downtwo_bk;
         dir = DTW_DIR_DOWNTWO;
     }
     
-//    printf("Selected: %f\n",score);
-
     //Store info back and finish
     dtw->next_col[row].score = score;
     dtw->next_col[row].dir = dir;
     dtw->next_col[row].backpointer = back;
-/*
-    double max= left;
-    if(max < downone){
-	max = downone;
-    }
-    if(max < downtwo){
-        max = downtwo;
-    }
-    if( max != score){
-	printf("There is something wrong with our max\n");
-    }
-*/
+
     return score;
 }
 

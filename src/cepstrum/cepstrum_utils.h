@@ -42,7 +42,8 @@ void dtct(double* input, double* output);
  */
 #define MEL_LOW_FREQ 30
 #define MEL_HIGH_FREQ 8000
-void log_mel_filter(double* freqs, int num_filters, double* log_spectra);
+void log_mel_filter(double* freqs, int num_filters, double* log_spectra,
+                    int sample_rate);
 
 /* mel_cepstrum - takes in a log mel spectrum and the number of filters used to
  *                generate it, and runs it through a cosine transform and stores
