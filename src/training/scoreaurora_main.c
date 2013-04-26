@@ -65,9 +65,19 @@ int main(int argc, char** argv)
     raw_cepstrum_to_features(cepstra,features);
 
 
+    /*
+    for(int i = 0; i < CEPSTRUM_DIMENSION; i++)
+    {
+        for(int j = 0; j < features->num_vectors; j++)
+            printf("%f ", features->features[j].values[i]);
+        printf("\n");
+    }
+    */
+
+
     //Run the test and display result
     printf("Testing against %s...\n",filename);
-    char* result = viterbi_search(g, features, 0.5);
+    char* result = viterbi_search(g, features, VITERBI_THRESHOLD);
     printf("\nResult: %s\n", result);
 
     return 0;

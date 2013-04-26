@@ -73,18 +73,18 @@ int main()
     // Initialize models
     printf("\nInitializing models...\n");
     gaussian_cluster** initial_models = calloc(12,sizeof(gaussian_cluster*));
-    initial_models[0] = read_cluster_from_file("zero-init");
-    initial_models[1] = read_cluster_from_file("one-init");
-    initial_models[2] = read_cluster_from_file("two-init");
-    initial_models[3] = read_cluster_from_file("three-init");
-    initial_models[4] = read_cluster_from_file("four-init");
-    initial_models[5] = read_cluster_from_file("five-init");
-    initial_models[6] = read_cluster_from_file("six-init");
-    initial_models[7] = read_cluster_from_file("seven-init");
-    initial_models[8] = read_cluster_from_file("eight-init");
-    initial_models[9] = read_cluster_from_file("nine-init");
-    initial_models[10] = read_cluster_from_file("sil-init");
-    initial_models[11] = read_cluster_from_file("oh-init");
+    initial_models[0] = read_cluster_from_file("zero-new");
+    initial_models[1] = read_cluster_from_file("one-new");
+    initial_models[2] = read_cluster_from_file("two-new");
+    initial_models[3] = read_cluster_from_file("three-new");
+    initial_models[4] = read_cluster_from_file("four-new");
+    initial_models[5] = read_cluster_from_file("five-new");
+    initial_models[6] = read_cluster_from_file("six-new");
+    initial_models[7] = read_cluster_from_file("seven-new");
+    initial_models[8] = read_cluster_from_file("eight-new");
+    initial_models[9] = read_cluster_from_file("nine-new");
+    initial_models[10] = read_cluster_from_file("sil-new");
+    initial_models[11] = read_cluster_from_file("oh-new");
 
 
     // Initialize corpus
