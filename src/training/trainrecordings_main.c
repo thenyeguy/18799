@@ -12,22 +12,54 @@
  *
  */
 
-int main()
+int main(int argc, char** argv)
 {
+    if(argc < 2)
+    {
+        printf("USAGE: bin/trainrecordings [initial models]\n");
+        printf("       Initial model options:\n");
+        printf("          init - naive isolated word models\n");
+        printf("          new  - our voices, continuously trained\n");
+        printf("\n");
+        exit(1);
+    }
+
     // Read in initial models
     printf("\nInitializing models...\n");
-    gaussian_cluster* sil_init = read_cluster_from_file("sil-init");
-    gaussian_cluster* zero_init = read_cluster_from_file("zero-init");
-    gaussian_cluster* one_init = read_cluster_from_file("one-init");
-    gaussian_cluster* two_init = read_cluster_from_file("two-init");
-    gaussian_cluster* three_init = read_cluster_from_file("three-init");
-    gaussian_cluster* four_init = read_cluster_from_file("four-init");
-    gaussian_cluster* five_init = read_cluster_from_file("five-init");
-    gaussian_cluster* six_init = read_cluster_from_file("six-init");
-    gaussian_cluster* seven_init = read_cluster_from_file("seven-init");
-    gaussian_cluster* eight_init = read_cluster_from_file("eight-init");
-    gaussian_cluster* nine_init = read_cluster_from_file("nine-init");
+    char* model = argv[1];
 
+    char zero_model[32]; sprintf(zero_model, "zero-%s", model);
+    gaussian_cluster* zero_init = read_cluster_from_file(zero_model);
+
+    char one_model[32]; sprintf(one_model, "one-%s", model);
+    gaussian_cluster* one_init = read_cluster_from_file(one_model);
+
+    char two_model[32]; sprintf(two_model, "two-%s", model);
+    gaussian_cluster* two_init = read_cluster_from_file(two_model);
+
+    char three_model[32]; sprintf(three_model, "three-%s", model);
+    gaussian_cluster* three_init = read_cluster_from_file(three_model);
+
+    char four_model[32]; sprintf(four_model, "four-%s", model);
+    gaussian_cluster* four_init = read_cluster_from_file(four_model);
+
+    char five_model[32]; sprintf(five_model, "five-%s", model);
+    gaussian_cluster* five_init = read_cluster_from_file(five_model);
+
+    char six_model[32]; sprintf(six_model, "six-%s", model);
+    gaussian_cluster* six_init = read_cluster_from_file(six_model);
+
+    char seven_model[32]; sprintf(seven_model, "seven-%s", model);
+    gaussian_cluster* seven_init = read_cluster_from_file(seven_model);
+
+    char eight_model[32]; sprintf(eight_model, "eight-%s", model);
+    gaussian_cluster* eight_init = read_cluster_from_file(eight_model);
+
+    char nine_model[32]; sprintf(nine_model, "nine-%s", model);
+    gaussian_cluster* nine_init = read_cluster_from_file(nine_model);
+
+    char sil_model[32]; sprintf(sil_model, "sil-%s", model);
+    gaussian_cluster* sil_init = read_cluster_from_file(sil_model);
 
 
     // Read in our recordings and create their model arrays

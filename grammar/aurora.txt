@@ -2,18 +2,18 @@ NumStates: 2
 NumHMMs: 12
 Terminal: 1
 
-HMM 0 zero
-HMM 1 one
-HMM 2 two
-HMM 3 three
-HMM 4 four
-HMM 5 five
-HMM 6 six
-HMM 7 seven
-HMM 8 eight
-HMM 9 nine
-HMM 10 sil
-HMM 11 oh
+HMM 0 zero-aurora
+HMM 1 one-aurora
+HMM 2 two-aurora
+HMM 3 three-aurora
+HMM 4 four-aurora
+HMM 5 five-aurora
+HMM 6 six-aurora
+HMM 7 seven-aurora
+HMM 8 eight-aurora
+HMM 9 nine-aurora
+HMM 10 sil-aurora
+HMM 11 oh-aurora
 
 //Silence before every word
 Edge 0 0 hmm=10 prob=.1

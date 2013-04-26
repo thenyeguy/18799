@@ -44,8 +44,19 @@ int wordToModelIndex(char* word)
 }
 
 
-int main()
+int main(int argc, char** argv)
 {
+    if(argc < 2)
+    {
+        printf("USAGE: bin/trainaurora [initial models]\n");
+        printf("       Initial model options:\n");
+        printf("          init - naive isolated word models\n");
+        printf("          new  - our voices, continuously trained\n");
+        printf("          aurora - the last trained aurora dataset\n");
+        printf("\n");
+        exit(1);
+    }
+
     // Count number of training instances
     unsigned buffer_size = 512;
     char buffer[buffer_size];
@@ -73,18 +84,43 @@ int main()
     // Initialize models
     printf("\nInitializing models...\n");
     gaussian_cluster** initial_models = calloc(12,sizeof(gaussian_cluster*));
-    initial_models[0] = read_cluster_from_file("zero-new");
-    initial_models[1] = read_cluster_from_file("one-new");
-    initial_models[2] = read_cluster_from_file("two-new");
-    initial_models[3] = read_cluster_from_file("three-new");
-    initial_models[4] = read_cluster_from_file("four-new");
-    initial_models[5] = read_cluster_from_file("five-new");
-    initial_models[6] = read_cluster_from_file("six-new");
-    initial_models[7] = read_cluster_from_file("seven-new");
-    initial_models[8] = read_cluster_from_file("eight-new");
-    initial_models[9] = read_cluster_from_file("nine-new");
-    initial_models[10] = read_cluster_from_file("sil-new");
-    initial_models[11] = read_cluster_from_file("oh-new");
+    char* model = argv[1];
+
+    char zero_model[32]; sprintf(zero_model, "zero-%s", model);
+    initial_models[0] = read_cluster_from_file(zero_model);
+
+    char one_model[32]; sprintf(one_model, "one-%s", model);
+    initial_models[1] = read_cluster_from_file(one_model);
+
+    char two_model[32]; sprintf(two_model, "two-%s", model);
+    initial_models[2] = read_cluster_from_file(two_model);
+
+    char three_model[32]; sprintf(three_model, "three-%s", model);
+    initial_models[3] = read_cluster_from_file(three_model);
+
+    char four_model[32]; sprintf(four_model, "four-%s", model);
+    initial_models[4] = read_cluster_from_file(four_model);
+
+    char five_model[32]; sprintf(five_model, "five-%s", model);
+    initial_models[5] = read_cluster_from_file(five_model);
+
+    char six_model[32]; sprintf(six_model, "six-%s", model);
+    initial_models[6] = read_cluster_from_file(six_model);
+
+    char seven_model[32]; sprintf(seven_model, "seven-%s", model);
+    initial_models[7] = read_cluster_from_file(seven_model);
+
+    char eight_model[32]; sprintf(eight_model, "eight-%s", model);
+    initial_models[8] = read_cluster_from_file(eight_model);
+
+    char nine_model[32]; sprintf(nine_model, "nine-%s", model);
+    initial_models[9] = read_cluster_from_file(nine_model);
+
+    char sil_model[32]; sprintf(sil_model, "sil-%s", model);
+    initial_models[10] = read_cluster_from_file(sil_model);
+
+    char oh_model[32]; sprintf(oh_model, "oh-%s", model);
+    initial_models[11] = read_cluster_from_file(oh_model);
 
 
     // Initialize corpus
