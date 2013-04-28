@@ -3,9 +3,30 @@
 #include <string.h>
 #include "phoneme_utils.h"
 
-gaussian_cluster** get_initial_phoneme_models(feature_vectors** recordings,
-											  int num_recordings) {
+gaussian_cluster** get_phoneme_initial_models(recording_set** recordings,int num_digits){
 	
+	//Initialize a count of the number of feature vectors needed for each phoneme
+	int feature_vectors_per_phoneme[NUM_PHONEMES];
+	for(int i=0; i<NUM_PHONEMES; i++){
+		feature_vectors_per_phoneme[i] = 0;
+	}
+
+	//Loop through each digit in our array of recordings
+	for(int i=0; i<num_digits; i++){
+		
+		//Get list of phonemes in that digit
+		char * digit_name = recordings[i].name;
+		int digit_index = wordToModelIndex(digit_name);
+		char ** digit_phonemes = word_phonemes[digit_index];
+		int num_phonemes = phonemes_in_word[digit_index];
+		
+		//For each recording in our recording set, increment that phoneme count
+		for(int j=0; j<num_phonemes; j++){
+			int phoneme_index = phonemeToModelIndex(digit_phonemes[j]);
+			feature_vectors_per_phoneme[phoneme_index]++;
+		}
+	}	
+
 	
 	return NULL;
 }

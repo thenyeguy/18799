@@ -6,14 +6,25 @@
 
 
 gaussian_cluster** train_isolated_phoneme_models(recording_set** recordings,
-                                                 int num_digits)
+    int num_digits, int num_iterations)
 {
-    /* First get initial models to seed the continuous training
-     */
-    gaussian_cluster** initials = get_phoneme_initial_models(recordings, num_digits);
+    // Get initial seeds
+    gaussian_cluster** models =
+        get_phoneme_initial_models(recordings, num_digits);
+
+    // Run training with previous result as seed
+    for(int i = 0; i < num_iterations; i++)
+    {
+        models = train_isolated_phoneme_step(recordings, num_digits, models);
+    }
+
+    return models;
+}
 
 
-
+gaussian_cluster** train_isolated_phoneme_step(recording_set** recordings,
+    int num_digits, gaussian_cluster** initials)
+{
     /* Rejigger our data to plug into the continuous training code
      */
     int num_recordings = 0;
@@ -68,8 +79,9 @@ gaussian_cluster** train_isolated_phoneme_models(recording_set** recordings,
 
     /* Run the continuous trainer using these flattened arrays of data
      */
-    gaussian_cluster** results = train_from_recordings(all_recordings,
-        num_recordings, models, num_models, phoneme_names, NUM_PHONEMES);
+    gaussian_cluster** result;
+    result = train_from_recordings(all_recordings, num_recordings,
+        models, num_models, phoneme_names, NUM_PHONEMES);
 
-    return results;
+    return result;
 }
