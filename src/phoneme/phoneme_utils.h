@@ -2,6 +2,7 @@
 #define PHONEME_UTILS_H
 
 #include "../dtw/feature.h"
+#include "../dtw/cluster.h"
 
 
 /* Encapsulate a set of recordings for a single digit or phoneme
