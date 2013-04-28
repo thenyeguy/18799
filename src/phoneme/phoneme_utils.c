@@ -81,10 +81,16 @@ gaussian_cluster** get_phoneme_initial_models(recording_set** recordings,int num
 	 * index is an array of feature vectors, now we must cluster each of these 
 	 * indexes to get a gaussian params for each phoneme */
 
-	
 
+	gaussian_cluster ** phoneme_clusters = (gaussian_cluster **) malloc(sizeof(gaussian_cluster*)*NUM_PHONEMES);
+	for(int i=0; i<NUM_PHONEMES; i++){
+
+		phoneme_clusters[i] = cluster_templates(feature_vectors_for_phonemes[i],
+					feature_vectors_per_phoneme[i],3,phoneme_names[i]);
+		
+	}
 	
-	return NULL;
+	return phoneme_clusters;
 }
 
 feature_vectors** split_feature_vectors(feature_vectors* input_vectors, 
