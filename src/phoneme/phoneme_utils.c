@@ -27,6 +27,62 @@ gaussian_cluster** get_phoneme_initial_models(recording_set** recordings,int num
 		}
 	}	
 
+	//Initialize array of feature vector arrays to ship off for clustering
+	feature_vectors** feature_vectors_for_phonemes[NUM_PHONEMES];
+
+	//Initializes the array of feature vector arrays for each phoneme to fill in by splitting
+	for(int i=0; i<NUM_PHONEMES; i++){
+		feature_vectors_for_phonemes[i] = (feature_vectors**)malloc(sizeof(feature_vectors*) * 
+			feature_vectors_per_phoneme[i]);
+	}
+
+	//Initialize an array of indexes into the Phoneme array to keep track of which feature_vector we are on
+	int phoneme_feature_vector_index[NUM_PHONEMES];
+	for(int i=0; i<NUM_PHONEMES; i++){
+		phoneme_feature_vector_index[i]=0;
+	}
+
+	//Loop through each digit
+	for(int i=0; i<num_digits; i++){
+		
+		//Get the word, number of phonemes, and list of phonemes for each digit
+		int word_index = wordToModelIndex(recordings[i]->name);
+		int num_phonemes = phonemes_in_word[word_index];
+		char** phonemes = word_phonemes[word_index];
+
+		//Loop through each recording in the digit's recording set
+		for(int j=0; j< (recordings[i]->num_recordings) ; j++){
+		
+			//Split the recording into num_phoneme different phoneme slices
+			feature_vectors** split = NULL; //SPLIT (recordings[i]->recordings[j],num_phonemes) FIXME EMILY!
+
+			//Add the newly split phoneme into the phoneme feature vector array
+			for(int k=0; k<num_phonemes; k++){
+				
+				//Figure out which phoneme this feature_vector is a member of
+				char *phoneme_name = phonemes[k];
+				int phoneme_index = phonemeToModelIndex(phoneme_name);
+			
+				//Figure out which feature vector within the phoneme array to put it	
+				int feature_vector_index = phoneme_feature_vector_index[phoneme_index];
+				
+				//Actually set the feature vector to point to that slice of the recording
+				feature_vectors_for_phonemes[phoneme_index][feature_vector_index] = split[k];
+
+				//Increment the feature vector index for that phoneme
+				phoneme_feature_vector_index[phoneme_index] ++;
+			}			
+		}
+
+	}
+
+	
+	/* feature_vectors_for_phonemes now holds an array of phonemes where each 
+	 * index is an array of feature vectors, now we must cluster each of these 
+	 * indexes to get a gaussian params for each phoneme */
+
+	
+
 	
 	return NULL;
 }
