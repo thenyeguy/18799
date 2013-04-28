@@ -6,7 +6,7 @@
 
 
 gaussian_cluster* cluster_templates(feature_vectors** templates,
-        int num_templates, char* word_id)
+        int num_templates, int num_clusters, char* word_id)
 {
     int iterations =0;
     //Initialize K means cluster by assigning each vector to a cluster
@@ -14,8 +14,8 @@ gaussian_cluster* cluster_templates(feature_vectors** templates,
     int** cluster_array = (int**) malloc(num_templates*sizeof(int*));
 
     //Initialize counter for each cluster
-    int* cluster_count = (int *) malloc(NUM_CLUSTERS*sizeof(int));
-    for(int i=0; i<NUM_CLUSTERS; i++)
+    int* cluster_count = (int *) malloc(num_clusters*sizeof(int));
+    for(int i=0; i<num_clusters; i++)
     {
         cluster_count[i] = 0;
     }
@@ -26,16 +26,16 @@ gaussian_cluster* cluster_templates(feature_vectors** templates,
         int num_vectors = templates[i]->num_vectors;	
         //Holds the cluster that each feature belongs to
         int* vector_clusters = (int*) malloc(sizeof(int)*num_vectors);
-        int segment_size = num_vectors/NUM_CLUSTERS;
+        int segment_size = num_vectors/num_clusters;
         for(int j=0; j<num_vectors; j++)
         {
-            if(j<(NUM_CLUSTERS*segment_size))
+            if(j<(num_clusters*segment_size))
             {
                 vector_clusters[j] = j/segment_size;
             }
             else
             {
-                vector_clusters[j] = NUM_CLUSTERS - 1;
+                vector_clusters[j] = num_clusters - 1;
             }
             cluster_count[vector_clusters[j]] +=1;
         }
@@ -44,14 +44,14 @@ gaussian_cluster* cluster_templates(feature_vectors** templates,
 
     //Initialize gaussian statistics for each cluster
     single_gaussian_params** cluster_stats = (single_gaussian_params**)
-        malloc(NUM_CLUSTERS*sizeof(single_gaussian_params*));
+        malloc(num_clusters*sizeof(single_gaussian_params*));
 
     //Create feature_vectors array for each cluster to send off for gaussians
     feature_vectors* vectors_array = (feature_vectors*)
-        malloc(NUM_CLUSTERS*sizeof(feature_vectors));
+        malloc(num_clusters*sizeof(feature_vectors));
 
     //Keep track of the index in each cluster we are building
-    int* cluster_index = (int*) malloc(NUM_CLUSTERS * sizeof(int));
+    int* cluster_index = (int*) malloc(num_clusters * sizeof(int));
 
     //Number of reclassifications needed on each iteration
     int reclassify;
@@ -62,14 +62,14 @@ gaussian_cluster* cluster_templates(feature_vectors** templates,
         reclassify = 0;
 
         //Zero out the index for each cluster we will build
-        for(int i=0; i < NUM_CLUSTERS; i++)
+        for(int i=0; i < num_clusters; i++)
         {
             cluster_index[i] = 0;
         }
 
-        //Initialize NUM_CLUSTERS different feature vector arrays to be sent
+        //Initialize num_clusters different feature vector arrays to be sent
         //for gaussian evaluation
-        for(int i=0; i < NUM_CLUSTERS; i++)
+        for(int i=0; i < num_clusters; i++)
         {
             vectors_array[i].features = (feature*)
                 malloc(sizeof(feature)*cluster_count[i]);
@@ -100,7 +100,7 @@ gaussian_cluster* cluster_templates(feature_vectors** templates,
         }
 
         //Get gaussian parameters
-        for(int i =0; i<NUM_CLUSTERS; i++)
+        for(int i =0; i<num_clusters; i++)
         {
             single_gaussian_params* cluster_gaus_params;
             cluster_gaus_params =
@@ -144,7 +144,7 @@ gaussian_cluster* cluster_templates(feature_vectors** templates,
         }
 
         //Free Memory used in recalculating gaussians
-        for(int i=0; i <NUM_CLUSTERS; i++)
+        for(int i=0; i <num_clusters; i++)
         {
             free(vectors_array[i].features);
         }
@@ -156,13 +156,13 @@ gaussian_cluster* cluster_templates(feature_vectors** templates,
     //Create container
     gaussian_cluster* cluster = malloc(sizeof(gaussian_cluster));
     cluster->params = cluster_stats;
-    cluster->num_clusters = NUM_CLUSTERS;
+    cluster->num_clusters = num_clusters;
     strcpy(cluster->word_id, word_id);
 
     //Set the transition probabilities
-    cluster->stationary_probs = malloc(NUM_CLUSTERS*sizeof(double));
-    cluster->transition_probs = malloc(NUM_CLUSTERS*sizeof(double));
-    for(int i = 0; i < NUM_CLUSTERS; i++)
+    cluster->stationary_probs = malloc(num_clusters*sizeof(double));
+    cluster->transition_probs = malloc(num_clusters*sizeof(double));
+    for(int i = 0; i < num_clusters; i++)
     {
         cluster->transition_probs[i] = ((double) num_templates)/ cluster_count[i];
         cluster->stationary_probs[i] = 1 - cluster->transition_probs[i];

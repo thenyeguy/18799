@@ -75,7 +75,7 @@ gaussian_cluster** train_from_recordings(feature_vectors** recordings,
     {
         final_clusters[i] =
             cluster_templates(all_templates[i], templates_per_word[i],
-                              words_in_corpus[i]);
+                              NUM_CLUSTERS, words_in_corpus[i]);
     }
 
 

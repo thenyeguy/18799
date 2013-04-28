@@ -27,13 +27,6 @@ int main(int argc, char **argv)
     feature_vectors** templates =
         features_from_all_files(&argv[3], num_templates);
     
-    // Now use gaussian parameters to calculate probabilities
-    //single_gaussian_params** gaussian_params = cluster_templates(templates,num_templates);
-    //gaussian_params = gaussian_params;
-    //for(int i =0; i<NUM_CLUSTERS; i++){
-        //print_single_gaussian_params(gaussian_params[i]);
-    //}		
-
     double threshold = strtod(argv[1],NULL);
     dtw_prune_t prune;
     if(threshold == 0.0)

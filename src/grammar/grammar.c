@@ -172,7 +172,7 @@ gaussian_cluster* grammar_build_hmm(char* files, char* word)
         features_from_all_files(file_array->strings,file_array->num_strings);
 	
 	// Send of feature vectors to be clustered
-	hmm = cluster_templates(features,file_array->num_strings,word);
+	hmm = cluster_templates(features, file_array->num_strings, NUM_CLUSTERS, word);
 
 	//return gaussian cluster	
 	return hmm;

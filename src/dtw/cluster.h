@@ -47,7 +47,7 @@ typedef struct {
  *                      Uses the word_id to name the cluster.
  */
 gaussian_cluster* cluster_templates(feature_vectors** templates,
-                                    int num_templates, char* word_id);
+    int num_templates, int num_clusters, char* word_id);
 
 
 /* read_cluster_from_file - Given a file containing a gaussian cluster,

@@ -30,7 +30,7 @@ int main(int argc, char** argv)
     //Cluster
     printf("Clustering...\n");
     gaussian_cluster* cluster =
-        cluster_templates(templates, num_templates, name);
+        cluster_templates(templates, num_templates, NUM_CLUSTERS, name);
 
 
     //Save output
