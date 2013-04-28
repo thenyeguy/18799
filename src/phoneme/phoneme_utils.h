@@ -4,13 +4,13 @@
 #include "../dtw/feature.h"
 
 
-/* Encapsulate a set of recordings for a digit
+/* Encapsulate a set of recordings for a single digit or phoneme
  */
 typedef struct {
     char name[28];
     int num_recordings;
     feature_vectors** recordings;
-} digit_recordings;
+} recording_set;
 
 
 /* Useful constants for phoneme stuff
@@ -38,7 +38,7 @@ char **word_phonemes[NUM_WORDS] = {zero,one,two,three,four,five,six,seven,eight,
  *     those digits into phonemes and trains an initial set of gaussian clusters
  *     for those phonemes
  */
-gaussian_cluster** get_phoneme_initial_models(digit_recordings** recordings,
+gaussian_cluster** get_phoneme_initial_models(recording_set** recordings,
                                               int num_digits);
 
 
