@@ -10,8 +10,9 @@ int main(int argc, char** argv)
 {
     if(argc < 2)
     {
-        printf("USAGE: bin/trainphonemeisolated\n");
-        printf("       Trains our isolated phoneme models\n");
+        printf("USAGE: bin/trainphonemeisolated [recursion depth]\n");
+        printf("       Trains our isolated phoneme models.\n");
+        printf("       Runs recursion depth iterations of training\n");
         printf("\n");
         exit(1);
     }
@@ -104,9 +105,13 @@ int main(int argc, char** argv)
 
     // Actually run training
     printf("Running training and clustering algorithm...\n\n");
+    int iterations = atoi(argv[1]);
     gaussian_cluster** results =
-        train_isolated_phoneme_models(recordings, NUM_WORDS);
+        train_isolated_phoneme_models(recordings, NUM_WORDS, iterations);
 
+
+    /* TODO - recombine phonemes into words and save those
+     */
 
     // Save results
     printf("Now saving results...\n");
