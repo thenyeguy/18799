@@ -15,7 +15,7 @@ gaussian_cluster** get_phoneme_initial_models(recording_set** recordings,int num
 	for(int i=0; i<num_digits; i++){
 		
 		//Get list of phonemes in that digit
-		char * digit_name = recordings[i].name;
+		char * digit_name = recordings[i]->name;
 		int digit_index = wordToModelIndex(digit_name);
 		char ** digit_phonemes = word_phonemes[digit_index];
 		int num_phonemes = phonemes_in_word[digit_index];
