@@ -31,7 +31,49 @@ gaussian_cluster** get_phoneme_initial_models(recording_set** recordings,int num
 	return NULL;
 }
 
+feature_vectors** split_feature_vectors(feature_vectors* input_vectors, 
+										int num_segments) {
+	/// determine the number of segments per split vector 
+	int segment_length = (input_vectors -> num_vectors) / num_segments;
+	int remaining_vectors = input_vectors->num_vectors;
 
+	/// identify the phoneme breakdown of the input word
+	char* word = input_vectors->word_id;
+	char** phonemes = word_phonemes[wordToModelIndex(word)];
+
+	/// allocate memory for the new feature_vectors list
+	feature_vectors** segment_list = 
+					malloc(num_segments*sizeof(feature_vectors*));
+
+	/// fill in all but the last feature vector (to make sure we account for all 
+	/// vectors in the original feature_vectors)
+	for (int i = 0; i < num_segments-1; i++) {
+		segment_list[i] = malloc(sizeof(feature_vectors));
+		segment_list[i]->num_vectors = segment_length;
+		strcpy(segment_list[i]->word_id, phonemes[i]);
+		segment_list[i]->features = malloc(segment_length*sizeof(feature));
+		for (int j = 0; j < segment_length; j++) {
+			/// copy features from input_vectors to new segment
+			memcpy(&(segment_list[i]->features[j]),
+					&(input_vectors->features[i*segment_length+j]),
+					sizeof(feature));
+		}
+		remaining_vectors -= segment_length;
+	}
+
+	/// put the remaining vectors in the last segment.
+	segment_list[num_segments-1] = malloc(sizeof(feature_vectors));
+	segment_list[num_segments-1]->num_vectors = remaining_vectors;
+	strcpy(segment_list[num_segments-1]->word_id, phonemes[num_segments-1]);
+	for (int j = 0; j < remaining_vectors; j++) {
+		/// copy features from input_vectors to new segment
+		memcpy(&(segment_list[num_segments-1]->features[j]), 
+				&(input_vectors->features[(num_segments-1)*segment_length]),
+				sizeof(feature));
+	}
+	
+	return segment_list;
+}
 
 int phonemeToModelIndex(char* phoneme) {
 	if (!strcmp(phoneme,"AX"))
