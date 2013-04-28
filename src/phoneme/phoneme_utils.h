@@ -32,7 +32,8 @@ char* seven[5] = {"S","EH","V","EH","N"};
 char* eight[2] = {"EY","T"};
 char* nine[3] = {"N","AY","N"};
 
-char **word_phonemes[NUM_WORDS] = {zero,one,two,three,four,five,six,seven,eight,nine};
+int phonemes_in_word[NUM_WORDS] = {4,3,2,3,3,3,4,5,2,3};
+char** word_phonemes[NUM_WORDS] = {zero,one,two,three,four,five,six,seven,eight,nine};
 
 
 /* get_phoneme_initial_models - given a set of recordings of digits, splits
@@ -42,5 +43,9 @@ char **word_phonemes[NUM_WORDS] = {zero,one,two,three,four,five,six,seven,eight,
 gaussian_cluster** get_phoneme_initial_models(recording_set** recordings,
                                               int num_digits);
 
+
+/* Used to convert a string like "one" to the index to get phonemes
+ */
+int wordToModelIndex(char* word);
 
 #endif
