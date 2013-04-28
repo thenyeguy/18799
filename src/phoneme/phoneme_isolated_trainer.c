@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "phoneme_isolated_trainer.h"
+#include "../training/training_utils.h"
 
 
 gaussian_cluster** train_isolated_phoneme_models(recording_set** recordings,
@@ -35,9 +36,24 @@ gaussian_cluster** train_isolated_phoneme_models(recording_set** recordings,
 
         //Create the set of models
         int word_index = wordToModelIndex(set->name);
-        int set_num_models;
+        int set_num_models = phonemes_in_word[word_index];;
         gaussian_cluster** set_model =
             calloc(set_num_models, sizeof(gaussian_cluster*));
+
+        //Find phonemes and get their intial models
+        char** set_phoneme_names = word_phonemes[word_index];
+        for(int j = 0; j < set_num_models; j++)
+        {
+            gaussian_cluster* phoneme_model = NULL;
+            for(int k = 0; k < NUM_PHONEMES; k++)
+            {
+                if(strcmp(set_phoneme_names[j],phoneme_names[k]) == 0)
+                {
+                    phoneme_model = initials[k];
+                }
+            }
+            set_model[j] = phoneme_model;
+        }
 
         //Fill the flat arrays for each isolated recording
         for(int j = 0; j < set->num_recordings; j++)
@@ -48,4 +64,12 @@ gaussian_cluster** train_isolated_phoneme_models(recording_set** recordings,
         }
     }
 
+
+
+    /* Run the continuous trainer using these flattened arrays of data
+     */
+    gaussian_cluster** results = train_from_recordings(all_recordings,
+        num_recordings, models, num_models, phoneme_names, NUM_PHONEMES);
+
+    return results;
 }
