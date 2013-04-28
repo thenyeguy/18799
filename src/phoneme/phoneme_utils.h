@@ -46,7 +46,7 @@ gaussian_cluster** get_phoneme_initial_models(recording_set** recordings,
 
 /* Used to convert a string like "AH" into the index of that phoneme
 */
-
+int phonemeToModelIndex(char* phoneme);
 
 /* Used to convert a string like "one" to the index to get phonemes
  */

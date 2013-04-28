@@ -72,7 +72,9 @@ int phonemeToModelIndex(char* phoneme) {
 		return 17;
  	else if (!strcmp(phoneme,"Z"))
 		return 18; 
- }
+	
+	return -1;
+}
 
 int wordToModelIndex(char* word)
 {
