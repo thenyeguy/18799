@@ -18,6 +18,7 @@ gaussian_cluster** train_isolated_phoneme_models(recording_set** recordings,
     // Run training with previous result as seed
     for(int i = 0; i < num_iterations; i++)
     {
+	//FIXME, something seems to go wrong starting here according to backtrace
         models = train_isolated_phoneme_step(recordings, num_digits, models);
     }
 

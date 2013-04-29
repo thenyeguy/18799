@@ -116,6 +116,14 @@ gaussian_cluster** get_phoneme_initial_models(recording_set** recordings,int num
 		phoneme_clusters[i] = cluster_templates(feature_vectors_for_phonemes[i],
 					feature_vectors_per_phoneme[i],3,phoneme_names[i]);
 		
+		//Test to see whether everything worked:
+		/*
+		single_gaussian_params ** phoneme_cluster_params = phoneme_clusters[i]->params;
+		int num_clusters = phoneme_clusters[i]-> num_clusters;
+		for(int k=0; k<num_clusters; k++){
+			print_single_gaussian_params(phoneme_cluster_params[k]);
+		}
+		*/
 	}
 	
 	return phoneme_clusters;
@@ -125,17 +133,7 @@ feature_vectors** split_feature_vectors(feature_vectors* input_vectors, int num_
 
 	/// determine the number of segments per split vector 
 	int segment_length = (input_vectors -> num_vectors) / num_segments;
-	int remaining_vectors = input_vectors->num_vectors; //FIXME, should this be a %num_segments?
-
-	/// identify the phoneme breakdown of the input word
-	//char* word = input_vectors->word_id;
-	//FIXME, for some reason the word_id is "analysis/zero1-40.out" and not just "zero"
-	//printf("fucked word: %s\n",word);
-	//int word_index = wordToModelIndex(word);
-	//printf("Word index: %d\n",word_index);
-	//char** phonemes = word_phonemes[word_index];
-	//int num_phonemes = phonemes_in_word[word_index];
-	//num_phonemes = num_phonemes;
+	int remaining_vectors = (input_vectors->num_vectors) % num_segments;
 
 	/// allocate memory for the new feature_vectors list
 	feature_vectors** segment_list = 
