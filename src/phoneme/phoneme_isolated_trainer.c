@@ -10,6 +10,7 @@
 gaussian_cluster** train_isolated_phoneme_models(recording_set** recordings,
     int num_digits, int num_iterations)
 {
+
     // Get initial seeds
     gaussian_cluster** models =
         get_phoneme_initial_models(recordings, num_digits);

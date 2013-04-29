@@ -79,9 +79,14 @@ gaussian_cluster** get_phoneme_initial_models(recording_set** recordings,int num
 		// Loop through each recording in the digit's recording set
 		for (int j=0; j<(recordings[i]->num_recordings); j++) {
 		
+<<<<<<< HEAD
 			// Split the recording into num_phoneme different phoneme slices
 			feature_vectors** split = 
 				split_feature_vectors(recordings[i]->recordings[j], num_phonemes);
+=======
+			//Split the recording into num_phoneme different phoneme slices
+			feature_vectors** split = split_feature_vectors (recordings[i]->recordings[j],num_phonemes);
+>>>>>>> Fixed bug of not filling in recordings array before passing it to be initialized
 
 			// Add the newly split phoneme into the phoneme feature vector array
 			for(int k=0; k<num_phonemes; k++){
@@ -112,7 +117,8 @@ gaussian_cluster** get_phoneme_initial_models(recording_set** recordings,int num
 	gaussian_cluster ** phoneme_clusters = 
 		(gaussian_cluster **) malloc(sizeof(gaussian_cluster*)*NUM_PHONEMES);
 	for(int i=0; i<NUM_PHONEMES; i++){
-
+		
+		//Actually send off each array of feature vectors to be clustered and store in the phoneme cluster array
 		phoneme_clusters[i] = cluster_templates(feature_vectors_for_phonemes[i],
 					feature_vectors_per_phoneme[i],3,phoneme_names[i]);
 		
