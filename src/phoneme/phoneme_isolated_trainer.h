@@ -1,8 +1,6 @@
 #ifndef PHONEME_ISOLATED_TRAINER_H
 #define PHONEME_ISOLATED_TRAINER_H
 
-#include "phoneme_utils.h"
-
 
 /* train_isolated_phoneme_models - given sets of recordings of isolated digits,
  *      trains phoneme models. Uses num_iterations of iterations of the

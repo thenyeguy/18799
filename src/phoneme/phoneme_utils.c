@@ -3,6 +3,30 @@
 #include <string.h>
 #include "phoneme_utils.h"
 
+
+/* Define the phonemes used in each word
+ */
+char* zero[4] = {"Z","IY","R","OW"};
+char* one[3] = {"W","AX","N"};
+char* two[2] = {"T","UW"};
+char* three[3] = {"TH","R","IY"}; 
+char* four[3] = {"F","OW","R"};
+char* five[3] = {"F","AY","V"};
+char* six[4] = {"S","IH","K","S"};
+char* seven[5] = {"S","EH","V","EH","N"};
+char* eight[2] = {"EY","T"};
+char* nine[3] = {"N","AY","N"};
+
+
+/* Packge the phoneme names and word models together
+ */
+char* phoneme_names[NUM_PHONEMES] = {"AX", "AH", "AY", "EH", "EY", "F", "IH",
+        "IY", "K", "N", "OW", "R", "S", "T", "TH", "UW", "V", "W", "Z"};
+int phonemes_in_word[NUM_WORDS] = {4,3,2,3,3,3,4,5,2,3};
+char** word_phonemes[NUM_WORDS] = {zero,one,two,three,four,five,six,seven,eight,nine};
+
+
+
 gaussian_cluster** get_phoneme_initial_models(recording_set** recordings,int num_digits){
 	
 	//Initialize a count of the number of feature vectors needed for each phoneme

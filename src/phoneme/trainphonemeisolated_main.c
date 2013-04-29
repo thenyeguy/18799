@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "phoneme_utils.h"
 #include "phoneme_isolated_trainer.h"
 
 

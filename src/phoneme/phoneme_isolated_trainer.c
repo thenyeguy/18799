@@ -1,8 +1,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "phoneme_isolated_trainer.h"
 #include "../training/training_utils.h"
+#include "phoneme_utils.h"
+#include "phoneme_isolated_trainer.h"
+
 
 
 gaussian_cluster** train_isolated_phoneme_models(recording_set** recordings,

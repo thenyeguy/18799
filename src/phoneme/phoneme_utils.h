@@ -14,26 +14,17 @@ typedef struct {
 } recording_set;
 
 
-/* Useful constants for phoneme stuff
+/* Useful constants for mapping between words and phonemes.
+ *     phoneme_names is a list of the names for each phoneme.
+ *     phonemes_in_word is a list of how many phonemes each word contains.
+ *     word_phonemes is a list of a list of phoneme names for each word.
  */
 #define NUM_PHONEMES 19
 #define NUM_WORDS 10 //FIXME? is this used already
-char* phoneme_names[NUM_PHONEMES] = {"AX", "AH", "AY", "EH", "EY", "F", "IH",
-        "IY", "K", "N", "OW", "R", "S", "T", "TH", "UW", "V", "W", "Z"};
+char* phoneme_names[NUM_PHONEMES];
+int phonemes_in_word[NUM_WORDS];
+char** word_phonemes[NUM_WORDS];
 
-char* zero[4] = {"Z","IY","R","OW"};
-char* one[3] = {"W","AX","N"};
-char* two[2] = {"T","UW"};
-char* three[3] = {"TH","R","IY"}; 
-char* four[3] = {"F","OW","R"};
-char* five[3] = {"F","AY","V"};
-char* six[4] = {"S","IH","K","S"};
-char* seven[5] = {"S","EH","V","EH","N"};
-char* eight[2] = {"EY","T"};
-char* nine[3] = {"N","AY","N"};
-
-int phonemes_in_word[NUM_WORDS] = {4,3,2,3,3,3,4,5,2,3};
-char** word_phonemes[NUM_WORDS] = {zero,one,two,three,four,five,six,seven,eight,nine};
 
 
 /* get_phoneme_initial_models - given a set of recordings of digits, splits

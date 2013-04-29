@@ -13,7 +13,7 @@
 
 /* Used to convert a string like "0" to the index into initial_models
  */
-int wordToModelIndex(char* word)
+int wordToIndex(char* word)
 {
     if(strcmp(word,"zero") == 0)
         return 0;
@@ -164,7 +164,7 @@ int main(int argc, char** argv)
         tok = strtok(buffer, " \n");
         for(int j = 0; j < n; j++)
         {
-            model[j] = initial_models[wordToModelIndex(tok)];
+            model[j] = initial_models[wordToIndex(tok)];
             tok = strtok(NULL, " \n");
         }
 
