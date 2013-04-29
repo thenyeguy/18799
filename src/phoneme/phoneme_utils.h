@@ -20,7 +20,7 @@ typedef struct {
  *     word_phonemes is a list of a list of phoneme names for each word.
  */
 #define NUM_PHONEMES 19
-#define NUM_WORDS 10 //FIXME? is this used already
+#define NUM_WORDS 10
 char* phoneme_names[NUM_PHONEMES];
 int phonemes_in_word[NUM_WORDS];
 char** word_phonemes[NUM_WORDS];
