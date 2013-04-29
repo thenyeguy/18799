@@ -38,7 +38,7 @@ gaussian_cluster** get_phoneme_initial_models(recording_set** recordings,
 /* split_feature_vectors - splits a feature_vectors into num_segments segments
 	of equal length.
 */
-feature_vectors** split_feature_vectors(feature_vectors* input_vectors, int num_segments);
+feature_vectors** split_feature_vectors(feature_vectors* input_vectors, int num_segments,char **new_names);
 
 /* Used to convert a string like "AH" into the index of that phoneme
 */

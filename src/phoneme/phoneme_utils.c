@@ -80,7 +80,7 @@ gaussian_cluster** get_phoneme_initial_models(recording_set** recordings,int num
 		for (int j=0; j<(recordings[i]->num_recordings); j++) {
 		
 			// Split the recording into num_phoneme different phoneme slices
-			feature_vectors** split = split_feature_vectors(recordings[i]->recordings[j], num_phonemes);
+			feature_vectors** split = split_feature_vectors(recordings[i]->recordings[j], num_phonemes,phonemes);
 
 			// Add the newly split phoneme into the phoneme feature vector array
 			for(int k=0; k<num_phonemes; k++){
@@ -121,21 +121,21 @@ gaussian_cluster** get_phoneme_initial_models(recording_set** recordings,int num
 	return phoneme_clusters;
 }
 
-feature_vectors** split_feature_vectors(feature_vectors* input_vectors, int num_segments) {
+feature_vectors** split_feature_vectors(feature_vectors* input_vectors, int num_segments,char **new_names) {
 
 	/// determine the number of segments per split vector 
 	int segment_length = (input_vectors -> num_vectors) / num_segments;
 	int remaining_vectors = input_vectors->num_vectors; //FIXME, should this be a %num_segments?
 
 	/// identify the phoneme breakdown of the input word
-	char* word = input_vectors->word_id;
+	//char* word = input_vectors->word_id;
 	//FIXME, for some reason the word_id is "analysis/zero1-40.out" and not just "zero"
-	printf("fucked word: %s\n",word);
-	int word_index = wordToModelIndex(word);
-	printf("Word index: %d\n",word_index);
-	char** phonemes = word_phonemes[word_index];
-	int num_phonemes = phonemes_in_word[word_index];
-	num_phonemes = num_phonemes;
+	//printf("fucked word: %s\n",word);
+	//int word_index = wordToModelIndex(word);
+	//printf("Word index: %d\n",word_index);
+	//char** phonemes = word_phonemes[word_index];
+	//int num_phonemes = phonemes_in_word[word_index];
+	//num_phonemes = num_phonemes;
 
 	/// allocate memory for the new feature_vectors list
 	feature_vectors** segment_list = 
@@ -147,8 +147,7 @@ feature_vectors** split_feature_vectors(feature_vectors* input_vectors, int num_
 		segment_list[i] = malloc(sizeof(feature_vectors)); 
 		segment_list[i]->num_vectors = segment_length;
 
-		printf("Phoneme: %s\n",phonemes[i]);
-		strcpy(segment_list[i]->word_id, phonemes[i]);
+		strcpy(segment_list[i]->word_id, new_names[i]);
 		segment_list[i]->features = malloc(segment_length*sizeof(feature));
 		for (int j = 0; j < segment_length; j++) {
 			/// copy features from input_vectors to new segment
@@ -162,7 +161,7 @@ feature_vectors** split_feature_vectors(feature_vectors* input_vectors, int num_
 	/// put the remaining vectors in the last segment.
 	segment_list[num_segments-1] = malloc(sizeof(feature_vectors));
 	segment_list[num_segments-1]->num_vectors = remaining_vectors;
-	strcpy(segment_list[num_segments-1]->word_id, phonemes[num_segments-1]);
+	strcpy(segment_list[num_segments-1]->word_id, new_names[num_segments-1]);
 	for (int j = 0; j < remaining_vectors; j++) {
 		/// copy features from input_vectors to new segment
 		memcpy(&(segment_list[num_segments-1]->features[j]), 
