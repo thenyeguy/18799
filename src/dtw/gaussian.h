@@ -6,6 +6,11 @@
 #include "feature.h"
 
 
+/* MEANT TO HANDLE ZERO VALUES - apply a delta shift
+ */
+#define DELTA .001
+
+
 /* Struct to store single gaussian parameters. Contains the mean model vector,
  * and the diagonals of the covariance matrix of a multivariate gaussian
  * distribution.

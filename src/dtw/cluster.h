@@ -6,7 +6,7 @@
 #include "gaussian.h"
 
 
-/* NUM_CLUSTERS - number of time periods we break the template into to classify
+/* NUM_CLUSTERS - defuault number of statess we break the template into to classify
  * CONVERGE_THRESHOLD - the number of nodes that can be moved and still consider
  *                      the k-means to be converged
  * CONVERGE_ITERATIONS - a hard cap on the number of iterations we iterate

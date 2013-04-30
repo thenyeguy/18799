@@ -36,7 +36,7 @@ gaussian_cluster** train_continuous_phoneme_models(feature_vectors** recordings,
         // Add each phoneme model in
         // Special case silence
         int next_i = 0;
-        for(int j = 0; j < this_model_num; j++)
+        for(int j = 0; j < num_words[i]; j++)
         {
             char* word = word_names[i][j];
             if(strcmp(word, "sil") == 0)
@@ -51,10 +51,13 @@ gaussian_cluster** train_continuous_phoneme_models(feature_vectors** recordings,
             char** phonemes = word_phonemes[wordToModelIndex(word)];
             for(int k = 0; k < num_phonemes; k++)
             {
+                printf("%s ", phonemes[k]);
                 this_model[next_i] = initials[phonemeToModelIndex(phonemes[k])];
                 next_i++;
             }
+            printf("\n");
         }
+        printf("\n");
 
         // Add to training data
         models[i] = this_model;
@@ -78,7 +81,7 @@ gaussian_cluster** read_phoneme_set(char* setname)
     for(int i = 0; i < NUM_PHONEMES; i++)
     {
         char buffer[128];
-        sprintf(buffer, "phonemes/%s-%s.hmm", phoneme_names[i], setname);
+        sprintf(buffer, "phonemes/%s-%s", phoneme_names[i], setname);
         results[i] = read_cluster_from_file(buffer);
     }
 

@@ -60,16 +60,16 @@ double single_gaussian_log_pdf(single_gaussian_params* ps, feature* test)
     double result = 0;
     for(int i = 0; i < CEPSTRUM_DIMENSION; i++)
     {
-        result += 0.5 * log(2*M_PI * ps->covariances.values[i]);
-        result += 0.5 * log(2*M_PI * ps->covariances.deltas[i]);
-        result += 0.5 * log(2*M_PI * ps->covariances.doubles[i]);
+        result += 0.5 * log(2*M_PI * ps->covariances.values[i]+ DELTA);
+        result += 0.5 * log(2*M_PI * ps->covariances.deltas[i] + DELTA);
+        result += 0.5 * log(2*M_PI * ps->covariances.doubles[i] + DELTA);
 
         result += 0.5 * pow(ps->means.values[i] - test->values[i], 2)
-            / ps->covariances.values[i];
+            / (ps->covariances.values[i] + DELTA);
         result += 0.5 * pow(ps->means.deltas[i] - test->deltas[i], 2)
-            / ps->covariances.deltas[i];
+            / (ps->covariances.deltas[i] + DELTA);
         result += 0.5 * pow(ps->means.doubles[i] - test->doubles[i], 2)
-            / ps->covariances.doubles[i];
+            / (ps->covariances.doubles[i] + DELTA);
     }
 
     return -1.0*result;

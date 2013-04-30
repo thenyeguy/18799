@@ -34,7 +34,7 @@ int main(int argc, char** argv)
     gaussian_cluster** initials = read_phoneme_set(set);
     
     // Initial silence
-    char silname[52]; sprintf(silname, "sil-%s.hmm", set);
+    char silname[52]; sprintf(silname, "sil-%s", set);
     gaussian_cluster* sil_init = read_cluster_from_file(silname);
 
     // Read in our recordings and create their model arrays
