@@ -135,7 +135,7 @@ int main(int argc, char** argv)
 
     for(int i = 0; i < NUM_WORDS; i++)
     {
-        printf("    hmms/%s-phoneme.hmm\n", word_names[i]);
+        printf("    hmms/%s-phoneme-init.hmm\n", word_names[i]);
 
         char filename[128];
         sprintf(filename, "%s-phoneme-init", word_names[i]);
@@ -143,7 +143,6 @@ int main(int argc, char** argv)
     }
 
     printf("Done!\n\n");
-
 
 
     return 0;
