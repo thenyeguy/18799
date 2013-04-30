@@ -121,9 +121,6 @@ int main(int argc, char** argv)
     gaussian_cluster** word_models = phonemes_to_word_models(phoneme_models);
 
 
-    /* TODO - recombine phonemes into words and save those
-     */
-
     // Save results
     printf("Now saving results...\n");
 

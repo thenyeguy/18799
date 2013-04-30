@@ -146,7 +146,7 @@ gaussian_cluster** phonemes_to_word_models(gaussian_cluster** phoneme_models)
 
         // Allocate space and fill identifiers
         gaussian_cluster* word = malloc(sizeof(gaussian_cluster));
-        strcpy(word->word_id, phoneme_names[i]);
+        strcpy(word->word_id, word_names[i]);
         word->num_clusters = states;
         word->params = calloc(states, sizeof(single_gaussian_params*));
         word->stationary_probs = calloc(states, sizeof(double));
