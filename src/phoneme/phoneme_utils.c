@@ -22,6 +22,9 @@ char* nine[3] = {"N","AY","N"};
  */
 char* phoneme_names[NUM_PHONEMES] = {"AX", "AH", "AY", "EH", "EY", "F", "IH",
         "IY", "K", "N", "OW", "R", "S", "T", "TH", "UW", "V", "W", "Z"};
+char* word_names[NUM_WORDS] =
+    {"zero","one","two","three","four","five","six","seven","eight","nine"};
+
 int phonemes_in_word[NUM_WORDS] = {4,3,2,3,3,3,4,5,2,3};
 char** word_phonemes[NUM_WORDS] = {zero,one,two,three,four,five,six,seven,eight,nine};
 
@@ -47,7 +50,8 @@ gaussian_cluster** get_phoneme_initial_models(recording_set** recordings,int num
 		// For each recording in our recording set, increment that phoneme count
 		for (int j=0; j<num_phonemes_in_digit; j++) {
 			int phoneme_index = phonemeToModelIndex(digit_phonemes[j]);
-			feature_vectors_per_phoneme[phoneme_index]++;
+			feature_vectors_per_phoneme[phoneme_index] +=
+            recordings[i]->num_recordings;
 		}
 	}	
 
@@ -114,7 +118,7 @@ gaussian_cluster** get_phoneme_initial_models(recording_set** recordings,int num
 		
 		//Actually send off each array of feature vectors to be clustered and store in the phoneme cluster array
 		phoneme_clusters[i] = cluster_templates(feature_vectors_for_phonemes[i],
-					feature_vectors_per_phoneme[i],3,phoneme_names[i]);
+					feature_vectors_per_phoneme[i],STATES_PER_PHONEME,phoneme_names[i]);
 		
 		//Test to see whether everything worked:
 		/*
@@ -129,6 +133,49 @@ gaussian_cluster** get_phoneme_initial_models(recording_set** recordings,int num
 	return phoneme_clusters;
 }
 
+
+gaussian_cluster** phonemes_to_word_models(gaussian_cluster** phoneme_models)
+{
+    gaussian_cluster** words = calloc(NUM_WORDS, sizeof(gaussian_cluster*));
+
+    // For each word, figure out what its phonemes are, then get the models and
+    // concactenate the states
+    for(int i = 0; i < NUM_WORDS; i++)
+    {
+        int states = STATES_PER_PHONEME * phonemes_in_word[i];
+
+        // Allocate space and fill identifiers
+        gaussian_cluster* word = malloc(sizeof(gaussian_cluster));
+        strcpy(word->word_id, phoneme_names[i]);
+        word->num_clusters = states;
+        word->params = calloc(states, sizeof(single_gaussian_params*));
+        word->stationary_probs = calloc(states, sizeof(double));
+        word->transition_probs = calloc(states, sizeof(double));
+
+        // Get phonemes and copy their data
+        char** phonemes = word_phonemes[i];
+        for(int j = 0; j < phonemes_in_word[i]; j++)
+        {
+            gaussian_cluster* phoneme =
+                phoneme_models[phonemeToModelIndex(phonemes[j])];
+            for(int k = 0; k < STATES_PER_PHONEME; k++)
+            {
+                word->params[STATES_PER_PHONEME*j + k] = phoneme->params[k];
+                word->stationary_probs[STATES_PER_PHONEME*j + k] =
+                    phoneme->stationary_probs[k];
+                word->transition_probs[STATES_PER_PHONEME*j + k] =
+                    phoneme->transition_probs[k];
+            }
+        }
+
+        // Add to results
+        words[i] = word;
+    }
+
+    return words;
+}
+
+
 feature_vectors** split_feature_vectors(feature_vectors* input_vectors, int num_segments,char **new_names) {
 
 	/// determine the number of segments per split vector 
@@ -141,7 +188,9 @@ feature_vectors** split_feature_vectors(feature_vectors* input_vectors, int num_
 
 	/// fill in all but the last feature vector (to make sure we account for all 
 	/// vectors in the original feature_vectors)
-	for (int i = 0; i < num_segments-1; i++) {
+	for (int i = 0; i < num_segments; i++) {
+        // Add last segment onto end
+        if(i == num_segments-1) segment_length += remaining_vectors;
 		segment_list[i] = malloc(sizeof(feature_vectors)); 
 		segment_list[i]->num_vectors = segment_length;
 
@@ -153,18 +202,6 @@ feature_vectors** split_feature_vectors(feature_vectors* input_vectors, int num_
 					&(input_vectors->features[i*segment_length+j]),
 					sizeof(feature));
 		}
-		remaining_vectors -= segment_length;
-	}
-
-	/// put the remaining vectors in the last segment.
-	segment_list[num_segments-1] = malloc(sizeof(feature_vectors));
-	segment_list[num_segments-1]->num_vectors = remaining_vectors;
-	strcpy(segment_list[num_segments-1]->word_id, new_names[num_segments-1]);
-	for (int j = 0; j < remaining_vectors; j++) {
-		/// copy features from input_vectors to new segment
-		memcpy(&(segment_list[num_segments-1]->features[j]), 
-				&(input_vectors->features[(num_segments-1)*segment_length]),
-				sizeof(feature));
 	}
 	
 	return segment_list;

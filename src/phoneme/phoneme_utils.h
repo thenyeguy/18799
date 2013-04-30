@@ -15,13 +15,16 @@ typedef struct {
 
 
 /* Useful constants for mapping between words and phonemes.
+ *     states_per_phoneme is how many hmm states each phoneme model should have
  *     phoneme_names is a list of the names for each phoneme.
  *     phonemes_in_word is a list of how many phonemes each word contains.
  *     word_phonemes is a list of a list of phoneme names for each word.
  */
+#define STATES_PER_PHONEME 3
 #define NUM_PHONEMES 19
 #define NUM_WORDS 10
 char* phoneme_names[NUM_PHONEMES];
+char* word_names[NUM_WORDS];
 int phonemes_in_word[NUM_WORDS];
 char** word_phonemes[NUM_WORDS];
 
@@ -33,6 +36,12 @@ char** word_phonemes[NUM_WORDS];
  */
 gaussian_cluster** get_phoneme_initial_models(recording_set** recordings,
                                               int num_digits);
+
+
+/* phonemes_to_word_models - given a set of trained phoneme models, pastes the
+ *      models together into models for each word
+ */
+gaussian_cluster** phonemes_to_word_models(gaussian_cluster** phoneme_models);
 
 
 /* split_feature_vectors - splits a feature_vectors into num_segments segments

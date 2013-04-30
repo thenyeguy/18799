@@ -116,8 +116,9 @@ int main(int argc, char** argv)
     // Actually run training
     printf("Running training and clustering algorithm...\n\n");
     int iterations = atoi(argv[1]);
-    gaussian_cluster** results =
+    gaussian_cluster** phoneme_models =
         train_isolated_phoneme_models(recordings, NUM_WORDS, iterations);
+    gaussian_cluster** word_models = phonemes_to_word_models(phoneme_models);
 
 
     /* TODO - recombine phonemes into words and save those
@@ -128,11 +129,20 @@ int main(int argc, char** argv)
 
     for(int i = 0; i < NUM_PHONEMES; i++)
     {
-        printf("    hmms/%s-init.hmm\n", phoneme_names[i]);
+        printf("    hmms/phonemes/%s-init.hmm\n", phoneme_names[i]);
 
         char filename[128];
-        sprintf(filename, "%s-init", phoneme_names[i]);
-        write_cluster_to_file(filename, results[i]);
+        sprintf(filename, "phonemes/%s-init", phoneme_names[i]);
+        write_cluster_to_file(filename, phoneme_models[i]);
+    }
+
+    for(int i = 0; i < NUM_WORDS; i++)
+    {
+        printf("    hmms/%s-phoneme.hmm\n", word_names[i]);
+
+        char filename[128];
+        sprintf(filename, "%s-phoneme-init", word_names[i]);
+        write_cluster_to_file(filename, word_models[i]);
     }
 
     printf("Done!\n\n");

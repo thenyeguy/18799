@@ -76,6 +76,9 @@ gaussian_cluster** train_isolated_phoneme_step(recording_set** recordings,
             all_recordings[next_i] = set->recordings[j];
             models[next_i] = set_model;
             num_models[next_i] = set_num_models;
+
+            // Go to next index in flat array
+            next_i++;
         }
     }
 
