@@ -40,7 +40,6 @@ int main(int argc, char** argv)
     int num_templates = 0;
     while(fgets(buffer, buffer_size, transcript) != NULL)
         num_templates++;
-    num_templates = 10;
 
 
     // Initialize containers
