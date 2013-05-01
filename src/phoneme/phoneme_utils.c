@@ -16,6 +16,7 @@ char* six[4] = {"S","IH","K","S"};
 char* seven[5] = {"S","EH","V","EH","N"};
 char* eight[2] = {"EY","T"};
 char* nine[3] = {"N","AY","N"};
+char* oh[1] = {"OW"};
 
 
 /* Packge the phoneme names and word models together
@@ -23,10 +24,11 @@ char* nine[3] = {"N","AY","N"};
 char* phoneme_names[NUM_PHONEMES] = {"AX", "AH", "AY", "EH", "EY", "F", "IH",
         "IY", "K", "N", "OW", "R", "S", "T", "TH", "UW", "V", "W", "Z"};
 char* word_names[NUM_WORDS] =
-    {"zero","one","two","three","four","five","six","seven","eight","nine"};
+    {"zero","one","two","three","four","five","six","seven","eight","nine","oh"};
 
-int phonemes_in_word[NUM_WORDS] = {4,3,2,3,3,3,4,5,2,3};
-char** word_phonemes[NUM_WORDS] = {zero,one,two,three,four,five,six,seven,eight,nine};
+int phonemes_in_word[NUM_WORDS] = {4,3,2,3,3,3,4,5,2,3,1};
+char** word_phonemes[NUM_WORDS] =
+    {zero,one,two,three,four,five,six,seven,eight,nine,oh};
 
 
 

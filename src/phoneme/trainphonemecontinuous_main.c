@@ -37,6 +37,8 @@ int main(int argc, char** argv)
     char silname[52]; sprintf(silname, "sil-%s", set);
     gaussian_cluster* sil_init = read_cluster_from_file(silname);
 
+
+
     // Read in our recordings and create their model arrays
     printf("Reading training templates...\n");
 

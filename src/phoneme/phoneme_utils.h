@@ -22,7 +22,7 @@ typedef struct {
  */
 #define STATES_PER_PHONEME 3
 #define NUM_PHONEMES 19
-#define NUM_WORDS 10
+#define NUM_WORDS 11
 char* phoneme_names[NUM_PHONEMES];
 char* word_names[NUM_WORDS];
 int phonemes_in_word[NUM_WORDS];

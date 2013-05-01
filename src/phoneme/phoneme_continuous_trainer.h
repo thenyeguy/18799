@@ -2,6 +2,7 @@
 #define PHONEME_CONTINUOUS_TRAINER_H
 
 #include "../dtw/feature.h"
+#include "../dtw/gaussian.h"
 
 /* train_continuous_phoneme_models - given sets of recordings of digits,
  *      and list of those digits in each recordings, retrains new
