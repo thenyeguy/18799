@@ -87,6 +87,7 @@ int main(int argc, char** argv)
 
 
     // Actually run trainer
+    printf("\nTraining...\n");
     gaussian_cluster** phoneme_models =
         train_continuous_phoneme_models(recordings, words, num_words,
             num_recordings, initials, sil_init);

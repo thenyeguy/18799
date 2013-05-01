@@ -51,13 +51,10 @@ gaussian_cluster** train_continuous_phoneme_models(feature_vectors** recordings,
             char** phonemes = word_phonemes[wordToModelIndex(word)];
             for(int k = 0; k < num_phonemes; k++)
             {
-                printf("%s ", phonemes[k]);
                 this_model[next_i] = initials[phonemeToModelIndex(phonemes[k])];
                 next_i++;
             }
-            printf("\n");
         }
-        printf("\n");
 
         // Add to training data
         models[i] = this_model;
