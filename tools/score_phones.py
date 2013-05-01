@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import subprocess
+from editdistance import *
 
 # Define testing parameters
 grammar = "grammar/phone.txt"
@@ -18,7 +19,10 @@ def wordToNumber(w):
     return wordDict[w]
 
 
-totalCorrectDigits = 0
+totalDistance = 0
+totalSubs = 0
+totalIns = 0
+totalDels = 0
 totalDigits = 0
 totalCorrectNumbers = 0
 totalNumbers = 0
@@ -37,23 +41,20 @@ for number in numbers:
     lastLine = resultString.split("\n")[-2]
     words = filter(lambda w: w != "sil", lastLine.split(" ")[1:])
     resultNumbers = map(wordToNumber, words);
+    expectedResult = filter(lambda c: c != "-", list(number))
     
+    dist, subs, ins, dels = editDistance(resultNumbers, expectedResult)
 
-    # Compare result to template
-    testNumbers = filter(lambda c: c != "-", list(number))
-    correct = True
-    for i in xrange(0,len(testNumbers)):
-        totalDigits += 1
-        if i < len(resultNumbers):
-            if testNumbers[i] == resultNumbers[i]:
-                totalCorrectDigits += 1
-            else:
-                correct = False
-        else:
-            correct = False
+    totalDistance += dist
+    totalSubs += subs
+    totalIns += ins
+    totalDels += dels
+
+    totalDigits += len(expectedResult)
     totalNumbers += 1
-    if correct:
+    if dist == 0:
         totalCorrectNumbers += 1
+
 
 
     # Prettify the phone number
@@ -67,12 +68,16 @@ for number in numbers:
     print
     print "Expect:  "+number
     print "Got:     "+resultString
+    print "Dist:    "+str(dist)
 
 # Return final results
 print
 print
 print "FINAL RESULTS:"
-print "    " + str(totalCorrectDigits) + "/" + str(totalDigits) + \
-      " digits correct"
+print "    From " + str(totalDigits) + " total digits..."
+print "        Distance: " + str(totalDistance)
+print "        Substitutions: " + str(totalSubs)
+print "        Insertions: " + str(totalIns)
+print "        Deletions: " + str(totalDels)
 print "    " + str(totalCorrectNumbers) + "/" + str(totalNumbers) + \
       " numbers correct"

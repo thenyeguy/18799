@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import subprocess
+from editdistance import *
 
 # Define testing parameters
 grammar = "grammar/loop.txt"
@@ -13,36 +14,16 @@ def wordToNumber(w):
                 "five":"5", "six":"6", "seven":"7", "eight":"8", "nine":"9"}
     return wordDict[w]
 
-# Not quite edit distance - doesn't punish insertions
-def editDistance(w1,w2):
-    lastCol = range(0,len(w2))
-    if w1[0] != w2[0]:
-        lastCol = map(lambda x: x+1, lastCol)
-
-    nextCol = [0]*len(w2)
-    for i in xrange(1,len(w1)):
-        for j in xrange(0,len(w2)):
-            if j == 0:
-                nextCol[j] = lastCol[j] + 1
-            else:
-                left = lastCol[j] + 1
-                down = nextCol[j-1]
-                downleft = lastCol[j-1]
-                if w1[i] != w2[j]:
-                    downleft += 1
-                nextCol[j] = min(left,down,downleft)
-        lastCol = nextCol
-        nextCol = [0]*len(w2)
-
-    return lastCol[-1]
 
 
-
-extraDigits = 0
-totalCorrectDigits = 0
+totalDistance = 0
+totalSubs = 0
+totalIns = 0
+totalDels = 0
 totalDigits = 0
 totalCorrectNumbers = 0
 totalNumbers = 0
+
 # Run the test against each test number
 for number in numbers:
     print
@@ -61,31 +42,34 @@ for number in numbers:
     
 
     # Compare result to template
+    expectedResult = filter(lambda c: c != "-", list(number))
+    dist, subs, ins, dels = editDistance(resultNumbers, expectedResult)
+
+    totalDistance += dist
+    totalSubs += subs
+    totalIns += ins
+    totalDels += dels
+
+    totalDigits += len(expectedResult)
     totalNumbers += 1
-    totalDigits += len(number)
-
-    testNumbers = filter(lambda c: c != "-", list(number))
-    distance = editDistance(testNumbers, resultNumbers)
-
-    totalCorrectDigits += len(number) - distance
-    if distance == 0:
+    if dist == 0:
         totalCorrectNumbers += 1
-
-    extraDigits += max(len(resultNumbers)-len(testNumbers), 0)
-
 
     print lastLine
     print
     print "Expect:  " + number
     print "Got:     " + "".join(resultNumbers)
-    print "Dist:    " + str(distance)
+    print "Dist:    " + str(dist)
+
 
 # Return final results
 print
 print
 print "FINAL RESULTS:"
-print "    " + str(totalCorrectDigits) + "/" + str(totalDigits) + \
-      " digits correct"
-print "    " + str(extraDigits) + " extras"
+print "    From " + str(totalDigits) + " total digits..."
+print "        Distance: " + str(totalDistance)
+print "        Substitutions: " + str(totalSubs)
+print "        Insertions: " + str(totalIns)
+print "        Deletions: " + str(totalDels)
 print "    " + str(totalCorrectNumbers) + "/" + str(totalNumbers) + \
       " numbers correct"

@@ -31,6 +31,8 @@ Edge 0 1 hmm=7 prob=.1
 Edge 0 1 hmm=8 prob=.1
 Edge 0 1 hmm=9 prob=.1
 
+Edge 1 1 hmm=10 prob=.1
+
 Edge 1 2 hmm=0 prob=.1
 Edge 1 2 hmm=1 prob=.1
 Edge 1 2 hmm=2 prob=.1
@@ -41,6 +43,8 @@ Edge 1 2 hmm=6 prob=.1
 Edge 1 2 hmm=7 prob=.1
 Edge 1 2 hmm=8 prob=.1
 Edge 1 2 hmm=9 prob=.1
+
+Edge 2 2 hmm=10 prob=.1
 
 Edge 2 3 hmm=0 prob=.1
 Edge 2 3 hmm=1 prob=.1
@@ -70,6 +74,8 @@ Edge 3 4 hmm=7 prob=.1
 Edge 3 4 hmm=8 prob=.1
 Edge 3 4 hmm=9 prob=.1
 
+Edge 4 4 hmm=10 prob=.1
+
 Edge 4 5 hmm=0 prob=.1
 Edge 4 5 hmm=1 prob=.1
 Edge 4 5 hmm=2 prob=.1
@@ -80,6 +86,8 @@ Edge 4 5 hmm=6 prob=.1
 Edge 4 5 hmm=7 prob=.1
 Edge 4 5 hmm=8 prob=.1
 Edge 4 5 hmm=9 prob=.1
+
+Edge 5 5 hmm=10 prob=.1
 
 Edge 5 6 hmm=0 prob=.1
 Edge 5 6 hmm=1 prob=.1
@@ -109,6 +117,8 @@ Edge 6 7 hmm=7 prob=.1
 Edge 6 7 hmm=8 prob=.1
 Edge 6 7 hmm=9 prob=.1
 
+Edge 7 7 hmm=10 prob=.1
+
 Edge 7 8 hmm=0 prob=.1
 Edge 7 8 hmm=1 prob=.1
 Edge 7 8 hmm=2 prob=.1
@@ -120,6 +130,8 @@ Edge 7 8 hmm=7 prob=.1
 Edge 7 8 hmm=8 prob=.1
 Edge 7 8 hmm=9 prob=.1
 
+Edge 8 8 hmm=10 prob=.1
+
 Edge 8 9 hmm=0 prob=.1
 Edge 8 9 hmm=1 prob=.1
 Edge 8 9 hmm=2 prob=.1
@@ -130,6 +142,8 @@ Edge 8 9 hmm=6 prob=.1
 Edge 8 9 hmm=7 prob=.1
 Edge 8 9 hmm=8 prob=.1
 Edge 8 9 hmm=9 prob=.1
+
+Edge 9 9 hmm=10 prob=.1
 
 Edge 9 10 hmm=0 prob=.1
 Edge 9 10 hmm=1 prob=.1
