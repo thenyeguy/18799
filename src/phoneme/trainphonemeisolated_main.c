@@ -112,6 +112,15 @@ int main(int argc, char** argv)
     nine->recordings = features_from_all_files(nine_files,RECORDINGS_PER_WORD);
     recordings[9] = nine;
 
+    char* oh_files[RECORDINGS_PER_WORD] = {"analysis/oh1-40.out",
+        "analysis/oh2-40.out", "analysis/oh3-40.out", "analysis/oh4-40.out",
+        "analysis/oh5-40.out"};
+    recording_set* oh = (recording_set*)malloc(sizeof(recording_set));
+    strcpy(oh->name, "oh");
+    oh->num_recordings = RECORDINGS_PER_WORD;
+    oh->recordings = features_from_all_files(oh_files,RECORDINGS_PER_WORD);
+    recordings[10] = oh;
+
 
     // Actually run training
     printf("Running training and clustering algorithm...\n\n");

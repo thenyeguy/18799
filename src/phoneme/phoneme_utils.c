@@ -274,10 +274,8 @@ int wordToModelIndex(char* word)
         return 8;
     else if(strcmp(word,"nine") == 0)
         return 9;
-    else if(strcmp(word,"sil") == 0)
-        return 10;
     else if(strcmp(word,"oh") == 0)
-        return 11;
+        return 10;
 
     return -1;
 }
