@@ -60,7 +60,7 @@ void copy_word_only_lowercase(char* dest, char* source)
 lextree* build_lextree(char** dictionary, int dict_size)
 {
     int depth = 0;
-    lextree_node* head = new_lextree_node('*');
+    lextree_node* head = new_lextree_node(' ');
 
     //Loop through every word in the dict and add it to our lextree
     //Also keep track of the longest word... this is our depth

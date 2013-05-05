@@ -65,9 +65,7 @@ int main(int argc, char **argv)
         for(word = strtok(line," \n"); word != NULL; word = strtok(NULL," \n"))
         {
             printf("%s ... ",word); fflush(stdout);
-			lextree_scored_string** matches =
-                lextree_closest_n(lex, word, 1, segment);
-            char* result = matches[0] ? matches[0]->string : "---";
+			char* result = lextree_closest(lex, word, segment);
 
             fprintf(out, "%s ", result);
             printf("%s\n", result);

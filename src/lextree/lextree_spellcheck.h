@@ -22,15 +22,37 @@ typedef struct {
     int score;
 } lextree_scored_string;
 
+typedef struct lextree_spellcheck_node lextree_spellcheck_node;
+struct lextree_spellcheck_node {
+    char c;
+    bool is_full_word;
 
-/* lextree_closest_n_words - given a filled lextree, a test word, and the number
- *                        of matches to return, returns the n closest wors to
- *                        our input word and their edit distance. If segment is
- *                        true, then we search for multiple words and insert
- *                        spaces
- */
-lextree_scored_string** lextree_closest_n(lextree* lex, char* string, int n,
-                                          bool segment);
+    lextree_spellcheck_node* children[26];
+    lextree_spellcheck_node* parent;
+
+    int col;
+
+    int word_length;
+    lextree_spellcheck_node* backpointer;
+    int edit_distance;
+
+    int last_word_length;
+    lextree_spellcheck_node* last_backpointer;
+    int last_edit_distance;
+};
+
+
+char* lextree_closest(lextree* lex, char* string, bool segment);
+
+lextree_spellcheck_node* get_lextree_eval_struct(lextree_node* l,
+    lextree_spellcheck_node* parent);
+
+void score_lextree_spellcheck_column(lextree_spellcheck_node* n, char* string,
+    lextree_spellcheck_node* head, bool segment);
+
+void prep_lextree_spellcheck_column(lextree_spellcheck_node* n);
+
+lextree_spellcheck_node* lextree_best_backpointer(lextree_spellcheck_node* n);
 
 
 /* lextree_add_to_result - helper function for lextree_closest_n_words.

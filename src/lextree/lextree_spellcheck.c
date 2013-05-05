@@ -4,8 +4,207 @@
 #include "lextree_spellcheck.h"
 #include "lexqueue_utils.h"
 
+char* lextree_closest(lextree* lex, char* string, bool segment)
+{
+    /* Parse grammar into scoring structure
+     */
+    lextree_spellcheck_node* head = get_lextree_eval_struct(lex->head, NULL);
 
-lextree_scored_string** lextree_closest_n(lextree* lex, char* string, int n,
+    // Prep entry
+    head->edit_distance = 0;
+    head->backpointer = NULL;
+    head->word_length = 0;
+
+
+    /* Score one column at a time
+     */
+    for(int i = 0; i < strlen(string); i++)
+    {
+        // Score a column
+        score_lextree_spellcheck_column(head, string, head, segment);
+
+        //Push current column to last column
+        prep_lextree_spellcheck_column(head);
+    }
+
+
+    /* Find best scoring word
+     */
+    lextree_spellcheck_node* backpointer = lextree_best_backpointer(head);
+    char* result = calloc(backpointer->word_length+1, sizeof(char));
+    result[backpointer->word_length] = '\0';
+
+    printf("%d\n", backpointer->last_edit_distance);
+    for(int i = backpointer->last_word_length - 1; i >= 0; i--)
+    {
+        result[i] = backpointer->c;
+        backpointer = backpointer->last_backpointer;
+    }
+
+    return result;
+}
+
+
+lextree_spellcheck_node* get_lextree_eval_struct(lextree_node* l,
+    lextree_spellcheck_node* parent)
+{
+    lextree_spellcheck_node* result = malloc(sizeof(lextree_spellcheck_node));
+    result->c = l->c;
+    result->is_full_word = l->is_full_word;
+
+    result->col = 0;
+
+    result->word_length = 0;
+    result->backpointer = NULL;
+    result->edit_distance = MAXINT/2;
+
+    result->last_word_length = 0;
+    result->last_backpointer = NULL;
+    result->last_edit_distance = MAXINT/2;
+    
+    for(int i = 0; i < 26; i++)
+    {
+        if(l->children[i] == NULL)
+            result->children[i] = NULL;
+        else
+            result->children[i] = get_lextree_eval_struct(l->children[i], result);
+    }
+    result->parent = parent;
+
+    return result;
+}
+
+
+void score_lextree_spellcheck_column(lextree_spellcheck_node* n, char* string,
+    lextree_spellcheck_node* head, bool segment)
+{
+    // Set up self insertion
+    if(n->last_edit_distance + 1 < n->edit_distance)
+    {
+        n->edit_distance = n->last_edit_distance+1;
+        n->backpointer = n->last_backpointer;
+        n->word_length = n->last_word_length;
+    }
+
+    // Inject substitutions/deletions
+    for(int i = 0; i < 26; i++)
+    {
+        lextree_spellcheck_node* c = n->children[i];
+        if(c == NULL) continue;
+
+        int sub_distance = n->last_edit_distance;
+        if(c->c != string[n->col]) sub_distance++;
+        if(sub_distance < c->edit_distance)
+        {
+            c->edit_distance = sub_distance;
+            c->backpointer = n;
+            c->word_length = n->word_length+1;
+        }
+
+        int del_distance = n->last_edit_distance + 1;
+        if(del_distance < c->edit_distance)
+        {
+            c->edit_distance = del_distance;
+            c->backpointer = n;
+            c->word_length = n->word_length+1;
+        }
+    }
+
+    // Sub/delete into head if we can!
+    if(segment)
+    {
+        int sub_distance = n->edit_distance;
+        if(head->c != string[n->col]) sub_distance++;
+        if(sub_distance < head->edit_distance)
+        {
+            head->edit_distance = sub_distance;
+            head->backpointer = n;
+            head->word_length = n->word_length+1;
+        }
+
+        int del_distance = n->edit_distance + 1;
+        if(del_distance < head->edit_distance)
+        {
+            head->edit_distance = del_distance;
+            head->backpointer = n->backpointer;
+            head->word_length = n->word_length;
+        }
+    }
+
+    // Go to next col
+    n->col++;
+
+    // Score children
+    for(int i = 0; i < 26; i++)
+    {
+        if(n->children[i] == NULL) continue;
+        score_lextree_spellcheck_column(n->children[i], string, head, segment);
+    }
+}
+
+
+void prep_lextree_spellcheck_column(lextree_spellcheck_node* n)
+{
+    n->last_edit_distance = n->edit_distance;
+    n->last_backpointer = n->backpointer;
+    n->last_word_length = n->word_length;
+
+    n->edit_distance = MAXINT/2;
+    n->backpointer = NULL;
+    n->word_length = 0;
+
+    // Set up children
+    for(int i = 0; i < 26; i++)
+    {
+        if(n->children[i] == NULL) continue;
+        prep_lextree_spellcheck_column(n->children[i]);
+    }
+}
+
+
+lextree_spellcheck_node* lextree_best_backpointer(lextree_spellcheck_node* n)
+{
+    lextree_spellcheck_node* backpointer = NULL;
+
+    // If we are a candidate...
+    if(n->is_full_word)
+        backpointer = n;
+
+    // Our children?
+    for(int i = 0; i < 26; i++)
+    {
+        if(n->children[i] == NULL) continue;
+
+        if(backpointer == NULL)
+        {
+            backpointer = lextree_best_backpointer(n->children[i]);
+        }
+        else
+        {
+            lextree_spellcheck_node* candidate =
+                lextree_best_backpointer(n->children[i]);
+            if(candidate == NULL) continue;
+
+            if(candidate->last_edit_distance < backpointer->last_edit_distance)
+                backpointer = candidate;
+        }
+    }
+
+    return backpointer;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+lextree_scored_string** lextree_closest_n_orig(lextree* lex, char* string, int n,
                                           bool segment)
 {
     //Allocate results array
