@@ -33,11 +33,11 @@ struct lextree_spellcheck_node {
     int col;
 
     int word_length;
-    lextree_spellcheck_node* backpointer;
+    char word[1024];
     int edit_distance;
 
     int last_word_length;
-    lextree_spellcheck_node* last_backpointer;
+    char last_word[1024];
     int last_edit_distance;
 };
 

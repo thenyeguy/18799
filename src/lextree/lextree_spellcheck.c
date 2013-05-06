@@ -11,9 +11,13 @@ char* lextree_closest(lextree* lex, char* string, bool segment)
     lextree_spellcheck_node* head = get_lextree_eval_struct(lex->head, NULL);
 
     // Prep entry
-    head->edit_distance = 0;
-    head->backpointer = NULL;
+    head->edit_distance = MAXINT/2;
+    strcpy(head->word, "");
     head->word_length = 0;
+
+    head->last_edit_distance = 0;
+    strcpy(head->last_word,"");
+    head->last_word_length = 0;
 
 
     /* Score one column at a time
@@ -31,15 +35,8 @@ char* lextree_closest(lextree* lex, char* string, bool segment)
     /* Find best scoring word
      */
     lextree_spellcheck_node* backpointer = lextree_best_backpointer(head);
-    char* result = calloc(backpointer->word_length+1, sizeof(char));
-    result[backpointer->word_length] = '\0';
-
-    printf("%d\n", backpointer->last_edit_distance);
-    for(int i = backpointer->last_word_length - 1; i >= 0; i--)
-    {
-        result[i] = backpointer->c;
-        backpointer = backpointer->last_backpointer;
-    }
+    char* result = backpointer->last_word; 
+    printf("Distance: %d\n", backpointer->last_edit_distance);
 
     return result;
 }
@@ -48,18 +45,18 @@ char* lextree_closest(lextree* lex, char* string, bool segment)
 lextree_spellcheck_node* get_lextree_eval_struct(lextree_node* l,
     lextree_spellcheck_node* parent)
 {
-    lextree_spellcheck_node* result = malloc(sizeof(lextree_spellcheck_node));
+    lextree_spellcheck_node* result = calloc(1,sizeof(lextree_spellcheck_node));
     result->c = l->c;
     result->is_full_word = l->is_full_word;
 
     result->col = 0;
 
     result->word_length = 0;
-    result->backpointer = NULL;
+    strcpy(result->word,"");
     result->edit_distance = MAXINT/2;
 
     result->last_word_length = 0;
-    result->last_backpointer = NULL;
+    strcpy(result->last_word,"");
     result->last_edit_distance = MAXINT/2;
     
     for(int i = 0; i < 26; i++)
@@ -82,7 +79,7 @@ void score_lextree_spellcheck_column(lextree_spellcheck_node* n, char* string,
     if(n->last_edit_distance + 1 < n->edit_distance)
     {
         n->edit_distance = n->last_edit_distance+1;
-        n->backpointer = n->last_backpointer;
+        strcpy(n->word, n->last_word);
         n->word_length = n->last_word_length;
     }
 
@@ -97,37 +94,40 @@ void score_lextree_spellcheck_column(lextree_spellcheck_node* n, char* string,
         if(sub_distance < c->edit_distance)
         {
             c->edit_distance = sub_distance;
-            c->backpointer = n;
-            c->word_length = n->word_length+1;
+            strcpy(c->word,n->last_word);
+            c->word[n->last_word_length] = c->c;
+            c->word[n->last_word_length+1] = '\0';
+            c->word_length = n->last_word_length+1;
         }
 
-        int del_distance = n->last_edit_distance + 1;
+        int del_distance = n->edit_distance + 1;
         if(del_distance < c->edit_distance)
         {
             c->edit_distance = del_distance;
-            c->backpointer = n;
+            strcpy(c->word,n->word);
+            c->word[n->word_length] = c->c;
+            c->word[n->word_length+1] = '\0';
             c->word_length = n->word_length+1;
         }
     }
 
-    // Sub/delete into head if we can!
-    if(segment)
+    // Delete into head if we can!
+    if(segment && n->is_full_word)
     {
-        int sub_distance = n->edit_distance;
-        if(head->c != string[n->col]) sub_distance++;
-        if(sub_distance < head->edit_distance)
-        {
-            head->edit_distance = sub_distance;
-            head->backpointer = n;
-            head->word_length = n->word_length+1;
-        }
-
         int del_distance = n->edit_distance + 1;
         if(del_distance < head->edit_distance)
         {
             head->edit_distance = del_distance;
-            head->backpointer = n->backpointer;
-            head->word_length = n->word_length;
+            strcpy(head->word,n->last_word);
+            head->word[n->word_length] = head->c;
+            head->word[n->word_length+1] = '\0';
+            head->word_length = n->word_length+1;
+
+            if(strcmp(head->word, "once upon time while brahmadatta asking of benares the bodhisatta cameo life at the foot onthe himalayas as monkey he grew strong and sturdy big of frame well do") == 0)
+                printf("wat '%c', '%c', '%c', '%c', %d\n",
+                    head->word[n->word_length], head->word[n->word_length-1],
+                    n->c, n->word[n->word_length-1],
+                    head->word_length);
         }
     }
 
@@ -140,17 +140,21 @@ void score_lextree_spellcheck_column(lextree_spellcheck_node* n, char* string,
         if(n->children[i] == NULL) continue;
         score_lextree_spellcheck_column(n->children[i], string, head, segment);
     }
+
+    if(n->parent == NULL)
+    {
+    }
 }
 
 
 void prep_lextree_spellcheck_column(lextree_spellcheck_node* n)
 {
     n->last_edit_distance = n->edit_distance;
-    n->last_backpointer = n->backpointer;
+    strcpy(n->last_word,n->word);
     n->last_word_length = n->word_length;
 
     n->edit_distance = MAXINT/2;
-    n->backpointer = NULL;
+    strcpy(n->word,"");
     n->word_length = 0;
 
     // Set up children
