@@ -14,14 +14,10 @@
 #define MININT (1<<31)
 #define MAXINT (~MININT)
 
-/* lextree_scored_word is a pair that contains a word and its edit distance.
- *                     CURRENTLY ASSUMES WORDS AT MOST 64 CHARS LONG.
- */
-typedef struct {
-    char string[LT_STRING_LENGTH];
-    int score;
-} lextree_scored_string;
 
+/* Helper node for the lextree_closest code. Contains evalutation state in
+ * addition to the topology of the lextree
+ */
 typedef struct lextree_spellcheck_node lextree_spellcheck_node;
 struct lextree_spellcheck_node {
     char c;
@@ -42,45 +38,37 @@ struct lextree_spellcheck_node {
 };
 
 
+/* lextree_closest - given a lextree and a test string, finds the lowest edit
+ *      match to the string in the lextree. If segment is true, then we are
+ *      allowed to insert spaces and break the input into multiple words.
+ */
 char* lextree_closest(lextree* lex, char* string, bool segment);
 
+
+/* get_lextree_eval_struct - helper for lextree closest. Copies the given
+ *      lextree into a lextree_spellcheck structure for evaluation.
+ */
 lextree_spellcheck_node* get_lextree_eval_struct(lextree_node* l,
     lextree_spellcheck_node* parent);
 
+
+/* score_lextree_spellcheck_column - given a lextree_spellcheck struct, the test
+ *      string, the head of the lextree and whether we allow segmenting into
+ *      multiple words, scores one column in the "trellis" of our lextree
+ */
 void score_lextree_spellcheck_column(lextree_spellcheck_node* n, char* string,
     lextree_spellcheck_node* head, bool segment);
 
+/* prep_lextree_spellcheck_column - swaps the last state and the next state so
+ *      we can score the next column
+ */
 void prep_lextree_spellcheck_column(lextree_spellcheck_node* n);
 
+
+/* lextree_best_backpointer - given the evaluation structure, returns the lowest
+ *      edit distance result in the tree.
+ */
 lextree_spellcheck_node* lextree_best_backpointer(lextree_spellcheck_node* n);
 
-
-/* lextree_add_to_result - helper function for lextree_closest_n_words.
- *                         Attempts to add a scored word to our list of best
- *                         scored words. Does nothing if the list is full and
- *                         every word so far is better. 
- */
-void lextree_add_to_result(lextree_scored_string** strings, int n,
-                           char* string, int score);
-
-
-/* already_in_nbest - helper function for lextree_add_to_result.  looks in 
- *					  the list "words" for "word". returns the word's index 
- *					  in the list if it is there, and -1 if it is not.
- */
-
- int already_in_nbest(lextree_scored_string** strings, int n, char* string);
-
-
-/* lextree_print_n_best - given a list of lextree_scored_words and its length,
- *                        prints out a list of the results
- */
-void lextree_print_n_best(lextree_scored_string** strings, int n);
-
-
-/* lextree_free_n_best - given a list of lextree_scored_words and its length,
- *                       frees the resulting arrays
- */
-void lextree_free_n_best(lextree_scored_string** strings, int n);
 
 #endif
